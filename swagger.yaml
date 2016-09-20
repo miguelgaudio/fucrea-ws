@@ -10,30 +10,13 @@ info:
 
 # Describe your paths here
 paths:
-  /companies:
-    post:
-      description: |
-        Create company    
-      parameters:
-        -
-          name: name
-          in: formData
-          description: Name of the company
-          required: true
-          type: string
-          format: string
-          
-      responses:
-        200:
-          description: Successful response
-          
+  # This is a path endpoint. Change it.
   /indicators:
     # This is a HTTP operation
     get:
       # Describe this verb here. Note: you can use markdown
       description: |
         Gets `Indicator` object.
-      # This is array of GET operation parameters:
       parameters:
         # An example parameter that is in query and is required
         -
@@ -79,4 +62,13 @@ definitions:
         type: integer
       name:
         type: string
+  Stablishment:
+    type: object
+    properties:
+      id: 
+        type: integer
+      name: 
+        type: string
+      company_id:
+        type: integer
       
