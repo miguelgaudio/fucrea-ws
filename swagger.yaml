@@ -10,6 +10,22 @@ info:
 
 # Describe your paths here
 paths:
+  /companies:
+     post:
+       description: |
+         Create company    
+       parameters:
+         -
+           name: name
+           in: formData
+           description: Name of the company
+           required: true
+           type: string
+           format: string          
+       responses:
+         200:
+           description: Successful response
+
   # This is a path endpoint. Change it.
   /indicators:
     # This is a HTTP operation
