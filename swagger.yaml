@@ -1,0 +1,82 @@
+# Example YAML to get you started quickly.
+# Be aware that YAML has indentation based scoping.
+# Code completion support is available so start typing for available options.
+swagger: '2.0'
+
+# This is your document metadata
+info:
+  version: "0.0.0"
+  title: indicators
+
+# Describe your paths here
+paths:
+  /companies:
+    post:
+      description: |
+        Create company    
+      parameters:
+        -
+          name: name
+          in: formData
+          description: Name of the company
+          required: true
+          type: string
+          format: string
+          
+      responses:
+        200:
+          description: Successful response
+          
+  /indicators:
+    # This is a HTTP operation
+    get:
+      # Describe this verb here. Note: you can use markdown
+      description: |
+        Gets `Indicator` object.
+      # This is array of GET operation parameters:
+      parameters:
+        # An example parameter that is in query and is required
+        -
+          name: excercise
+          in: query
+          description: Size of array
+          required: true
+          type: number
+          format: integer
+        -
+          name: company_id
+          in: query
+          description: Size of array
+          required: true
+          type: number
+          format: integer
+
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: Successful response
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/definitions/Indicator'
+      
+definitions:
+  Indicator:
+    type: object
+    properties:
+      excercise:
+        type: integer
+      company:
+        $ref: '#/definitions/Company'
+  Company:
+    type: object
+    properties:
+      id: 
+        type: integer
+      name:
+        type: string
+      
