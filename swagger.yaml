@@ -10,81 +10,118 @@ info:
 
 # Describe your paths here
 paths:
-  /companies:
-     post:
-       description: |
-         Create company    
-       parameters:
-         -
-           name: name
-           in: formData
-           description: Name of the company
-           required: true
-           type: string
-           format: string          
-       responses:
-         200:
-           description: Successful response
-
-  # This is a path endpoint. Change it.
-  /indicators:
-    # This is a HTTP operation
-    get:
-      # Describe this verb here. Note: you can use markdown
+  /users:
+    post:
       description: |
-        Gets `Indicator` object.
+        Create user
       parameters:
-        # An example parameter that is in query and is required
         -
-          name: excercise
-          in: query
-          description: Size of array
+          name: email
+          in: formData
+          description: User's email
           required: true
-          type: number
-          format: integer
+          type: string
+          format: string
         -
-          name: company_id
-          in: query
-          description: Size of array
+          name: password
+          in: formData
           required: true
-          type: number
-          format: integer
-
-      # Expected responses for this operation:
+          description: User's password
+          type: string
+          format: string
+        -
+          name: role
+          in: formData
+          required: true
+          description: User's role
+          type: integer
+        -
+          name: name
+          in: formData
+          required: false
+          description: User's name
+          type: string
+        - 
+          name: last_name
+          in: formData
+          required: false
+          description: User's last name
+          type: string
+        - 
+          name: X-User-Access-Token
+          in: header
+          required: true
+          description: User's access token
+          type: string
       responses:
-        # Response code
         200:
-          description: Successful response
-          # A schema describing your response object.
-          # Use JSON Schema format
+          description: Usuario creado correctamente
           schema:
             type: object
-            properties:
-              data:
-                $ref: '#/definitions/Indicator'
+    get:
+      description: |
+        Users list
+      parameters:
+        -
+          name: X-User-Access-Token
+          in: header
+          required: true
+          description: Current user's oauth token
+          type: string
+      responses:
+        200:
+          description: asdas
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+            
+              
       
 definitions:
-  Indicator:
+  User:
     type: object
     properties:
-      excercise:
-        type: integer
-      company:
-        $ref: '#/definitions/Company'
-  Company:
-    type: object
-    properties:
-      id: 
-        type: integer
-      name:
+      email:
         type: string
-  Stablishment:
-    type: object
-    properties:
-      id: 
+      password:
+        type: string
+      role: 
+        enum: [1, 2, 3, 4, 5]
         type: integer
       name: 
         type: string
-      company_id:
+      last_name:
+        type: string
+      X-User-Access-Token:
+        type: string
+  Establishment:
+    type: object
+    properties:
+      name:
+        type: string
+      state:
+        type: boolean
+      crea_group:
+        $ref: '#/definitions/CreaGroup'
+      coneat:
         type: integer
-      
+      location:
+        type: object
+        properties:
+          latitude: 
+            type: number
+            format: float
+          longitude:
+            type: number
+            format: float
+      share_fucrea:
+        type: boolean
+      share_group:
+        type: boolean
+  CreaGroup:
+    type: object
+    properties:
+      name: 
+        type: string
+  
