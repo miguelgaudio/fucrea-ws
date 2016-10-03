@@ -876,7 +876,6 @@ definitions:
           - ADMINISTRATIVO SISTEMA
           - ASESOR
           - PRODUCTOR
-          - ADMINISTRATIVO
           - ADMINISTRATIVO PRODUCTOR
           - INVITADO
         type: string
