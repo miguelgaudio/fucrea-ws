@@ -122,7 +122,14 @@ paths:
           in: path
           required: true
           description: User's id 
-          type: integer  
+          type: integer 
+        -
+          name: user
+          in: body
+          description: User's info
+          required: false
+          schema:
+            $ref: '#/definitions/User'
       responses:
         200:
           description: Usuario modificado correctamente 
@@ -233,7 +240,7 @@ paths:
         500:
           description: Error del servidor
   /users/login:
-    post:
+    get:
       description: |
         User logs in the platform
       consumes:
@@ -256,7 +263,12 @@ paths:
         200:
           description: Usuario autenticado con éxito
           schema:
-            $ref: '#/definitions/User'
+            type: object
+            properties:
+              access_token:
+                type: string
+              user:
+                $ref: '#/definitions/User'
         400:
           description: Error del cliente
         404:
@@ -868,7 +880,7 @@ definitions:
         readOnly: true
       email:
         type: string
-      name:
+      fist_name:
         type: string
       role: 
         enum: 
@@ -905,6 +917,10 @@ definitions:
                 $ref: '#/definitions/Permissions'
               lots: 
                 $ref: '#/definitions/Permissions'
+      establishments:
+        type: array
+        items:
+          type: integer
   ### USERS DEFINITIONS END
   
   ### ADMINISTRATION DEFINITIONS
