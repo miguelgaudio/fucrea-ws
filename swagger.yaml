@@ -72,7 +72,7 @@ paths:
           schema:
             $ref: '#/definitions/User'
       responses:
-        201:
+        200:
           description: Usuario creado correctamente
         400:
           description: Error del cliente
@@ -131,7 +131,7 @@ paths:
           schema:
             $ref: '#/definitions/User'
       responses:
-        204:
+        200:
           description: Usuario modificado correctamente 
         400:
           description: Error del cliente
@@ -177,7 +177,7 @@ paths:
         500:
           description: Error del servidor
   /users/confirm:
-    patch:
+    post:
       description: |
         Sends supplied registration token to confirm user's registration
       consumes:
@@ -197,7 +197,7 @@ paths:
               registration_token:
                 type: string
       responses:
-        204:
+        200:
           description: Registro de usuario confirmado correctamente      
         400:
           description: Error del cliente
@@ -393,7 +393,7 @@ paths:
           required: true
           description: Characterization info
           schema:
-            $ref: '#/definitions/CharacterizationPOSTList'
+            $ref: '#/definitions/CharacterizationList'
         - 
           name: id
           in: path
@@ -880,7 +880,7 @@ definitions:
         readOnly: true
       email:
         type: string
-      name:
+      fist_name:
         type: string
       role: 
         enum: 
@@ -906,11 +906,16 @@ definitions:
                 $ref: '#/definitions/Permissions'
               comparative: 
                 $ref: '#/definitions/Permissions'
-              sustentability:
+          tickets:
+            $ref: '#/definitions/Permissions'
+          administration:
+            type: object
+            properties:
+              companies:
                 $ref: '#/definitions/Permissions'
-              margin: 
+              establishments: 
                 $ref: '#/definitions/Permissions'
-              details: 
+              lots: 
                 $ref: '#/definitions/Permissions'
       establishments:
         type: array
@@ -987,7 +992,7 @@ definitions:
       padrons:
         type: array
         items:  
-          $ref: '#/definitions/PadronPATCH'
+          $ref: '#/definitions/Padron'
       lots:
         type: array
         items:  
@@ -1025,6 +1030,10 @@ definitions:
   CharacterizationList:
     type: object
     properties:
+      id:
+        type: integer
+      establishment_id:
+        type: integer
       date: 
         type: string
         format: date
@@ -1049,33 +1058,6 @@ definitions:
         $ref: '#/definitions/ChacarterizationObject'
       dias_semana_decisor: 
         $ref: '#/definitions/ChacarterizationObject'
-  CharacterizationPOSTList:
-    type: object
-    properties:
-      date: 
-        type: string
-        format: date
-      agriculture: 
-        type: integer
-      sistema_producto_vacuno: 
-        type: integer
-      sistema_producto_ovino: 
-        type: integer
-      forestacion_comercial: 
-        type: integer
-      evolucion_propiedad_empresas_familiares: 
-        type: integer
-      fecha_nacimiento_decisor: 
-        type: string
-        format: date
-      riego: 
-        type: integer
-      nivel_instruccion_decisor: 
-        type: integer
-      residencia_decisor: 
-        type: integer
-      dias_semana_decisor: 
-        type: integer
   CharacterizationFormList:
     type: object
     properties:
@@ -1318,24 +1300,10 @@ definitions:
   Padron:
     type: object
     properties:
-      id:
-        type: integer
-        readOnly: true
       padron_number: 
         type: string
-      department: 
+      departament: 
         $ref: '#/definitions/Department'
-  PadronPATCH:
-    type: object
-    properties:
-      id:
-        type: integer
-        readOnly: true
-      padron_number: 
-        type: string
-      department: 
-        type: integer
-  ### ADMINISTRATION DEFINITIONS END        
   ### ADMINISTRATION DEFINITIONS END        
           
   ### INDICATORS DEFINITIONS
