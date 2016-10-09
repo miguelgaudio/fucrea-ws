@@ -1242,6 +1242,9 @@ definitions:
       area:
         type: number
         format: float
+      productive_area:
+        type: number
+        format: float
       coneat:
         type: integer     
       posession:
