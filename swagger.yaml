@@ -751,46 +751,224 @@ paths:
         Returns list of indicators acording to user configuration
       parameters:
         - 
-           name: X-User-Access-Token
-           in: header
-           required: true
-           description: User's access token
-           type: string
-        - 
-           name: company_id
-           in: formData
-           required: true
-           description: Company id to filter its establishemnts
-           type: integer
-        - 
-           name: crea_group_id
-           in: formData
-           required: true
-           description: Crea group id to filter its establishemnts
-           type: integer
-        -
-          name: establishment_id
-          in: formData
-          required: false
-          description: Establishment id to filter indicator. Null means all establishemnts
-          type: integer
-        -
-          name: excercise_date
-          in: formData
-          required: true
-          description: Date which belongs to indicator for filtering
-          type: integer
+         name: filters
+         in: body
+         required: true
+         description: Company id to filter its establishemnts
+         schema:
+            properties:
+              company_id:
+                type: integer
+              crea_group_id:
+                type: integer
+              establishment_id:
+                type: integer
+              exercise_dates:
+                type: array
+                items:
+                  type: integer
       responses:
         200:
           description: Indicadores obtenidos correctamente
           schema:
-             type: array
-             items:
-              $ref: '#/definitions/IndicatorList'
+             type: object
+             properties:
+                general:
+                  type: object
+                  properties:
+                    economic_evolution:
+                      type: object
+                      properties:
+                        series:
+                          type: object
+                          properties:
+                            pb: 
+                              type: array
+                              items:
+                                type: integer
+                            ik:
+                              type: array
+                              items:
+                                type: integer
+                            costs:
+                              type: array
+                              items:
+                                type: integer
+                        categories:
+                          type: array
+                          items:
+                            type: string
+                    area_evolution:
+                      type: object
+                      properties:
+                        series:
+                          type: object
+                          properties:
+                            agrcultural: 
+                              type: array
+                              items:
+                                type: integer
+                            forest:
+                              type: array
+                              items:
+                                type: integer
+                            milkmaid:
+                              type: array
+                              items:
+                                type: integer
+                            cattle:
+                              type: array
+                              items:
+                                type: integer
+                            fine_seed:
+                              type: array
+                              items:
+                                type: integer
+                        categories:
+                          type: array
+                          items:
+                            type: string    
+                agricultural:
+                  type: object
+                  properties:
+                    crude_product_evolution:
+                      type: object
+                      properties:
+                        series:
+                          type: object
+                          properties:
+                            others: 
+                              type: array
+                              items:
+                                type: integer
+                            fine_seed:
+                              type: array
+                              items:
+                                type: integer
+                            cultivation:
+                              type: array
+                              items:
+                                type: integer
+                            wool:
+                              type: array
+                              items:
+                                type: integer
+                            ovine:
+                              type: array
+                              items:
+                                type: integer  
+                            bovine:
+                              type: array
+                              items:
+                                type: integer  
+                        categories:
+                          type: array
+                          items:
+                            type: string    
+                cattle:
+                  type: object
+                  properties:
+                    kg_evolution:
+                      type: object
+                      properties:
+                        series:
+                          type: object
+                          properties:
+                            ovine: 
+                              type: array
+                              items:
+                                type: integer
+                            bovine:
+                              type: array
+                              items:
+                                type: integer
+                            wool:
+                              type: array
+                              items:
+                                type: integer
+                        categories:
+                          type: array
+                          items:
+                            type: string    
+                milk:
+                  type: object
+                  properties:
+                    milk_production_evolution:
+                      type: object
+                      properties:
+                        series:
+                          type: object
+                          properties:
+                            production: 
+                              type: array
+                              items:
+                                type: integer
+                            price:
+                              type: array
+                              items:
+                                type: integer
+                        categories:
+                          type: array
+                          items:
+                            type: string    
         400:
           description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor
+  /indicators/graphic/management:
+    get:
+      description: |
+        Returns an indicators tree acording to filters selected
+      parameters:
+        - 
+           name: filters
+           in: body
+           required: false
+           description: Company id to filter its establishemnts
+           schema:
+              properties:
+                company_id:
+                  type: integer
+                crea_group_id:
+                  type: integer
+                establishment_id:
+                  type: integer
+                exercise_date:
+                  type: integer
+                comparative:
+                  type: object
+                  properties:
+                    compare_w_myself:
+                      type: boolean
+                    exercise:
+                      type: integer
+                    company_id:
+                      type: integer
+                    establishment_id:
+                      type: integer
+                    characterization:
+                      $ref: '#/definitions/CharacterizationPOSTList'
+                    filters:
+                      $ref: '#/definitions/IndicatorFilterPOSTList'
+      responses:
+        200:
+          description: Indicador obtenido correctamente
+          schema:
+             type: array
+             items:
+              $ref: '#/definitions/IndicatorTree'        
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor      
   /indicators/details:
     get:
       description: |
@@ -870,49 +1048,7 @@ paths:
         200:
           description: Indicador agregado correctamente
           #Todo
-  /indicators/graphic/management:
-    get:
-      description: |
-        Returns an indicator acording to filters selected
-      parameters:
-        - 
-          name: X-User-Access-Token
-          in: header
-          required: true
-          description: User's access token
-          type: string
-        - 
-           name: company_id
-           in: formData
-           required: false
-           description: Company id to filter its establishemnts
-           type: integer
-        - 
-           name: crea_group_id
-           in: formData
-           required: false
-           description: Crea group id to filter its establishemnts
-           type: integer
-        -
-          name: establishment_id
-          in: formData
-          required: false
-          description: Establishment id to filter indicator. Null means all establishemnts
-          type: integer
-        -
-          name: excercise_date
-          in: formData
-          required: false
-          description: Date which belongs to indicator for filtering
-          type: integer
-        
-      responses:
-        200:
-          description: Indicador obtenido correctamente
-          schema:
-             type: array
-             items:
-              $ref: '#/definitions/IndicatorList'
+  
   ### INDICATORS DEFINITIONS END     
         
 definitions:
@@ -1066,40 +1202,6 @@ definitions:
                   type: array
                   items:
                     type: integer
-  ChacarterizationObject:
-    type: object
-    properties:
-      description:
-        type: string
-      value:
-        type: integer
-  CharacterizationList:
-    type: object
-    properties:
-      creation_date: 
-        type: string
-        format: date
-      agriculture: 
-        $ref: '#/definitions/ChacarterizationObject'
-      sistema_producto_vacuno: 
-        $ref: '#/definitions/ChacarterizationObject'
-      sistema_producto_ovino: 
-        $ref: '#/definitions/ChacarterizationObject'
-      forestacion_comercial: 
-        $ref: '#/definitions/ChacarterizationObject'
-      evolucion_propiedad_empresas_familiares: 
-        $ref: '#/definitions/ChacarterizationObject'
-      fecha_nacimiento_decisor: 
-        type: string
-        format: date
-      riego: 
-        $ref: '#/definitions/ChacarterizationObject'
-      nivel_instruccion_decisor: 
-        $ref: '#/definitions/ChacarterizationObject'
-      residencia_decisor: 
-        $ref: '#/definitions/ChacarterizationObject'
-      dias_semana_decisor: 
-        $ref: '#/definitions/ChacarterizationObject'
   CharacterizationPOSTList:
     type: object
     properties:
@@ -1126,6 +1228,18 @@ definitions:
       residencia_decisor: 
         type: integer
       dias_semana_decisor: 
+        type: integer
+      gegraphic_zone:
+        type: integer
+        description: "Applies only in indicators filtering"
+  IndicatorFilterPOSTList:
+    type: object
+    properties:
+      comparative_groups:
+        type: integer
+      aggregation_type:
+        type: integer
+      ordering_type:
         type: integer
   CharacterizationFormList:
     type: object
@@ -1211,6 +1325,15 @@ definitions:
               type: integer
             description:
               type: string   
+      geographic_zone: 
+        type: array
+        items:
+          type: object
+          properties:
+            value:
+              type: integer
+            description:
+              type: string   
   IndicatorFilterFormList:
     type: object
     properties:
@@ -1232,6 +1355,15 @@ definitions:
               type: integer
             description:
               type: string
+      ordering_type:        
+        type: array
+        items:
+          type: object
+          properties:
+            value:
+              type: integer
+            description:
+              type: string  
       indicators:
         type: array
         items:
@@ -1415,4 +1547,209 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Indicator'
+  IndicatorTree:
+    type: object
+    properties:
+      'r%':
+        type: object
+        properties:
+          value:
+            type: number
+            format: float
+          children:
+            type: object
+            properties:
+              Cd:
+                type: object
+                properties:
+                  value:
+                    type: number
+                    format: float
+              L:
+                type: object
+                properties:
+                  value:
+                    type: number
+                    format: float
+                  children:
+                    type: object
+                    properties:
+                      patrimonio:
+                        type: object
+                        properties:
+                          value:
+                            type: number
+                            format: float
+                      pasivo:
+                        type: object
+                        properties:
+                          value:
+                            type: number
+                            format: float
+                          children:
+                            type: object
+                            properties:
+                              largo_plazo:
+                                type: object
+                                properties:
+                                  value:
+                                    type: number
+                                    format: float
+                              corto_plazo:
+                                type: object
+                                properties:
+                                  value:
+                                    type: number
+                                    format: float      
+              R%:
+                type: object
+                properties:
+                  value:
+                    type: number
+                    format: float
+                  children:
+                    type: object
+                    properties:
+                      activos:
+                        type: object
+                        properties:
+                          value: 
+                            type: number
+                            format: float
+                          children:
+                            type: object
+                            properties:
+                              indicadores:
+                                type: object
+                                properties:
+                                  value:
+                                    type: number
+                                    format: float
+                              bienes_inmuebles:
+                                type: object
+                                properties:
+                                  value:
+                                    type: number
+                                    format: float
+                                  children:
+                                    type: object
+                                    properties:
+                                      mejoramientos_extensivos:
+                                        type: object
+                                        properties:
+                                          value:
+                                            type: number
+                                            format: float
+                                      pasturas:
+                                        type: object
+                                        properties:
+                                          value:
+                                            type: number
+                                            format: float
+                                      montes_artificiales:
+                                        type: object
+                                        properties:
+                                          value:
+                                            type: number
+                                            format: float
+                                      tierra:
+                                        type: object
+                                        properties:
+                                          value:
+                                            type: number
+                                            format: float 
+                                          children:
+                                            type: object
+                                            properties:
+                                              valor_usd_ha:
+                                                type: object
+                                                properties:
+                                                  value:
+                                                    type: number
+                                                    format: float        
+                                              superficie_en_ha:
+                                                type: object
+                                                properties:
+                                                  value:
+                                                    type: number
+                                                    format: float         
+                                      mejoras_fijas:
+                                        type: object
+                                        properties:
+                                          value:
+                                            type: number
+                                            format: float
+                              bienes_muebles:
+                                type: object
+                                properties:
+                                  value:
+                                    type: number
+                                    format: float
+                                  children:
+                                    type: object
+                                    properties:
+                                      otros:
+                                        type: object
+                                        properties:
+                                          value:
+                                            type: number
+                                            format: float
+                                      vehiculos:
+                                        type: object
+                                        properties:
+                                          value:
+                                            type: number
+                                            format: float
+                                      maquinaria:
+                                        type: object
+                                        properties:
+                                          value:
+                                            type: number
+                                            format: float
+                                      stock_ovino:
+                                        type: object
+                                        properties:
+                                          value:
+                                            type: number
+                                            format: float                                         
+                                      stock_vacuno:
+                                        type: object
+                                        properties:
+                                          value:
+                                            type: number
+                                            format: float          
+                              disponible_y_realizable:
+                                type: object
+                                properties:
+                                  value:
+                                    type: number
+                                    format: float
+                      ik:
+                        type: object
+                        properties:
+                          value:
+                            type: number
+                            format: float
+                          children:
+                            type: object
+                            properties:
+                              fuente_y_uso_de_fondos:
+                                type: object
+                                properties:
+                                  value:
+                                    type: number
+                                    format: float
+                              rel_i_p:
+                                type: object
+                                properties:
+                                  value:
+                                    type: number
+                                    format: float      
+                              pb:
+                                type: object
+                                properties:
+                                  value:
+                                    type: number
+                                    format: float
+                      
   ### INDICATORS DEFINITIONS END
