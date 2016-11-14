@@ -51,7 +51,7 @@ securityDefinitions:
 
 paths:
   ### USERS SERVICES
-  /users:
+  /users/:
     # quizas esto es otro endpoint "invitations" 
     post:
       summary: Sends user an email invitation
@@ -106,7 +106,7 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor
-  /users/{id}:
+  /users/{id}/:
     patch:
       description: |
         Updates user's info
@@ -176,7 +176,7 @@ paths:
           description: Usuario no enontrado
         500:
           description: Error del servidor
-  /users/confirm:
+  /users/confirm/:
     patch:
       description: |
         Sends supplied registration token to confirm user's registration
@@ -203,7 +203,7 @@ paths:
           description: Error del cliente
         500:
           description: Error del servidor
-  /users/change_password:
+  /users/change_password/:
     patch:
       description: |
         Changes password for described user
@@ -239,7 +239,7 @@ paths:
           description: Usuario no enontrado
         500:
           description: Error del servidor
-  /users/invite:
+  /users/invite/:
     patch:
       description: |
         Resends a mail invitation to a created user
@@ -269,8 +269,8 @@ paths:
           description: Usuario no enontrado
         500:
           description: Error del servidor        
-  /users/login:
-    get:
+  /users/login/:
+    post:
       description: |
         User logs in the platform
       consumes:
@@ -305,7 +305,7 @@ paths:
           description: Usuario no enontrado
         500:
           description: Error del servidor
-  /users/logout:
+  /users/logout/:
     post:
       description: |
         User logs out of the platform
@@ -326,7 +326,7 @@ paths:
   ### USERS SERVICES END
   
   ### ADMINISTRATION SERVICES
-  /establishments:
+  /establishments/:
      get:
        description: |
          List establishments
@@ -347,7 +347,7 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
          500:
           description: Error del servidor
-  /establishments/unasigned:
+  /establishments/unasigned/:
     get:
       description: |
          List unasigned establishments
@@ -373,7 +373,7 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor        
-  /establishments/{id}:
+  /establishments/{id}/:
     patch:
        description: |
           Updates establishment's info
@@ -410,7 +410,7 @@ paths:
           description: Establecimiento no enontrado
          500:
           description: Error del servidor
-  /establishments/{id}/characterizations:
+  /establishments/{id}/characterizations/:
     post:
       description: |  
         Create new establishment's categorization
@@ -443,7 +443,7 @@ paths:
           description: Establecimiento no enontrado
          500:
           description: Error del servidor
-  /companies:
+  /companies/:
     get:
       description: |
         List user's companies
@@ -488,7 +488,7 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor
-  /companies/{id}:
+  /companies/{id}/:
     patch:
       description: |
         Updates company's data
@@ -546,7 +546,7 @@ paths:
           description: Empresa no enontrada
         500:
           description: Error del servidor
-  /companies/establishments:
+  /companies/establishments/:
     get:
       description: |
         Lists companies with its establishments in brief format
@@ -567,7 +567,7 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor
-  /lots:
+  /lots/:
     get:
       description: |
          List lots
@@ -612,7 +612,7 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor
-  /lots/unasigned:
+  /lots/unasigned/:
     get:
       description: |
          List unasigned lots
@@ -641,7 +641,7 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor
-  /lots/{id}:
+  /lots/{id}/:
     patch:
       security:
         - Bearer: []
@@ -699,7 +699,7 @@ paths:
           description: Potrero no enontrado
         500:
           description: Error del servidor
-  /crea_groups:
+  /crea_groups/:
     get:
       description: |
          List Crea groups
@@ -723,7 +723,7 @@ paths:
   ### ADMINISTRATION SERVICES END
   
   ### AUX SERVICES
-  /forms/categorizations:
+  /forms/characterizations/:
     get:
       description: |
         Lists every field with its options to fill the categorizations and filters forms
@@ -745,7 +745,7 @@ paths:
   ### AUX SERVICES END
   
   ### INDICATORS SERVICES
-  /indicators/summary:
+  /indicators/summary/:
     get:
       description: |
         Returns list of indicators acording to user configuration
@@ -754,7 +754,7 @@ paths:
          name: filters
          in: body
          required: true
-         description: Company id to filter its establishemnts
+         description: Filters to calculate indicators
          schema:
             properties:
               company_id:
@@ -766,7 +766,7 @@ paths:
               exercise_dates:
                 type: array
                 items:
-                  type: integer
+                  type: string
       responses:
         200:
           description: Indicadores obtenidos correctamente
@@ -776,7 +776,7 @@ paths:
                 general:
                   type: object
                   properties:
-                    economic_evolution:
+                    economical_evolution:
                       type: object
                       properties:
                         series:
@@ -919,7 +919,7 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor
-  /indicators/graphic/management:
+  /indicators/graphic/management/:
     get:
       description: |
         Returns an indicators tree acording to filters selected
@@ -928,7 +928,7 @@ paths:
            name: filters
            in: body
            required: false
-           description: Company id to filter its establishemnts
+           description: Filters to calculate indicators
            schema:
               properties:
                 company_id:
@@ -938,22 +938,28 @@ paths:
                 establishment_id:
                   type: integer
                 exercise_date:
-                  type: integer
+                  type: string
+                  format: date
                 comparative:
                   type: object
                   properties:
                     compare_w_myself:
                       type: boolean
-                    exercise:
-                      type: integer
+                    exercise_date:
+                      type: string
+                      format: date
                     company_id:
                       type: integer
+                    crea_group_id:
+                      type: integer  
                     establishment_id:
                       type: integer
                     characterization:
                       $ref: '#/definitions/CharacterizationPOSTList'
                     filters:
-                      $ref: '#/definitions/IndicatorFilterPOSTList'
+                      type: array
+                      items:
+                        $ref: '#/definitions/IndicatorFilterPOSTList'
       responses:
         200:
           description: Indicador obtenido correctamente
@@ -969,85 +975,219 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor      
-  /indicators/details:
+  /indicators/graphic/margin/:
     get:
       description: |
-        Returns an indicator acording to filters selected
+        Returns the evolution of MB for the delected exercises
       parameters:
         - 
-          name: X-User-Access-Token
-          in: header
-          required: true
-          description: User's access token
-          type: string
+         name: filters
+         in: body
+         required: true
+         description: Filters to calculate indicators
+         schema:
+            properties:
+              company_id:
+                type: integer
+              crea_group_id:
+                type: integer
+              establishment_id:
+                type: integer
+              exercise_dates:
+                type: array
+                items:
+                  type: string
+              exercise:
+                type: string
+      responses:
+        200:
+          description: Indicadores obtenidos correctamente
+          schema:
+             type: object
+             properties:
+                mb_evolution:
+                  type: object
+                  properties:
+                    series:
+                      type: object
+                      properties:
+                        agricultural: 
+                          type: array
+                          items:
+                            type: integer
+                        cattle:
+                          type: array
+                          items:
+                            type: integer
+                        forest:
+                          type: array
+                          items:
+                            type: integer
+                        fine_seed:
+                          type: array
+                          items:
+                            type: integer
+                    categories:
+                      type: array
+                      items:
+                        type: string
+                mb_table:
+                  type: object
+                  properties:
+                    columns:
+                      type: array
+                      items: 
+                        type: string
+                    rows:
+                      type: array
+                      items:
+                        type: string
+                        
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor        
+  /indicators/detail/:
+    get:
+      description: |
+        Returns an indicator list to show on the table
       responses:
         200:
           description: Indicadores obtenidos correctamente
           schema:
              type: array
              items:
-              $ref: '#/definitions/IndicatorList'
+              $ref: '#/definitions/IndicatorDetailList'
         400:
           description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor 
+          description: Error del servidor
     post:
       description: |
-        Configurates and sets which indicators the user wants to see when consulting
-        Stored in database
+        Calculates an indicator acording to selected chategorization and filters
       parameters:
         - 
-          name: X-User-Access-Token
-          in: header
-          required: true
-          description: User's access token
-          type: string
-        -
-          name: indicators
-          in: body
-          required: true
-          description: Indicators list
-          schema:
-             type: array
-             items:
-              $ref: '#/definitions/Indicator'
+           name: comparative
+           in: body
+           required: false
+           description: Filters to calculate indicator
+           schema:
+              properties:
+                  compare_w_myself:
+                    type: boolean
+                  exercise:
+                    type: integer
+                  company_id:
+                    type: integer
+                  establishment_id:
+                    type: integer
+                  characterization:
+                    $ref: '#/definitions/CharacterizationPOSTList'
+                  filters:
+                      type: array
+                      items:
+                        $ref: '#/definitions/IndicatorFilterPOSTList'
       responses:
         200:
-          description: Configuración guardada correctamente
+          description: Indicadores obtenidos correctamente
+          schema:
+             type: object
+             properties:
+              comparative:
+                type: string
+              exercise: 
+                type: string
+              indicators:
+                type: object
+                properties:
+                  indicator1_id:
+                    type: number
+                    format: float
         400:
           description: Error del cliente
         500:
           description: Error del servidor
-  /idicators/details/new:
-    get:
+    delete:
       description: |
-        Returns an indicator acording to selected filters
+        Deletes a stored indicator detail
       parameters:
         - 
-          name: X-User-Access-Token
-          in: header
-          required: true
-          description: User's access token
-          type: string
+           name: indicator
+           in: body
+           required: false
+           description: Indicator data to delete
+           schema:
+              properties:
+                exercise:
+                  type: string
+                  format: date
+                comparative:
+                  type: string
       responses:
-        200:
-          description: Indicador agregado correctamente
-          #Todo
-  /idicators/details/delete:
+        204:
+          description: Indicador eliminada correctamente   
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        404:
+          description: Indicador no enontrado
+        500:
+          description: Error del servidor
+  /indicators/detail/configuration/:
     get:
       description: |
-        Returns an indicator acording to selected filters
-      parameters:
-        - 
-          name: X-User-Access-Token
-          in: header
-          required: true
-          description: User's access token
-          type: string
+        Returns an indicator identifier list to show on the table
       responses:
         200:
-          description: Indicador agregado correctamente
-          #Todo
+          description: Indicadores obtenidos correctamente
+          schema:
+             type: array
+             items:
+              type: string
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor
+    post:
+      description: |
+        Sends an indicator identifier list to save user's indicator table configuration
+      parameters:
+        - 
+           name: indicators
+           in: body
+           required: false
+           description: List of Indicators reference name
+           schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: Indicadores obtenidos correctamente
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor
+  
   
   ### INDICATORS DEFINITIONS END     
         
@@ -1205,9 +1345,6 @@ definitions:
   CharacterizationPOSTList:
     type: object
     properties:
-      creation_date: 
-        type: string
-        format: date
       agriculture: 
         type: integer
       sistema_producto_vacuno: 
@@ -1235,12 +1372,19 @@ definitions:
   IndicatorFilterPOSTList:
     type: object
     properties:
-      comparative_groups:
+      comparative_group:
         type: integer
       aggregation_type:
         type: integer
       ordering_type:
         type: integer
+      indicator:
+        type: object
+        properties:
+          type:
+            type: string
+          name:
+            type: string
   CharacterizationFormList:
     type: object
     properties:
@@ -1524,29 +1668,6 @@ definitions:
   ### ADMINISTRATION DEFINITIONS END        
           
   ### INDICATORS DEFINITIONS
-  Indicator:
-    type: object
-    properties:
-      name: 
-        type: string
-      value:
-        type: number
-        format: float
-      id:
-        type: integer
-  IndicatorList:
-    type: object
-    properties:
-      company_id: 
-        type: integer
-      establishment_id:
-        type: integer
-      excercise_date:
-        type: integer
-      indicators:
-        type: array
-        items:
-          $ref: '#/definitions/Indicator'
   IndicatorTree:
     type: object
     properties:
@@ -1751,5 +1872,30 @@ definitions:
                                   value:
                                     type: number
                                     format: float
-                      
+  IndicatorDetailList:
+    type: object
+    properties:
+      criteria:
+        type: string
+      exercise:
+        type: string
+      indicators:
+        type: object
+        properties:
+          indicator1_id:
+            type: object
+            properties:
+              name:
+                type: string
+              value:
+                type: number
+                format: float
+          indicator2_id:
+            type: object
+            properties:
+              name:
+                type: string
+              value:
+                type: number
+                format: float
   ### INDICATORS DEFINITIONS END
