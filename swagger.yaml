@@ -298,7 +298,7 @@ paths:
               access_token:
                 type: string
               user:
-                $ref: '#/definitions/User'
+                $ref: '#/definitions/UserLogin'
         400:
           description: Error del cliente
         404:
@@ -750,23 +750,28 @@ paths:
       description: |
         Returns list of indicators acording to user configuration
       parameters:
+        -
+          name: company_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise_dates
+          in: query
+          required: true
+          type: array
+          items:
+            type: string
+        -
+          name: crea_group_id
+          in: query
+          required: true
+          type: integer
         - 
-         name: filters
-         in: body
+         name: establishment_id
+         in: query
          required: true
-         description: Filters to calculate indicators
-         schema:
-            properties:
-              company_id:
-                type: integer
-              crea_group_id:
-                type: integer
-              establishment_id:
-                type: integer
-              exercise_dates:
-                type: array
-                items:
-                  type: string
+         type: integer
       responses:
         200:
           description: Indicadores obtenidos correctamente
@@ -797,7 +802,7 @@ paths:
                         categories:
                           type: array
                           items:
-                            type: string
+                            type: integer
                     area_evolution:
                       type: object
                       properties:
@@ -827,7 +832,7 @@ paths:
                         categories:
                           type: array
                           items:
-                            type: string    
+                            type: integer    
                 agricultural:
                   type: object
                   properties:
@@ -864,7 +869,7 @@ paths:
                         categories:
                           type: array
                           items:
-                            type: string    
+                            type: integer    
                 cattle:
                   type: object
                   properties:
@@ -889,7 +894,7 @@ paths:
                         categories:
                           type: array
                           items:
-                            type: string    
+                            type: integer    
                 milk:
                   type: object
                   properties:
@@ -910,7 +915,7 @@ paths:
                         categories:
                           type: array
                           items:
-                            type: string    
+                            type: integer    
         400:
           description: Error del cliente
         401:
@@ -920,7 +925,7 @@ paths:
         500:
           description: Error del servidor
   /indicators/graphic/management/:
-    get:
+    post:
       description: |
         Returns an indicators tree acording to filters selected
       parameters:
@@ -964,9 +969,7 @@ paths:
         200:
           description: Indicador obtenido correctamente
           schema:
-             type: array
-             items:
-              $ref: '#/definitions/IndicatorTree'        
+             $ref: '#/definitions/IndicatorTree'        
         400:
           description: Error del cliente
         401:
@@ -1061,7 +1064,10 @@ paths:
           schema:
              type: array
              items:
-              $ref: '#/definitions/IndicatorDetailList'
+               type: object
+               properties:
+                stored_comparatives:
+                  $ref: '#/definitions/IndicatorDetailList'
         400:
           description: Error del cliente
         401:
@@ -1083,7 +1089,7 @@ paths:
               properties:
                   compare_w_myself:
                     type: boolean
-                  exercise:
+                  exercise_date:
                     type: integer
                   company_id:
                     type: integer
@@ -1099,18 +1105,7 @@ paths:
         200:
           description: Indicadores obtenidos correctamente
           schema:
-             type: object
-             properties:
-              comparative:
-                type: string
-              exercise: 
-                type: string
-              indicators:
-                type: object
-                properties:
-                  indicator1_id:
-                    type: number
-                    format: float
+             $ref: '#/definitions/IndicatorDetailList'
         400:
           description: Error del cliente
         500:
@@ -1120,17 +1115,11 @@ paths:
         Deletes a stored indicator detail
       parameters:
         - 
-           name: indicator
-           in: body
+           name: id
+           in: query
            required: false
            description: Indicator data to delete
-           schema:
-              properties:
-                exercise:
-                  type: string
-                  format: date
-                comparative:
-                  type: string
+           type: string
       responses:
         204:
           description: Indicador eliminada correctamente   
@@ -1187,8 +1176,6 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor
-  
-  
   ### INDICATORS DEFINITIONS END     
         
 definitions:
@@ -1243,6 +1230,46 @@ definitions:
         type: array
         items:
           type: integer
+  UserLogin:
+    type: object
+    properties:
+      id:
+        type: integer
+        readOnly: true
+      email:
+        type: string
+      name:
+        type: string
+      role: 
+        enum: 
+          - ADMINISTRADOR 
+          - ADMINISTRATIVO SISTEMA
+          - ASESOR
+          - PRODUCTOR
+          - ADMINISTRATIVO PRODUCTOR
+          - INVITADO
+        type: string
+      temporary:
+        type: boolean
+      end_date:
+        type: string
+        format: date
+      permissions:
+        type: object
+        properties:
+          indicators:
+            type: object
+            properties:
+              summary:
+                $ref: '#/definitions/Permissions'
+              comparative: 
+                $ref: '#/definitions/Permissions'
+              sustentability:
+                $ref: '#/definitions/Permissions'
+              margin: 
+                $ref: '#/definitions/Permissions'
+              details: 
+                $ref: '#/definitions/Permissions'
   ### USERS DEFINITIONS END
   
   ### ADMINISTRATION DEFINITIONS
@@ -1472,12 +1499,7 @@ definitions:
       geographic_zone: 
         type: array
         items:
-          type: object
-          properties:
-            value:
-              type: integer
-            description:
-              type: string   
+          type: string
   IndicatorFilterFormList:
     type: object
     properties:
@@ -1875,27 +1897,37 @@ definitions:
   IndicatorDetailList:
     type: object
     properties:
-      criteria:
-        type: string
-      exercise:
-        type: string
+      comparative:
+        type: object
+        properties:
+          description:
+            type: string
+          crea_group_id:
+            type: integer
+          company_id: 
+            type: integer
+          establishment_id:
+            type: integer
+          exercise_date:
+            type: string
+            format: date
+          compare_w_myself:
+            type: boolean
+          filters:
+            type: array
+            items:
+              $ref: '#/definitions/IndicatorFilterPOSTList'
+          characterization:
+            $ref: '#/definitions/CharacterizationPOSTList'
       indicators:
         type: object
         properties:
-          indicator1_id:
-            type: object
-            properties:
-              name:
-                type: string
-              value:
-                type: number
-                format: float
-          indicator2_id:
-            type: object
-            properties:
-              name:
-                type: string
-              value:
-                type: number
-                format: float
+          producto_bruto_total:
+            type: number
+            format: float
+          producto_bruto_vacuno:
+            type: number
+            format: float
+      id:
+        type: string
   ### INDICATORS DEFINITIONS END
