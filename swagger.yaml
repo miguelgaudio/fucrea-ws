@@ -12,24 +12,7 @@ securityDefinitions:
     type: apiKey
     name: Authorization
     in: header
-  # OauthSecurity:
-  #   type: oauth2
-  #   flow: accessCode
-  #   authorizationUrl: 'https://oauth.simple.api/authorization'
-  #   tokenUrl: 'https://oauth.simple.api/token'
-  #   scopes:
-  #     admin: Admin scope
-  #     user: User scope
-  #     media: Media scope
-  # OauthSecurity:
-  #   description: New Oauth security system. Do not use MediaSecurity or LegacySecurity.
-  #   type: oauth2
-  #   flow: accessCode
-  #   authorizationUrl: 'https://oauth.simple.api/authorization'
-  #   tokenUrl: 'https://oauth.simple.api/token'
-  #   scopes:
-  #     admin: Admin scope
-  #     user: User scope
+ 
   
 #responseCodesDefinition:
 #  200: 
@@ -129,7 +112,7 @@ paths:
           description: User's info
           required: false
           schema:
-            $ref: '#/definitions/User'
+            $ref: '#/definitions/UserPATCH'
       responses:
         204:
           description: Usuario modificado correctamente 
@@ -162,10 +145,6 @@ paths:
       responses:
         200:
           description: Usuarios obtenidos correctamente
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/User'
         400:
           description: Error del cliente
         401:
@@ -215,17 +194,17 @@ paths:
         - application/json
       parameters:
         -
-          name: new_password
-          in: formData
+          name: data
+          in: body
           required: true
           description: New user's password
-          type: string
-        -
-          name: old_password
-          in: formData
-          required: true
-          description: New user's password
-          type: string
+          schema:
+            type: object
+            properties:
+              old_password:
+                type: string
+              new_password:
+                type: string
       responses:
         204:
           description: Contraseña actualizada correctamente
@@ -742,6 +721,25 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor
+  /forms/user_forms/:
+    get:
+      description: |
+        Lists every field with its options to fill the users forms
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Formularios obtenidos correctamente
+          schema:
+              $ref: '#/definitions/UserFormList'
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor        
   ### AUX SERVICES END
   
   ### INDICATORS SERVICES
@@ -1177,21 +1175,214 @@ paths:
         500:
           description: Error del servidor
   ### INDICATORS DEFINITIONS END     
+  
+  ### LAND USES SERVICES
+  /land_use/summary/:
+    get:
+      description: |
+        Returns land use values by type and exercise
+      parameters:
+        -
+          name: company_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise_dates
+          in: query
+          required: true
+          type: array
+          items:
+            type: string
+        -
+          name: crea_group_id
+          in: query
+          required: true
+          type: integer
+        - 
+         name: establishment_id
+         in: query
+         required: true
+         type: integer
+      responses:
+        200:
+          description: Usos de suelo obtenidos correctamente
+          schema:
+             type: object
+             properties:
+                land_use:
+                  type: object
+                  properties:
+                    series:
+                      type: object
+                      properties:
+                        soja: 
+                          type: array
+                          items:
+                            type: integer
+                        sorgo:
+                          type: array
+                          items:
+                            type: integer
+                        maiz:
+                          type: array
+                          items:
+                            type: integer
+                        super_pastura:
+                          type: array
+                          items:
+                            type: integer
+                    categories:
+                      type: array
+                      items:
+                        type: integer
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor
+  /land_use/detail/:
+    get:
+      description: |
+        Returns land use values by type and exercise
+      parameters:
+        -
+          name: company_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise_date
+          in: query
+          required: true
+          type: integer
+        -
+          name: crea_group_id
+          in: query
+          required: true
+          type: integer
+        - 
+         name: establishment_id
+         in: query
+         required: true
+         type: integer
+      responses:
+        200:
+          description: Usos de suelo obtenidos correctamente
+          schema:
+             type: object
+             properties:
+              summary:
+               type: array
+               items:
+                  type: object
+                  properties:
+                    crop_variety:
+                      type: string
+                    hectares:
+                      type: integer
+              detail:
+                type: array
+                items:
+                  $ref: '#/definitions/MonthlyLandUse'
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor        
+    post:
+      description: |
+        Updates a land use for selected months
+      parameters:
+        -
+          name: land_use
+          in: body
+          required: true
+          schema: 
+            type: object
+            properties:
+              month_list:
+                type: array
+                items:
+                  type: integer
+              crop_variety:
+                type: integer
+              hectares:
+                type: integer
+      responses:
+        200:
+          description: Uso de suelo actualizado correctamente
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor              
+  /land_use/detail/copy/:
+    post:
+      description: |
+        Copies land use values from the selected lot others lots selected
+      parameters:
+        -
+          name: copy_parameters
+          in: body
+          required: true
+          schema: 
+            type: object
+            properties:
+              exercise_date:
+                type: integer
+              origin_lot:
+                type: integer
+              land_use:
+                type: boolean
+              productive_hectares: 
+                type: boolean
+              land_uses:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    month_id:
+                      type: integer
+                    productive_hectares:
+                      type: integer
+                    crop_variety:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+              
+      responses:
+        200:
+          description: Uso de suelo actualizado correctamente
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor              
+  ### LAND USES END        
         
 definitions:
   ### USERS definitions:
   Permissions:
-    enum:
-      - NO PERMISSION
-      - EDIT
-      - VIEW
-    type: string  
+    type: integer  
   User:
     type: object
     properties:
-      id:
-        type: integer
-        readOnly: true
       email:
         type: string
       name:
@@ -1218,18 +1409,35 @@ definitions:
             properties:
               summary:
                 $ref: '#/definitions/Permissions'
-              comparative: 
+              management: 
                 $ref: '#/definitions/Permissions'
               sustentability:
                 $ref: '#/definitions/Permissions'
               margin: 
                 $ref: '#/definitions/Permissions'
-              details: 
+              detail: 
                 $ref: '#/definitions/Permissions'
       establishments:
         type: array
         items:
           type: integer
+  UserPATCH:
+    type: object
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      departament: 
+        type: integer
+      phone_number:
+        type: string
+      address:
+        type: string
+      establishments:
+        type: array
+        items:
+          type: integer        
   UserLogin:
     type: object
     properties:
@@ -1249,6 +1457,12 @@ definitions:
           - ADMINISTRATIVO PRODUCTOR
           - INVITADO
         type: string
+      departament: 
+        type: integer
+      phone_number:
+        type: string
+      address:
+        type: string
       temporary:
         type: boolean
       end_date:
@@ -1270,6 +1484,45 @@ definitions:
                 $ref: '#/definitions/Permissions'
               details: 
                 $ref: '#/definitions/Permissions'
+  UserFormList:
+    type: object
+    properties:
+      departaments:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+      roles:
+        type: array
+        items:
+          type: object
+          properties:
+            value: 
+              type: integer
+            description:
+              type: string
+      permissions:
+        type: object
+        properties:
+          summary:
+            type: object
+            properties:
+              description:
+                type: string
+              values:
+                type: object
+                properties:
+                  sin_permiso:
+                    type: integer
+                  puede_ver:
+                    type: integer
+                  puede_editar:
+                    type: integer
+                  
   ### USERS DEFINITIONS END
   
   ### ADMINISTRATION DEFINITIONS
@@ -1931,3 +2184,36 @@ definitions:
       id:
         type: string
   ### INDICATORS DEFINITIONS END
+  
+  ### LAND USE DEFINITIONS
+  MonthlyLandUse:
+    type: object
+    properties:
+      lot:
+        type: object
+        properties:
+          id: 
+            type: integer
+          name:
+            type: string
+          hectares:
+            type: integer
+      land_uses:
+        type: array
+        items:
+          type: object
+          properties:
+              month_name:
+                type: string
+              month_id:
+                type: integer
+              productive_hectares:
+                type: integer
+              crop_variety:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+  ### LAND USE DEFINITIONS END
