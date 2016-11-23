@@ -218,7 +218,7 @@ paths:
           description: Usuario no enontrado
         500:
           description: Error del servidor
-  /users/invite/:
+  /users/{id}/invite/:
     patch:
       description: |
         Resends a mail invitation to a created user
@@ -231,9 +231,9 @@ paths:
       parameters:
         -
           name: id
-          in: formData
+          in: path
           required: true
-          description: User to send invitation id
+          description: User's id to send invitation to
           type: integer
       responses:
         204:
