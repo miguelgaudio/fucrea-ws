@@ -1552,6 +1552,11 @@ definitions:
         type: boolean
       share_group:
         type: boolean
+      initilization_stage:
+        enum:
+            - initialized
+            - uninitialized
+        type: string
       padrons:
         type: array
         items:  
