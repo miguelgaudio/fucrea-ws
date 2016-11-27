@@ -1307,6 +1307,10 @@ paths:
           schema: 
             type: object
             properties:
+              lot_id:
+                type: integer
+              exercise_date:
+                type: integer
               month_list:
                 type: array
                 items:
@@ -1340,12 +1344,15 @@ paths:
             properties:
               exercise_date:
                 type: integer
-              origin_lot:
-                type: integer
+              destiny_lot_ids: 
+                type: array
+                items:
+                  type: integer
               land_use:
                 type: boolean
               productive_hectares: 
                 type: boolean
+                
               land_uses:
                 type: array
                 items:
@@ -1356,12 +1363,7 @@ paths:
                     productive_hectares:
                       type: integer
                     crop_variety:
-                      type: object
-                      properties:
-                        id:
-                          type: integer
-                        name:
-                          type: string
+                      type: integer
               
       responses:
         200:
@@ -2199,7 +2201,7 @@ definitions:
         properties:
           id: 
             type: integer
-          name:
+          description:
             type: string
           hectares:
             type: integer
