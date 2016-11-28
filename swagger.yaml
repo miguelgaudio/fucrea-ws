@@ -1280,7 +1280,7 @@ paths:
                items:
                   type: object
                   properties:
-                    crop_variety:
+                    crop:
                       type: string
                     hectares:
                       type: integer
@@ -1315,7 +1315,7 @@ paths:
                 type: array
                 items:
                   type: integer
-              crop_variety:
+              crop:
                 type: integer
               hectares:
                 type: integer
@@ -1362,7 +1362,7 @@ paths:
                       type: integer
                     productive_hectares:
                       type: integer
-                    crop_variety:
+                    crop:
                       type: integer
               
       responses:
@@ -2216,7 +2216,7 @@ definitions:
                 type: integer
               productive_hectares:
                 type: integer
-              crop_variety:
+              crop:
                 type: object
                 properties:
                   id:
