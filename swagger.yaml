@@ -1348,19 +1348,12 @@ paths:
                 type: array
                 items:
                   type: integer
-              land_use:
-                type: boolean
-              productive_hectares: 
-                type: boolean
-                
               land_uses:
                 type: array
                 items:
                   type: object
                   properties:
                     month_id:
-                      type: integer
-                    productive_hectares:
                       type: integer
                     crop:
                       type: integer
