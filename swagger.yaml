@@ -740,6 +740,25 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor        
+  /forms/land_use/:
+    get:
+      description: |
+        Lists months and crops 
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Formularios obtenidos correctamente
+          schema:
+              $ref: '#/definitions/LandUseFormList'
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor        
   ### AUX SERVICES END
   
   ### INDICATORS SERVICES
@@ -998,8 +1017,6 @@ paths:
                 type: array
                 items:
                   type: string
-              exercise:
-                type: string
       responses:
         200:
           description: Indicadores obtenidos correctamente
@@ -1032,17 +1049,24 @@ paths:
                       type: array
                       items:
                         type: string
-                mb_table:
+                mb_tables:
                   type: object
                   properties:
                     columns:
                       type: array
                       items: 
                         type: string
-                    rows:
+                    content:
                       type: array
                       items:
-                        type: string
+                        type: object
+                        properties:
+                          exercise:
+                            type: string
+                          rows:
+                            type: array
+                            items:
+                              type: string
                         
         400:
           description: Error del cliente
@@ -1180,7 +1204,7 @@ paths:
   /land_use/summary/:
     get:
       description: |
-        Returns land use values by type and exercise
+        Returns land use values by type and exercise. Company_id, establishment_id and crea_group_id are exclusive between them
       parameters:
         -
           name: company_id
@@ -1236,6 +1260,10 @@ paths:
                       type: array
                       items:
                         type: integer
+                    name: 
+                      type: string
+                    graphic_type:
+                      type: string
         400:
           description: Error del cliente
         401:
@@ -1247,7 +1275,7 @@ paths:
   /land_use/detail/:
     get:
       description: |
-        Returns land use values by type and exercise
+        Returns land use values by type and exercise. Company_id, establishment_id and crea_group_id are exclusive between them
       parameters:
         -
           name: company_id
@@ -1264,7 +1292,7 @@ paths:
           in: query
           required: true
           type: integer
-        - 
+        -
          name: establishment_id
          in: query
          required: true
@@ -1281,7 +1309,7 @@ paths:
                   type: object
                   properties:
                     crop:
-                      type: string
+                      type: integer
                     hectares:
                       type: integer
               detail:
@@ -1330,6 +1358,66 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor              
+  /land_use/detail/global/:
+    post:
+      description: |
+        Updates a land use globally
+      parameters:
+        -
+          name: land_use
+          in: body
+          required: true
+          schema: 
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              exercise_date:
+                type: integer
+              hectares:
+                type: integer
+              crop:
+                type: integer
+      responses:
+        204:
+          description: Uso de suelo eliminado correctamente
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor              
+          
+    delete:
+      description: |
+        Deletes a land use globally
+      parameters:
+        -
+          name: land_use
+          in: body
+          required: true
+          schema: 
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              exercise_date:
+                type: integer
+              crop:
+                type: integer
+      responses:
+        204:
+          description: Uso de suelo eliminado correctamente
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor              
   /land_use/detail/copy/:
     post:
       description: |
@@ -1344,6 +1432,8 @@ paths:
             properties:
               exercise_date:
                 type: integer
+              origin_lot_id:
+                type: integer
               destiny_lot_ids: 
                 type: array
                 items:
@@ -1357,7 +1447,6 @@ paths:
                       type: integer
                     crop:
                       type: integer
-              
       responses:
         200:
           description: Uso de suelo actualizado correctamente
@@ -1517,7 +1606,6 @@ definitions:
                     type: integer
                   puede_editar:
                     type: integer
-                  
   ### USERS DEFINITIONS END
   
   ### ADMINISTRATION DEFINITIONS
@@ -1653,8 +1741,6 @@ definitions:
     type: object
     properties:
       comparative_group:
-        type: integer
-      aggregation_type:
         type: integer
       ordering_type:
         type: integer
@@ -1940,7 +2026,6 @@ definitions:
       department: 
         type: integer
   ### ADMINISTRATION DEFINITIONS END        
-  ### ADMINISTRATION DEFINITIONS END        
           
   ### INDICATORS DEFINITIONS
   IndicatorTree:
@@ -2198,22 +2283,38 @@ definitions:
             type: string
           hectares:
             type: integer
+      establishment:
+        type: string
       land_uses:
         type: array
         items:
           type: object
           properties:
-              month_name:
-                type: string
-              month_id:
+              month:
                 type: integer
               productive_hectares:
                 type: integer
               crop:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
+                type: integer
+  LandUseFormList:
+    type: object
+    properties:
+      months:
+        type: array
+        items:
+          type: object
+          properties:
+            value:
+              type: integer
+            name:
+              type: string
+      crops:
+        type: array
+        items:
+          type: object
+          properties:
+            value: 
+              type: integer
+            name:
+              type: string
   ### LAND USE DEFINITIONS END
