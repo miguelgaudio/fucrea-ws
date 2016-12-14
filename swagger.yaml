@@ -699,6 +699,28 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor
+  /crea_groups/establishments/:
+    get:
+      description: |
+        Lists crea groups with its establishments in brief format
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Establecimientos obtenidos correctamente
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CreaGroupDeep'
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor
+
   ### ADMINISTRATION SERVICES END
   
   ### AUX SERVICES
@@ -793,146 +815,75 @@ paths:
         200:
           description: Indicadores obtenidos correctamente
           schema:
+            type: array
+            items:
              type: object
              properties:
-                general:
-                  type: object
-                  properties:
-                    economical_evolution:
-                      type: object
-                      properties:
-                        series:
-                          type: object
-                          properties:
-                            pb: 
-                              type: array
-                              items:
-                                type: integer
-                            ik:
-                              type: array
-                              items:
-                                type: integer
-                            costs:
-                              type: array
-                              items:
-                                type: integer
-                        categories:
-                          type: array
-                          items:
-                            type: integer
-                    area_evolution:
-                      type: object
-                      properties:
-                        series:
-                          type: object
-                          properties:
-                            agrcultural: 
-                              type: array
-                              items:
-                                type: integer
-                            forest:
-                              type: array
-                              items:
-                                type: integer
-                            milkmaid:
-                              type: array
-                              items:
-                                type: integer
-                            cattle:
-                              type: array
-                              items:
-                                type: integer
-                            fine_seed:
-                              type: array
-                              items:
-                                type: integer
-                        categories:
-                          type: array
-                          items:
-                            type: integer    
-                agricultural:
-                  type: object
-                  properties:
-                    crude_product_evolution:
-                      type: object
-                      properties:
-                        series:
-                          type: object
-                          properties:
-                            others: 
-                              type: array
-                              items:
-                                type: integer
-                            fine_seed:
-                              type: array
-                              items:
-                                type: integer
-                            cultivation:
-                              type: array
-                              items:
-                                type: integer
-                            wool:
-                              type: array
-                              items:
-                                type: integer
-                            ovine:
-                              type: array
-                              items:
-                                type: integer  
-                            bovine:
-                              type: array
-                              items:
-                                type: integer  
-                        categories:
-                          type: array
-                          items:
-                            type: integer    
-                cattle:
-                  type: object
-                  properties:
-                    kg_evolution:
-                      type: object
-                      properties:
-                        series:
-                          type: object
-                          properties:
-                            ovine: 
-                              type: array
-                              items:
-                                type: integer
-                            bovine:
-                              type: array
-                              items:
-                                type: integer
-                            wool:
-                              type: array
-                              items:
-                                type: integer
-                        categories:
-                          type: array
-                          items:
-                            type: integer    
-                milk:
-                  type: object
-                  properties:
-                    milk_production_evolution:
-                      type: object
-                      properties:
-                        series:
-                          type: object
-                          properties:
-                            production: 
-                              type: array
-                              items:
-                                type: integer
-                            price:
-                              type: array
-                              items:
-                                type: integer
-                        categories:
-                          type: array
-                          items:
-                            type: integer    
+              title:
+                type: string
+              graphics:
+                type: object
+                properties:
+                  economical_evolution:
+                        type: object
+                        properties:
+                          series:
+                            type: object
+                            properties:
+                              pb: 
+                                type: array
+                                items:
+                                  type: integer
+                              ik:
+                                type: array
+                                items:
+                                  type: integer
+                              costs:
+                                type: array
+                                items:
+                                  type: integer
+                          categories:
+                            type: array
+                            items:
+                              type: integer
+                          type_graphic:
+                            type: string
+                          name: 
+                            type: string
+                  area_evolution:
+                    type: object
+                    properties:
+                      series:
+                        type: object
+                        properties:
+                          agrcultural: 
+                            type: array
+                            items:
+                              type: integer
+                          forest:
+                            type: array
+                            items:
+                              type: integer
+                          milkmaid:
+                            type: array
+                            items:
+                              type: integer
+                          cattle:
+                            type: array
+                            items:
+                              type: integer
+                          fine_seed:
+                            type: array
+                            items:
+                              type: integer
+                      categories:
+                        type: array
+                        items:
+                          type: integer    
+                      type_graphic:
+                            type: string
+                      name: 
+                        type: string
         400:
           description: Error del cliente
         401:
@@ -1275,7 +1226,7 @@ paths:
   /land_use/detail/:
     get:
       description: |
-        Returns land use values by type and exercise. Company_id, establishment_id and crea_group_id are exclusive between them
+        Returns land use values by type and exercise. Company_id, establishment_id and crea_group_id are exclusive between them. Undefined hectares are sent by the crop key "undefined"
       parameters:
         -
           name: company_id
@@ -1443,7 +1394,7 @@ paths:
                 items:
                   type: object
                   properties:
-                    month_id:
+                    month:
                       type: integer
                     crop:
                       type: integer
@@ -1969,6 +1920,29 @@ definitions:
               type: integer
             name:
               type: string
+  CreaGroupDeep:
+    type: object
+    properties:
+      crea_group:
+        type: object
+        properties:
+          id:
+            type: integer
+          name: 
+            type: string
+          establishments:
+            type: array
+            items:
+              type: object
+              properties:
+                id: 
+                  type: integer
+                name:
+                  type: string
+                closed_exercises:
+                  type: array
+                  items:
+                    type: integer
   Company:
     type: object
     properties:
@@ -2313,7 +2287,7 @@ definitions:
         items:
           type: object
           properties:
-            value: 
+            id: 
               type: integer
             name:
               type: string
