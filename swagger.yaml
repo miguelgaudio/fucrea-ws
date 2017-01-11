@@ -248,6 +248,69 @@ paths:
           description: Usuario no enontrado
         500:
           description: Error del servidor        
+
+  /users/reset_password/request/:
+    post:
+      description: |
+        Sends an email with a token to reset password
+      security:
+        - Bearer: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        -
+          name: email
+          in: body
+          required: true
+          description: User's emial to send reset token to
+          schema:
+            properties:
+              email:
+                type: string
+      responses:
+        204:
+          description: Mail enviado correctamente
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        404:
+          description: Usuario no enontrado
+        500:
+          description: Error del servidor
+  /users/reset_password/confirm/:
+    post:
+      description: |
+        Sends supplied reset token to allow user reset his password
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        -
+          name: reset_data
+          in: body
+          required: true
+          description: Authentication token sent by email to reset user's password, and new password
+          schema:
+            properties:
+              password:
+                type: string
+              # Comparte el nombre registration_token pq es igual en la implementacion
+              registration_token:
+                type: string
+      responses:
+        204:
+          description: Reset de password de usuario realizado      
+        400:
+          description: Error del cliente
+        500:
+          description: Error del servidor
+
   /users/login/:
     post:
       description: |
@@ -781,6 +844,44 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor        
+  /forms/land_use/oldest/:
+    get:
+      description: |
+        Returns oldest exercise to list in land uses
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: company_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: crea_group_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Formularios obtenidos correctamente
+          schema:
+              type: object
+              properties:
+                oldest_exercise:
+                  type: integer
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor                
   ### AUX SERVICES END
   
   ### INDICATORS SERVICES
@@ -2140,4 +2241,5 @@ definitions:
               type: integer
             duration:
               type: integer
+      
   ### LAND USE DEFINITIONS END
