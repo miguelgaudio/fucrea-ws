@@ -798,6 +798,32 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor
+  /crea_groups/all/:
+    get:
+      description: |
+         List Crea groups
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Crea groups obtenidos correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                name: 
+                  type: string
+                id:
+                  type: integer
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor
   /crea_groups/establishments/:
     get:
       description: |
@@ -947,7 +973,7 @@ paths:
         200:
           description: Formularios obtenidos correctamente
           schema:
-              $ref: '#/definitions/CharacterizationsAndFiltersFormList'
+              $ref: '#/definitions/AccountPlans'
         400:
           description: Error del cliente
         401:
@@ -969,6 +995,15 @@ paths:
             type: object
             properties:
               supply_types:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: integer
+                    description:
+                      type: string
+              movements_choices:
                 type: array
                 items:
                   type: object
@@ -1308,11 +1343,13 @@ paths:
         Deletes a stored indicator detail
       parameters:
         - 
-           name: id
+           name: ids
            in: query
            required: false
-           description: Indicator data to delete
-           type: string
+           description: Indicator ids to delete, comma separated string
+           type: array
+           items:
+            type: string
       responses:
         204:
           description: Indicador eliminada correctamente   
@@ -1731,6 +1768,31 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor
+  /supplies/{id}/:
+    get:
+      description: |
+         List movements for the specified establishment
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer 
+      responses:
+        200:
+          description: Detalle obtenidos correctamente
+          schema:
+            $ref: '#/definitions/SupplyDetail'  
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor
   /supplies/{id}/patch/:
     patch:
       security:
@@ -1754,12 +1816,6 @@ paths:
             properties:
               name:
                 type: string
-              supply_type:
-                type: integer
-              establishment_id:
-                type: integer
-              unit:
-                type: integer
               active_components:
                 type: object
                 properties:
@@ -1897,6 +1953,39 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor
+  /supplies/movements/:
+    get:
+      description: |
+         List movements for the specified establishment
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: false
+          type: integer 
+        -
+          name: quantity
+          in: query
+          required: true
+          type: integer 
+      responses:
+        200:
+          description: Movimientos obtenidos correctamente
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Movement'  
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor
+    
   ### SUPPLY END
 
   ### GIS WSs
@@ -2268,6 +2357,8 @@ definitions:
         type: array
         items:  
           $ref: '#/definitions/PadronPATCH'
+      zone:
+        type: integer
   EstablishmentBrief:
     type: object
     properties:
@@ -2509,6 +2600,13 @@ definitions:
             type: string
       characterizations:
         $ref: '#/definitions/CharacterizationFormList'
+      zones:
+        type: object
+        properties:
+          id:
+            type: integer
+          name:
+            type: string
   Lot:
     type: object
     properties:
@@ -2729,9 +2827,6 @@ definitions:
   PadronPATCH:
     type: object
     properties:
-      id:
-        type: integer
-        readOnly: true
       padron_number: 
         type: string
       department: 
@@ -2844,11 +2939,91 @@ definitions:
         format: float
       name:
         type: string
+      supply_type:
+        type: string
+      establishment_name: 
+        type: string
+  Movement:
+    type: object
+    properties:
+      id:
+        type: integer
+      quantity:
+        type: number
+        format: float
+      execution_date:
+        type: string
+        format: date
       type:
         type: string
       establishment_name: 
         type: string
-  
+      cost:
+        type: number
+        format: float
+  AccountPlans:
+    type: object
+    properties:
+      1st_account_plan:
+        type: array
+        items:
+          type: object
+          properties:
+            ref_name:
+              type: string
+            ext_name:
+              type: string
+            children:
+              type: array
+              items:
+                type: object
+      2nd_account_plan:
+        type: array
+        items:
+          type: object
+          properties:
+            ref_name:
+              type: string
+            ext_name:
+              type: string
+            children:
+              type: array
+              items:
+                type: object
+  SupplyDetail:
+    type: object
+    properties:
+      id:
+        type: integer
+      stock_quantity:
+        type: number
+        format: float
+      name:
+        type: string
+      type:
+        type: string
+      establishment_name: 
+        type: string
+      unit:
+        type: string
+      movements:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            quantity:
+              type: number
+              format: float
+            execution_date:
+              type: string
+              format: date
+            movement_type:
+              type: string
+            cost:
+              type: number
+              format: float
   ### SUPPLY DEFINITIONS END
 
   ### GIS DEFINITIONS
