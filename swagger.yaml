@@ -12,12 +12,12 @@ securityDefinitions:
     type: apiKey
     name: Authorization
     in: header
- 
-  
+
+
 #responseCodesDefinition:
-#  200: 
+#  200:
 #    descripcion: Success, no modifica estados de base de datos
-#  201: 
+#  201:
 #    descripcion: Success, crea nuevo objeto en base  de datos
 #  204:
 #    descripcion: Success, modifica un objeto de base de datos
@@ -103,8 +103,8 @@ paths:
           name: id
           in: path
           required: true
-          description: User's id 
-          type: integer 
+          description: User's id
+          type: integer
         -
           name: user
           in: body
@@ -114,7 +114,7 @@ paths:
             $ref: '#/definitions/UserPATCH'
       responses:
         204:
-          description: Ok 
+          description: Ok
         404:
           description: User not found
     delete:
@@ -131,8 +131,8 @@ paths:
           name: id
           in: path
           required: true
-          description: User's id 
-          type: integer  
+          description: User's id
+          type: integer
       responses:
         204:
           description: Ok
@@ -394,7 +394,7 @@ paths:
         204:
           description: User logged out Ok.
   ### USERS SERVICES END
-  
+
   ### ADMINISTRATION SERVICES
   /establishments/:
      get:
@@ -431,9 +431,9 @@ paths:
             items:
               type: object
               properties:
-                id: 
+                id:
                   type: integer
-                name: 
+                name:
                   type: string
         400:
           description: Error del cliente
@@ -442,7 +442,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor        
+          description: Error del servidor
   /establishments/{id}/:
     patch:
        description: |
@@ -459,7 +459,7 @@ paths:
           in: body
           description: Establishment info
           required: true
-          schema: 
+          schema:
             $ref: '#/definitions/EstablishmentPATCH'
         -
           name: id
@@ -482,19 +482,19 @@ paths:
           description: Error del servidor
   /establishments/{id}/characterizations/:
     post:
-      description: |  
+      description: |
         Create new establishment's categorization
       security:
         - Bearer: []
       parameters:
-        - 
+        -
           name: characterization
           in: body
           required: true
           description: Characterization info
           schema:
             $ref: '#/definitions/CharacterizationPOSTList'
-        - 
+        -
           name: id
           in: path
           required: true
@@ -516,12 +516,12 @@ paths:
 
   /establishments/{id}/lots/:
     get:
-      description: |  
+      description: |
         Get lots in the establishment
       security:
         - Bearer: []
       parameters:
-        - 
+        -
           name: id
           in: path
           required: true
@@ -545,19 +545,19 @@ paths:
          500:
           description: Error del servidor
     post:
-      description: |  
+      description: |
         Create new lot in establishment
       security:
         - Bearer: []
       parameters:
-        - 
+        -
           name: lot
           in: body
           required: true
           description: Lot info
           schema:
             $ref: '#/definitions/LotInEstablishmentPOST'
-        - 
+        -
           name: id
           in: path
           required: true
@@ -589,7 +589,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Company'  
+              $ref: '#/definitions/Company'
         400:
           description: Error del cliente
         401:
@@ -640,8 +640,8 @@ paths:
           name: id
           in: path
           required: true
-          description: Company's id 
-          type: integer   
+          description: Company's id
+          type: integer
       responses:
         204:
           description: Empresa actualizada correctamente
@@ -665,8 +665,8 @@ paths:
           name: id
           in: path
           required: true
-          description: Company's id 
-          type: integer  
+          description: Company's id
+          type: integer
       responses:
         204:
           description: Empresa eliminada correctamente
@@ -692,7 +692,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/EstablishmentBrief'    
+              $ref: '#/definitions/EstablishmentBrief'
         400:
           description: Error del cliente
         401:
@@ -713,7 +713,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Lot'  
+              $ref: '#/definitions/Lot'
         400:
           description: Error del cliente
         401:
@@ -780,11 +780,11 @@ paths:
           name: id
           in: path
           required: true
-          description: Lots's id 
-          type: integer  
+          description: Lots's id
+          type: integer
       responses:
         204:
-          description: Potrero actualizado correctamente    
+          description: Potrero actualizado correctamente
         400:
           description: Error del cliente
         401:
@@ -805,11 +805,11 @@ paths:
           name: id
           in: path
           required: true
-          description: Lots's id 
+          description: Lots's id
           type: integer
       responses:
         204:
-          description: Lote eliminada correctamente   
+          description: Lote eliminada correctamente
         400:
           description: Error del cliente
         401:
@@ -839,7 +839,7 @@ paths:
           name: id
           in: path
           required: true
-          description: Lots's id 
+          description: Lots's id
           type: integer
       responses:
         200:
@@ -861,7 +861,7 @@ paths:
           schema:
             type: object
             properties:
-              lots: 
+              lots:
                 type: array
                 items:
                   type: integer
@@ -869,8 +869,8 @@ paths:
           name: id
           in: path
           required: true
-          description: Lots's id 
-          type: integer  
+          description: Lots's id
+          type: integer
       responses:
         200:
           description: Lote unido con otros lotes OK
@@ -891,7 +891,7 @@ paths:
       security:
         - Bearer: []
       description: |
-        Create many lots with the data passed in the body, and updates the geofence of lot in the path to the remaining geofence not used by the others. 
+        Create many lots with the data passed in the body, and updates the geofence of lot in the path to the remaining geofence not used by the others.
       parameters:
         -
           name: new_lots
@@ -906,10 +906,10 @@ paths:
           name: id
           in: path
           required: true
-          description: Lots's id 
-          type: integer  
+          description: Lots's id
+          type: integer
       responses:
-        200:   
+        200:
           description: Lotes divididos OK
           schema:
             type: array
@@ -937,7 +937,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/CreaGroup'  
+              $ref: '#/definitions/CreaGroup'
         400:
           description: Error del cliente
         401:
@@ -960,7 +960,7 @@ paths:
             items:
               type: object
               properties:
-                name: 
+                name:
                   type: string
                 id:
                   type: integer
@@ -993,7 +993,7 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor
-  
+
   /providers/:
     get:
       description: |
@@ -1006,7 +1006,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Provider'  
+              $ref: '#/definitions/Provider'
         400:
           description: Error del cliente
         401:
@@ -1057,8 +1057,8 @@ paths:
           name: id
           in: path
           required: true
-          description: Provider's id 
-          type: integer   
+          description: Provider's id
+          type: integer
       responses:
         204:
           description: Proveedor actualizada correctamente
@@ -1082,8 +1082,8 @@ paths:
           name: id
           in: path
           required: true
-          description: Provider's id 
-          type: integer  
+          description: Provider's id
+          type: integer
       responses:
         204:
           description: Proveedor eliminada correctamente
@@ -1096,9 +1096,9 @@ paths:
         404:
           description: Empresa no enontrada
         500:
-          description: Error del servidor  
+          description: Error del servidor
   ### ADMINISTRATION SERVICES END
-  
+
   ### AUX SERVICES
   /forms/characterizations/:
     get:
@@ -1137,7 +1137,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor        
+          description: Error del servidor
   /forms/user_forms/:
     get:
       description: |
@@ -1156,11 +1156,11 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor        
+          description: Error del servidor
   /forms/land_use/:
     get:
       description: |
-        Lists months and crops 
+        Lists months and crops
       security:
         - Bearer: []
       responses:
@@ -1175,7 +1175,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor        
+          description: Error del servidor
   /forms/land_use/oldest/:
     get:
       description: |
@@ -1213,7 +1213,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor                
+          description: Error del servidor
   /forms/account_plans/:
     get:
       description: |
@@ -1279,7 +1279,7 @@ paths:
                   properties:
                     id:
                       type: integer
-                    name: 
+                    name:
                       type: string
                     unit:
                       type: integer
@@ -1299,7 +1299,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor                
+          description: Error del servidor
     post:
       description: |
         Requests creation of a new active component
@@ -1312,7 +1312,7 @@ paths:
           required: false
           schema:
             properties:
-              name:  
+              name:
                 type: string
       responses:
         200:
@@ -1324,7 +1324,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor                
+          description: Error del servidor
   /forms/investments/:
     get:
       description: |
@@ -1353,7 +1353,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor                
+          description: Error del servidor
   /forms/providers/:
     get:
       description: |
@@ -1382,9 +1382,9 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor                
+          description: Error del servidor
   ### AUX SERVICES END
-  
+
   ### INDICATORS SERVICES
   /indicators/summary/:
     get:
@@ -1408,7 +1408,7 @@ paths:
           in: query
           required: true
           type: integer
-        - 
+        -
          name: establishment_id
          in: query
          required: true
@@ -1432,7 +1432,7 @@ paths:
                           series:
                             type: object
                             properties:
-                              producto_bruto_total: 
+                              producto_bruto_total:
                                 type: array
                                 items:
                                   type: integer
@@ -1450,7 +1450,7 @@ paths:
                               type: integer
                           type_graphic:
                             type: string
-                          name: 
+                          name:
                             type: string
                           yAxis:
                             type: string
@@ -1460,7 +1460,7 @@ paths:
                       series:
                         type: object
                         properties:
-                          agrcultural: 
+                          agrcultural:
                             type: array
                             items:
                               type: integer
@@ -1483,10 +1483,10 @@ paths:
                       categories:
                         type: array
                         items:
-                          type: integer    
+                          type: integer
                       type_graphic:
                             type: string
-                      name: 
+                      name:
                         type: string
         400:
           description: Error del cliente
@@ -1501,11 +1501,11 @@ paths:
       description: |
         Returns an indicators tree acording to filters selected
       parameters:
-        - 
+        -
            name: filters
            in: body
            required: false
-           description: | 
+           description: |
             Company_id=0 significa "Sin empresa", no "Todas las empresas", company_id=null significa todas las empresas. Establishment_id=0 o =null significa "Todos los establecimientos". Company_id=null y establishment_id=null significa todos los establecimientos de todas las empresas
            schema:
               properties:
@@ -1533,7 +1533,7 @@ paths:
                     company_id:
                       type: integer
                     crea_group_id:
-                      type: integer  
+                      type: integer
                     establishment_id:
                       type: integer
                     characterization:
@@ -1549,7 +1549,7 @@ paths:
               name: 'r%'
               short_name: 'r%'
               value: 10
-              children: 
+              children:
                 - name: 'Cd bla bla'
                   short_name: 'Cd'
                   value: 2.3
@@ -1571,7 +1571,7 @@ paths:
                     tree:
                       type: object
                       properties:
-                        name: 
+                        name:
                           type: string
                         short_name:
                           type: string
@@ -1583,7 +1583,7 @@ paths:
                           items:
                             $ref: '#/definitions/IndicatorTree'
                     indicators_quantity:
-                      type: integer        
+                      type: integer
         400:
           description: Error del cliente
         401:
@@ -1591,13 +1591,13 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor      
+          description: Error del servidor
   /indicators/graphic/margin/:
     get:
       description: |
         Returns the evolution of MB for the delected exercises
       parameters:
-        - 
+        -
          name: filters
          in: body
          required: true
@@ -1626,7 +1626,7 @@ paths:
                     series:
                       type: object
                       properties:
-                        agricultural: 
+                        agricultural:
                           type: array
                           items:
                             type: integer
@@ -1651,7 +1651,7 @@ paths:
                   properties:
                     columns:
                       type: array
-                      items: 
+                      items:
                         type: string
                     content:
                       type: array
@@ -1664,7 +1664,7 @@ paths:
                             type: array
                             items:
                               type: string
-                        
+
         400:
           description: Error del cliente
         401:
@@ -1672,7 +1672,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor        
+          description: Error del servidor
   /indicators/detail/:
     get:
       description: |
@@ -1699,7 +1699,7 @@ paths:
       description: |
         Calculates an indicator acording to selected chategorization and filters
       parameters:
-        - 
+        -
            name: comparative
            in: body
            required: false
@@ -1733,7 +1733,7 @@ paths:
       description: |
         Deletes a stored indicator detail
       parameters:
-        - 
+        -
            name: ids
            in: query
            required: false
@@ -1743,7 +1743,7 @@ paths:
             type: string
       responses:
         204:
-          description: Indicador eliminada correctamente   
+          description: Indicador eliminada correctamente
         400:
           description: Error del cliente
         401:
@@ -1759,7 +1759,7 @@ paths:
       description: |
         Updates descriptions of stored indicators detail
       parameters:
-        - 
+        -
           name: descriptions
           in: body
           required: false
@@ -1775,7 +1775,7 @@ paths:
                     type: string
       responses:
         204:
-          description: Indicador eliminada correctamente   
+          description: Indicador eliminada correctamente
         400:
           description: Error del cliente
         401:
@@ -1809,7 +1809,7 @@ paths:
       description: |
         Sends an indicator identifier list to save user's indicator table configuration
       parameters:
-        - 
+        -
            name: indicators
            in: body
            required: false
@@ -1829,8 +1829,8 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor
-  ### INDICATORS DEFINITIONS END     
-  
+  ### INDICATORS DEFINITIONS END
+
   ### LAND USES SERVICES
   /land_uses/summary/:
     get:
@@ -1854,7 +1854,7 @@ paths:
           in: query
           required: true
           type: integer
-        - 
+        -
          name: establishment_id
          in: query
          required: true
@@ -1873,7 +1873,7 @@ paths:
                       series:
                         type: object
                         properties:
-                          soja: 
+                          soja:
                             type: array
                             items:
                               type: integer
@@ -1893,11 +1893,11 @@ paths:
                         type: array
                         items:
                           type: integer
-                      name: 
+                      name:
                         type: string
                       graphic_type:
                         type: string
-                      yAxis: 
+                      yAxis:
                         type: string
         400:
           description: Error del cliente
@@ -1942,9 +1942,9 @@ paths:
             items:
              type: object
              properties:
-              exercise: 
+              exercise:
                 type: integer
-              
+
               summary:
                type: array
                example:
@@ -1966,7 +1966,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/MonthlyLandUse'
-              undefined_hectares: 
+              undefined_hectares:
                 type: number
                 format: float
               closed:
@@ -1978,7 +1978,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor        
+          description: Error del servidor
     post:
       description: |
         Updates a land use for selected months
@@ -1987,7 +1987,7 @@ paths:
           name: land_use
           in: body
           required: true
-          schema: 
+          schema:
             type: object
             properties:
               lot_id:
@@ -2014,7 +2014,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor              
+          description: Error del servidor
     delete:
       description: |
         Deletes all land uses for selected months
@@ -2023,7 +2023,7 @@ paths:
           name: land_use
           in: body
           required: true
-          schema: 
+          schema:
             type: object
             properties:
               lot_id:
@@ -2044,7 +2044,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor              
+          description: Error del servidor
   /land_uses/detail/global/:
     post:
       description: |
@@ -2054,7 +2054,7 @@ paths:
           name: land_use
           in: body
           required: true
-          schema: 
+          schema:
             type: object
             properties:
               establishment_id:
@@ -2075,8 +2075,8 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor              
-          
+          description: Error del servidor
+
     delete:
       description: |
         Deletes a land use globally
@@ -2085,7 +2085,7 @@ paths:
           name: land_use
           in: body
           required: true
-          schema: 
+          schema:
             type: object
             properties:
               establishment_id:
@@ -2104,7 +2104,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor              
+          description: Error del servidor
   /land_uses/detail/copy/:
     post:
       description: |
@@ -2114,14 +2114,14 @@ paths:
           name: copy_parameters
           in: body
           required: true
-          schema: 
+          schema:
             type: object
             properties:
               exercise_date:
                 type: integer
               origin_lot_id:
                 type: integer
-              destiny_lot_ids: 
+              destiny_lot_ids:
                 type: array
                 items:
                   type: integer
@@ -2144,9 +2144,9 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor              
-  ### LAND USES END        
-  
+          description: Error del servidor
+  ### LAND USES END
+
   ### SUPPLY BEGIN
   /inventory/supplies/:
     #get:
@@ -2159,15 +2159,15 @@ paths:
     #      name: establishment_id
     #      in: query
     #      required: true
-    #      type: integer  
+    #      type: integer
     #  responses:
     #    200:
     #      description: Insumos obtenidos correctamente
     #      schema:
     #        type: array
     #        items:
-    #          $ref: '#/definitions/Supply'  
-    
+    #          $ref: '#/definitions/Supply'
+
     post:
       security:
         - Bearer: []
@@ -2197,7 +2197,7 @@ paths:
                 items:
                   type: object
                   properties:
-                    id: 
+                    id:
                       type: integer
                     concentration:
                       type: number
@@ -2236,12 +2236,12 @@ paths:
           name: id
           in: path
           required: true
-          type: integer 
+          type: integer
       responses:
         200:
           description: Detalle obtenidos correctamente
           schema:
-            $ref: '#/definitions/SupplyDetail'  
+            $ref: '#/definitions/SupplyDetail'
         400:
           description: Error del cliente
         401:
@@ -2260,8 +2260,8 @@ paths:
           name: id
           in: path
           required: true
-          description: Supply's id 
-          type: integer 
+          description: Supply's id
+          type: integer
         -
           name: supply
           in: body
@@ -2275,7 +2275,7 @@ paths:
               active_components:
                 type: object
                 properties:
-                  id_1: 
+                  id_1:
                     type: number
                     format: float
               nytrogen_concentration:
@@ -2300,7 +2300,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor      
+          description: Error del servidor
   /inventory/supplies/{id}/add/:
     post:
       security:
@@ -2312,8 +2312,8 @@ paths:
           name: id
           in: path
           required: true
-          description: Supply's id 
-          type: integer 
+          description: Supply's id
+          type: integer
         -
           name: supply
           in: body
@@ -2366,7 +2366,7 @@ paths:
           name: id
           in: path
           required: true
-          description: Supply's id 
+          description: Supply's id
           type: integer
         -
           name: supply
@@ -2417,7 +2417,7 @@ paths:
           name: id
           in: path
           required: true
-          description: Supply's id 
+          description: Supply's id
           type: integer
         -
           name: supply
@@ -2435,7 +2435,7 @@ paths:
                 format: date
               first_plan:
                 type: string
-              second_plan: 
+              second_plan:
                 type: string
               investment_id:
                 type: integer
@@ -2466,7 +2466,7 @@ paths:
         500:
           description: Error del servidor
   ### SUPPLY END
-  
+
   ### MAQIUNARIA BEGIN
   /inventory/farm_equipment/:
     post:
@@ -2504,7 +2504,7 @@ paths:
                 format: date
               cost:
                 type: number
-                format: float  
+                format: float
       responses:
         201:
           description: Insumos agrados correctamente
@@ -2527,7 +2527,7 @@ paths:
           name: id
           in: path
           required: true
-          type: integer 
+          type: integer
         -
           name: farm_equipment
           in: body
@@ -2562,7 +2562,7 @@ paths:
                   series:
                     type: object
                     properties:
-                      depreciation: 
+                      depreciation:
                         type: array
                         items:
                           type: integer
@@ -2572,7 +2572,7 @@ paths:
                       type: integer
                   type_graphic:
                     type: string
-                  name: 
+                  name:
                     type: string
                   yAxis:
                     type: string
@@ -2580,7 +2580,7 @@ paths:
         200:
           description: Maquinaria actualizada correctamente
           schema:
-            $ref: '#/definitions/FarmEquipmentDetail'  
+            $ref: '#/definitions/FarmEquipmentDetail'
         400:
           description: Error del cliente
         401:
@@ -2588,7 +2588,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor        
+          description: Error del servidor
     patch:
       description: |
          Returns info about specified equipment and his movements
@@ -2599,12 +2599,12 @@ paths:
           name: id
           in: path
           required: true
-          type: integer 
+          type: integer
       responses:
         200:
           description: Detalle obtenidos correctamente
           schema:
-            $ref: '#/definitions/FarmEquipmentDetail'  
+            $ref: '#/definitions/FarmEquipmentDetail'
         400:
           description: Error del cliente
         401:
@@ -2612,7 +2612,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor        
+          description: Error del servidor
   /inventory/farm_equipment/{id}/loss/:
     post:
       security:
@@ -2624,7 +2624,7 @@ paths:
           name: id
           in: path
           required: true
-          description: Farm equipment's id 
+          description: Farm equipment's id
           type: integer
         -
           name: farm_equipment
@@ -2660,7 +2660,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor        
+          description: Error del servidor
   /inventory/farm_equipment/types/:
     get:
       description: |
@@ -2672,17 +2672,17 @@ paths:
           name: establishment_id
           in: query
           required: false
-          type: integer 
+          type: integer
         -
           name: company_id
           in: query
           required: true
-          type: integer 
+          type: integer
         -
           name: crea_group_id
           in: query
           required: true
-          type: integer 
+          type: integer
       responses:
         200:
           description: Tipos de maquinaria obtenidos correctamente
@@ -2691,7 +2691,7 @@ paths:
             items:
               type: object
               properties:
-                id: 
+                id:
                   type: integer
                 name:
                   type: string
@@ -2702,7 +2702,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor        
+          description: Error del servidor
     post:
       security:
         - Bearer: []
@@ -2721,7 +2721,7 @@ paths:
                 type: string
               establishment_id:
                 type: integer
-              
+
       responses:
         201:
           description: Insumos agrados correctamente
@@ -2744,7 +2744,7 @@ paths:
           name: id
           in: path
           required: true
-          type: integer 
+          type: integer
       responses:
         200:
           description: Equipamiento modificado correctamente
@@ -2760,7 +2760,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor                
+          description: Error del servidor
     delete:
       description: |
          Deletes specified equipment type
@@ -2771,7 +2771,7 @@ paths:
           name: id
           in: path
           required: true
-          type: integer 
+          type: integer
       responses:
         200:
           description: Equipamiento eliminado correctamente
@@ -2782,11 +2782,11 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor                      
+          description: Error del servidor
   ### MAQUINARIA END
-          
-          
-  ### INVENTORY BEGIN        
+
+
+  ### INVENTORY BEGIN
   /inventory/movements/:
     get:
       description: |
@@ -2798,17 +2798,17 @@ paths:
           name: establishment_id
           in: query
           required: true
-          type: integer 
+          type: integer
         -
           name: company_id
           in: query
           required: true
-          type: integer 
+          type: integer
         -
           name: crea_group_id
           in: query
           required: true
-          type: integer 
+          type: integer
         -
           name: quantity
           in: query
@@ -2820,7 +2820,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Movement'  
+              $ref: '#/definitions/Movement'
         400:
           description: Error del cliente
         401:
@@ -2840,24 +2840,24 @@ paths:
           name: establishment_id
           in: query
           required: true
-          type: integer 
+          type: integer
         -
           name: company_id
           in: query
           required: true
-          type: integer 
+          type: integer
         -
           name: crea_group_id
           in: query
           required: true
-          type: integer 
+          type: integer
       responses:
         200:
           description: Movimientos obtenidos correctamente
           schema:
             type: array
             items:
-              $ref: '#/definitions/Inventory'  
+              $ref: '#/definitions/Inventory'
         400:
           description: Error del cliente
         401:
@@ -2865,11 +2865,11 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor        
+          description: Error del servidor
   ### INVENTORY END
-    
-          
-  ### INVESTMENT BEGIN        
+
+
+  ### INVESTMENT BEGIN
   /investments/:
     get:
       description: |
@@ -2881,29 +2881,29 @@ paths:
           name: establishment_id
           in: query
           required: true
-          type: integer 
+          type: integer
         -
           name: crea_group_id
           in: query
           required: true
-          type: integer 
+          type: integer
         -
           name: company_id
           in: query
           required: true
-          type: integer 
+          type: integer
         -
           name: active_only
           in: query
           required: false
-          type: boolean   
+          type: boolean
       responses:
         200:
           description: Inversiones obtenidas correctamente
           schema:
             type: array
             items:
-              $ref: '#/definitions/Investment'  
+              $ref: '#/definitions/Investment'
         400:
           description: Error del cliente
         401:
@@ -2911,7 +2911,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor        
+          description: Error del servidor
     post:
       security:
         - Bearer: []
@@ -2937,7 +2937,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor      
+          description: Error del servidor
   /investments/{id}/:
     patch:
       security:
@@ -2949,8 +2949,8 @@ paths:
           name: id
           in: path
           required: true
-          description: Investment's id 
-          type: integer       
+          description: Investment's id
+          type: integer
         -
           name: investment
           in: body
@@ -2968,7 +2968,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor      
+          description: Error del servidor
     get:
       security:
         - Bearer: []
@@ -2979,8 +2979,8 @@ paths:
           name: id
           in: path
           required: true
-          description: Investment's id 
-          type: integer       
+          description: Investment's id
+          type: integer
         -
           name: investment
           in: body
@@ -2998,11 +2998,11 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor      
+          description: Error del servidor
   ### INVESTMENT END
-  
+
   ### Cajas BEGIN
-          
+
   /savings_banks/:
     get:
       description: |
@@ -3015,7 +3015,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/SavingsBank'  
+              $ref: '#/definitions/SavingsBank'
         400:
           description: Error del cliente
         401:
@@ -3023,7 +3023,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor        
+          description: Error del servidor
     post:
       security:
         - Bearer: []
@@ -3049,7 +3049,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor      
+          description: Error del servidor
   /savings_bank/{id}/:
     patch:
       security:
@@ -3061,8 +3061,8 @@ paths:
           name: id
           in: path
           required: true
-          description: Savings bank's id 
-          type: integer       
+          description: Savings bank's id
+          type: integer
         -
           name: savings_bank
           in: body
@@ -3082,7 +3082,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor      
+          description: Error del servidor
     get:
       security:
         - Bearer: []
@@ -3093,8 +3093,8 @@ paths:
           name: id
           in: path
           required: true
-          description: Investment's id 
-          type: integer       
+          description: Investment's id
+          type: integer
         -
           name: investment
           in: body
@@ -3112,7 +3112,7 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor      
+          description: Error del servidor
   /savings_bank/{id}/movements/:
     post:
       security:
@@ -3124,8 +3124,8 @@ paths:
           name: id
           in: path
           required: true
-          description: Savings bank's id 
-          type: integer       
+          description: Savings bank's id
+          type: integer
         -
           name: movement
           in: body
@@ -3164,9 +3164,9 @@ paths:
         403:
           description: El usuario no tiene permisos para realizar la acción
         500:
-          description: Error del servidor      
+          description: Error del servidor
   ### CAJAS END
-    
+
   ### GIS WSs
   /gis/encode_kml/:
     get:
@@ -3491,11 +3491,11 @@ paths:
         500:
           description: Error del servidor
   ### GIS WSs END
-        
+
 definitions:
   ### USERS definitions:
   Permissions:
-    type: integer  
+    type: integer
   User:
     type: object
     properties:
@@ -3503,9 +3503,9 @@ definitions:
         type: string
       name:
         type: string
-      role: 
-        enum: 
-          - ADMINISTRADOR 
+      role:
+        enum:
+          - ADMINISTRADOR
           - ADMINISTRATIVO SISTEMA
           - ASESOR
           - PRODUCTOR
@@ -3525,13 +3525,13 @@ definitions:
             properties:
               summary:
                 $ref: '#/definitions/Permissions'
-              management: 
+              management:
                 $ref: '#/definitions/Permissions'
               sustentability:
                 $ref: '#/definitions/Permissions'
-              margin: 
+              margin:
                 $ref: '#/definitions/Permissions'
-              detail: 
+              detail:
                 $ref: '#/definitions/Permissions'
       establishments:
         type: array
@@ -3542,7 +3542,7 @@ definitions:
     properties:
       name:
         type: string
-      departament: 
+      departament:
         type: integer
       phone_number:
         type: string
@@ -3551,7 +3551,7 @@ definitions:
       establishments:
         type: array
         items:
-          type: integer        
+          type: integer
   UserLogin:
     type: object
     properties:
@@ -3562,16 +3562,16 @@ definitions:
         type: string
       name:
         type: string
-      role: 
-        enum: 
-          - ADMINISTRADOR 
+      role:
+        enum:
+          - ADMINISTRADOR
           - ADMINISTRATIVO SISTEMA
           - ASESOR
           - PRODUCTOR
           - ADMINISTRATIVO PRODUCTOR
           - INVITADO
         type: string
-      departament: 
+      departament:
         type: integer
       phone_number:
         type: string
@@ -3590,20 +3590,20 @@ definitions:
             properties:
               summary:
                 $ref: '#/definitions/Permissions'
-              comparative: 
+              comparative:
                 $ref: '#/definitions/Permissions'
               sustentability:
                 $ref: '#/definitions/Permissions'
-              margin: 
+              margin:
                 $ref: '#/definitions/Permissions'
-              details: 
+              details:
                 $ref: '#/definitions/Permissions'
       establishments:
         type: object
         properties:
-          id: 
+          id:
             type: integer
-          name: 
+          name:
             type: string
   UserFormList:
     type: object
@@ -3622,7 +3622,7 @@ definitions:
         items:
           type: object
           properties:
-            value: 
+            value:
               type: integer
             description:
               type: string
@@ -3644,7 +3644,7 @@ definitions:
                   puede_editar:
                     type: integer
   ### USERS DEFINITIONS END
-  
+
   ### ADMINISTRATION DEFINITIONS
   Establishment:
     type: object
@@ -3662,7 +3662,7 @@ definitions:
       location:
         type: object
         properties:
-          latitude: 
+          latitude:
             type: number
             format: float
           longitude:
@@ -3679,20 +3679,20 @@ definitions:
         type: string
       padrons:
         type: array
-        items:  
+        items:
           $ref: '#/definitions/Padron'
       lots:
         type: array
-        items:  
+        items:
           type: object
           properties:
-            id: 
+            id:
               type: integer
             name:
               type: string
       characterizations:
         type: array
-        items: 
+        items:
           $ref: '#/definitions/CharacterizationPOSTList'
   EstablishmentPATCH:
     type: object
@@ -3706,7 +3706,7 @@ definitions:
       location:
         type: object
         properties:
-          latitude: 
+          latitude:
             type: number
             format: float
           longitude:
@@ -3718,7 +3718,7 @@ definitions:
         type: boolean
       padrons:
         type: array
-        items:  
+        items:
           $ref: '#/definitions/PadronPATCH'
       zone:
         type: integer
@@ -3730,14 +3730,14 @@ definitions:
         properties:
           id:
             type: integer
-          name: 
+          name:
             type: string
           establishments:
             type: array
             items:
               type: object
               properties:
-                id: 
+                id:
                   type: integer
                 name:
                   type: string
@@ -3748,39 +3748,39 @@ definitions:
   CharacterizationPOSTList:
     type: object
     properties:
-      agriculture: 
+      agriculture:
         type: array
         items:
           type: integer
-      sistema_producto_vacuno: 
+      sistema_producto_vacuno:
         type: array
         items:
           type: integer
-      sistema_producto_ovino: 
+      sistema_producto_ovino:
         type: array
         items:
           type: integer
-      forestacion_comercial: 
+      forestacion_comercial:
         type: array
         items:
           type: integer
-      evolucion_propiedad_empresas_familiares: 
+      evolucion_propiedad_empresas_familiares:
         type: array
         items:
           type: integer
-      edad_decisor: 
+      edad_decisor:
         type: array
         items:
           type: integer
-      riego: 
+      riego:
         type: array
         items:
           type: integer
-      nivel_instruccion_decisor: 
+      nivel_instruccion_decisor:
         type: array
         items:
           type: integer
-      residencia_decisor: 
+      residencia_decisor:
         type: array
         items:
           type: integer
@@ -3814,7 +3814,7 @@ definitions:
   CharacterizationFormList:
     type: object
     properties:
-      agriculture: 
+      agriculture:
         type: array
         items:
           type: object
@@ -3823,7 +3823,7 @@ definitions:
               type: integer
             description:
               type: string
-      sistema_producto_vacuno: 
+      sistema_producto_vacuno:
         type: array
         items:
           type: object
@@ -3832,7 +3832,7 @@ definitions:
               type: integer
             description:
               type: string
-      sistema_producto_ovino: 
+      sistema_producto_ovino:
         type: array
         items:
           type: object
@@ -3841,7 +3841,7 @@ definitions:
               type: integer
             description:
               type: string
-      forestacion_comercial: 
+      forestacion_comercial:
         type: array
         items:
           type: object
@@ -3850,7 +3850,7 @@ definitions:
               type: integer
             description:
               type: string
-      evolucion_propiedad_empresas_familiares: 
+      evolucion_propiedad_empresas_familiares:
         type: array
         items:
           type: object
@@ -3859,7 +3859,7 @@ definitions:
               type: integer
             description:
               type: string
-      riego: 
+      riego:
         type: array
         items:
           type: object
@@ -3868,7 +3868,7 @@ definitions:
               type: integer
             description:
               type: string
-      nivel_instruccion_decisor: 
+      nivel_instruccion_decisor:
         type: array
         items:
           type: object
@@ -3877,7 +3877,7 @@ definitions:
               type: integer
             description:
               type: string
-      residencia_decisor: 
+      residencia_decisor:
         type: array
         items:
           type: object
@@ -3886,7 +3886,7 @@ definitions:
               type: integer
             description:
               type: string
-      dias_semana_decisor: 
+      dias_semana_decisor:
         type: array
         items:
           type: object
@@ -3894,8 +3894,8 @@ definitions:
             value:
               type: integer
             description:
-              type: string   
-      geographic_zone: 
+              type: string
+      geographic_zone:
         type: array
         items:
           type: object
@@ -3904,7 +3904,7 @@ definitions:
               type: string
             name:
               type: string
-      category: 
+      category:
         type: array
         items:
           type: object
@@ -3912,10 +3912,10 @@ definitions:
             value:
               type: integer
             description:
-              type: string     
+              type: string
   IndicatorFilterFormList:
     type: object
-    properties: 
+    properties:
       closed_exercises:
         type: array
         items:
@@ -3923,7 +3923,7 @@ definitions:
       indicator_types:
         type: object
         properties:
-          value: 
+          value:
             type: string
           description:
             type: string
@@ -3939,7 +3939,7 @@ definitions:
                   type: integer
                 description:
                   type: string
-          ordering_type:        
+          ordering_type:
             type: array
             items:
               type: object
@@ -3947,7 +3947,7 @@ definitions:
                 value:
                   type: integer
                 description:
-                  type: string  
+                  type: string
           indicators:
             type: array
             items:
@@ -4003,12 +4003,12 @@ definitions:
   Lot:
     type: object
     properties:
-      id: 
+      id:
         type: integer
         readOnly: true
-      description: 
+      description:
         type: string
-      code: 
+      code:
         type: string
       area:
         type: number
@@ -4038,9 +4038,9 @@ definitions:
   # LotPOST:
   #   type: object
   #   properties:
-  #     description: 
+  #     description:
   #       type: string
-  #     code: 
+  #     code:
   #       type: string
   #     area:
   #       type: number
@@ -4049,7 +4049,7 @@ definitions:
   #       type: number
   #       format: float
   #     coneat:
-  #       type: integer     
+  #       type: integer
   #     posession:
   #       enum:
   #         - PROPIO
@@ -4070,9 +4070,9 @@ definitions:
   LotPATCH:
     type: object
     properties:
-      description: 
+      description:
         type: string
-      code: 
+      code:
         type: string
       area:
         type: number
@@ -4081,7 +4081,7 @@ definitions:
         type: number
         format: float
       coneat:
-        type: integer     
+        type: integer
       posession:
         enum:
           - PROPIO
@@ -4102,9 +4102,9 @@ definitions:
   LotInEstablishmentPOST:
     type: object
     properties:
-      description: 
+      description:
         type: string
-      code: 
+      code:
         type: string
       area:
         type: number
@@ -4113,7 +4113,7 @@ definitions:
         type: number
         format: float
       coneat:
-        type: integer     
+        type: integer
       posession:
         enum:
           - PROPIO
@@ -4134,10 +4134,10 @@ definitions:
   CreaGroup:
     type: object
     properties:
-      id: 
+      id:
         type: integer
         readOnly: true
-      name: 
+      name:
         type: string
       establishments:
         type: array
@@ -4156,14 +4156,14 @@ definitions:
         properties:
           id:
             type: integer
-          name: 
+          name:
             type: string
           establishments:
             type: array
             items:
               type: object
               properties:
-                id: 
+                id:
                   type: integer
                 name:
                   type: string
@@ -4199,13 +4199,13 @@ definitions:
       establishments:
         type: array
         items:
-          type: integer        
+          type: integer
   Department:
     type: object
     properties:
       id:
         type: integer
-      name: 
+      name:
         type: string
   Padron:
     type: object
@@ -4213,23 +4213,23 @@ definitions:
       id:
         type: integer
         readOnly: true
-      padron_number: 
+      padron_number:
         type: string
-      department: 
+      department:
         $ref: '#/definitions/Department'
   PadronPATCH:
     type: object
     properties:
-      padron_number: 
+      padron_number:
         type: string
-      department: 
+      department:
         type: integer
   Provider:
     type: object
     properties:
       id:
         type: integer
-      fantasy_name: 
+      fantasy_name:
         type: string
       business_name:
         type: string
@@ -4249,13 +4249,13 @@ definitions:
     properties:
       id:
         type: integer
-      fantasy_name: 
+      fantasy_name:
         type: string
       business_name:
         type: string
       rut:
         type: string
-      type: 
+      type:
         type: integer
       establishments:
         type: array
@@ -4264,7 +4264,7 @@ definitions:
   ProviderPATCH:
     type: object
     properties:
-      fantasy_name: 
+      fantasy_name:
         type: string
       business_name:
         type: string
@@ -4272,8 +4272,8 @@ definitions:
         type: string
       type:
         type: integer
-  ### ADMINISTRATION DEFINITIONS END        
-          
+  ### ADMINISTRATION DEFINITIONS END
+
   ### INDICATORS DEFINITIONS
   IndicatorTree:
     type: object
@@ -4288,7 +4288,7 @@ definitions:
             tree:
               type: object
               properties:
-                name: 
+                name:
                   type: string
                 short_name:
                   type: string
@@ -4326,7 +4326,7 @@ definitions:
       id:
         type: string
   ### INDICATORS DEFINITIONS END
-  
+
   ### LAND USE DEFINITIONS
   MonthlyLandUse:
     type: object
@@ -4334,7 +4334,7 @@ definitions:
       lot:
         type: object
         properties:
-          id: 
+          id:
             type: integer
           description:
             type: string
@@ -4375,7 +4375,7 @@ definitions:
       crops:
         type: object
         properties:
-          id: 
+          id:
             type: integer
           name:
             type: string
@@ -4386,7 +4386,7 @@ definitions:
           duration:
             type: integer
   ### LAND USE DEFINITIONS END
-  
+
   ### SUPPLY DEFINITIONS
   #Supply:
   #  type: object
@@ -4400,7 +4400,7 @@ definitions:
   #      type: string
   #    type:
   #      type: string
-  #    establishment_name: 
+  #    establishment_name:
   #      type: string
   Movement:
     type: object
@@ -4417,7 +4417,7 @@ definitions:
         format: date
       movement_type:
         type: string
-      establishment_name: 
+      establishment_name:
         type: string
       cost:
         type: number
@@ -4468,7 +4468,7 @@ definitions:
         type: string
       type:
         type: string
-      establishment_name: 
+      establishment_name:
         type: string
       unit:
         type: string
@@ -4506,7 +4506,7 @@ definitions:
         items:
           type: object
           properties:
-            name: 
+            name:
               type: string
             concentration:
               type: number
@@ -4520,7 +4520,7 @@ definitions:
         type: string
       type:
         type: string
-      establishment_name: 
+      establishment_name:
         type: string
       comments:
         type: string
@@ -4528,7 +4528,7 @@ definitions:
         type: string
       depreciation:
               type: number
-              format: float  
+              format: float
       useful_life:
               type: number
               format: float
@@ -4549,7 +4549,7 @@ definitions:
               type: string
             cost:
               type: number
-              format: float            
+              format: float
   Inventory:
     type: object
     properties:
@@ -4573,7 +4573,7 @@ definitions:
       has_stock:
         type: boolean
   ### SUPPLY DEFINITIONS END
-  
+
   ### INVESTMENTS DEFINITIONS START
   Investment:
     type: object
@@ -4611,7 +4611,7 @@ definitions:
         items:
           type: object
           properties:
-            id: 
+            id:
               type: integer
             description:
               type: string
@@ -4699,7 +4699,7 @@ definitions:
         items:
           type: object
           properties:
-            ammount: 
+            ammount:
               type: string
             description:
               type: string
@@ -4744,5 +4744,5 @@ definitions:
   GEOJsonFeatureCollection:
     # como en https://developers.google.com/maps/documentation/javascript/3.exp/reference#Data, el metodo toGeoJson
     type: object
-  
+
   ### GIS DEFINITIONS END
