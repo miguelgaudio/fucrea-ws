@@ -39,6 +39,9 @@ paths:
       summary: Sends user an email invitation, and creates the user.
       description: |
         Sends an invitation via mail to the described user. If the user already exists on the system, it will be associated with the desscribed establishments, if not, an invitation will be created for him. It invitation wil be sended by email if the invited user has an email (and email was specified), or given to the guest user if not, in order to share the invitation by any other channel. Once the invited user has the invitation, it will complete the registration.
+        Note that the beavior of this POST sometimes creates objects and sometimes modifies the object (referenced by the username). Almost never raises duplicate errors.
+        Note that the email must be uniqe to let the user reset his password (maybe we could do something far complicated to handle this, but I dont know...).
+        If the user already exists in the system, the email field will be ignored.
       consumes:
         - application/json
       produces:
@@ -53,27 +56,31 @@ paths:
           required: false
           schema:
             properties:
-              reset_url_template:
+              registration_url_template:
                 type: string
                 required: false
                 description:
-                  An email template. The 'XXX' will be replaced with the token in the reset email.
+                  An email template. The 'XXX' will be replaced with the token in the registration email.
                 example:
-                  'usuarios/reset_pass?reset_token=XXX&algomas=1'
+                  'usuarios/invite?registration_token=XXX&algomas=1'
               user:
                 $ref: '#/definitions/User'
       responses:
         201:
-          description: Usuario creado correctamente
+          description: User created Ok.
           schema:
             properties:
+              email_sended:
+                type: boolean
               registration_url:
                 type: string
               user:
                 $ref: '#/definitions/User'
+        400:
+          description: Already exists an user with that email.
     get:
       description: |
-        List users in my establishments. The user itself will be not in the list. Only users with lower roles will be listed.
+        List users in my establishments. The user itself will be not in the list. Only users with lower roles (subordinated) will be listed.
       security:
         - Bearer: []
       consumes:
@@ -197,6 +204,8 @@ paths:
       responses:
         204:
           description: Mail modified OK. Informative email sended to user (if it has an email), to the new email address. The mail could contain a verification URL for the new address.
+        400:
+          description: Already exists an user with that email.
   /users/change_username/:
     post:
       description: |
@@ -222,6 +231,8 @@ paths:
       responses:
         204:
           description: Username modificado OK. Informative email sended to user (if it has an email).
+        400:
+          description: Already exists an user with that username.
   /users/change_password/:
     patch:
       description: |
@@ -280,9 +291,11 @@ paths:
                 'usuarios/registration?registration_token=XXX&algomas=1'
       responses:
         200:
-          description: Invitaión enviada correctamente
+          description: Invitation sended
           schema:
             properties:
+              email_sended:
+                type: boolean
               registration_url:
                 type: string
         404:
