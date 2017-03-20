@@ -35,11 +35,13 @@ securityDefinitions:
 paths:
   ### USERS SERVICES
   /users/:
-    # quizas esto es otro endpoint "invitations"
     post:
-      summary: Sends user an email invitation
+      summary: Sends user an email invitation, and creates the user.
       description: |
-        Sends an invitation via mail to the described user
+        Sends an invitation via mail to the described user. If the user already exists on the system, it will be associated with the desscribed establishments, if not, an invitation will be created for him. It invitation wil be sended by email if the invited user has an email (and email was specified), or given to the guest user if not, in order to share the invitation by any other channel. Once the invited user has the invitation, it will complete the registration.
+        Note that the beavior of this POST sometimes creates objects and sometimes modifies the object (referenced by the username). Almost never raises duplicate errors.
+        Note that the email must be uniqe to let the user reset his password (maybe we could do something far complicated to handle this, but I dont know...).
+        If the user already exists in the system, the email field will be ignored.
       consumes:
         - application/json
       produces:
@@ -53,21 +55,32 @@ paths:
           description: User's info
           required: false
           schema:
-            $ref: '#/definitions/User'
+            properties:
+              registration_url_template:
+                type: string
+                required: false
+                description:
+                  An email template. The 'XXX' will be replaced with the token in the registration email.
+                example:
+                  'usuarios/invite?registration_token=XXX&algomas=1'
+              user:
+                $ref: '#/definitions/User'
       responses:
         201:
-          description: Usuario creado correctamente
+          description: User created Ok.
+          schema:
+            properties:
+              email_sended:
+                type: boolean
+              registration_url:
+                type: string
+              user:
+                $ref: '#/definitions/User'
         400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+          description: Already exists an user with that email.
     get:
       description: |
-        Lista las invitaciones y usuarios de mis establecimientos
+        List users in my establishments. The user itself will be not in the list. Only users with lower roles (subordinated) will be listed.
       security:
         - Bearer: []
       consumes:
@@ -76,23 +89,16 @@ paths:
         - application/json
       responses:
         200:
-          description: Usuarios obtenidos correctamente
+          description: Ok
           schema:
             type: array
             items:
               $ref: '#/definitions/User'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /users/{id}/:
     patch:
       description: |
-        Updates user's info
+        Updates user's info. If active user is an advisor, it will be only allow to manage producers, althouth he can list any other user in my establishments.
+        This WS cant be used to change email nor username.
       security:
         - Bearer: []
       consumes:
@@ -115,20 +121,12 @@ paths:
             $ref: '#/definitions/UserPATCH'
       responses:
         204:
-          description: Usuario modificado correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
+          description: Ok
         404:
-          description: Usuario no enontrado
-        500:
-          description: Error del servidor
+          description: User not found
     delete:
       description: |
-        Deletes subordinate user
+        Deasociate user from all my establishments (the user will feel like it was deleted). Only subordinate users can be deleted. Users cant delete hereselves.
       security:
         - Bearer: []
       consumes:
@@ -143,22 +141,14 @@ paths:
           description: User's id
           type: integer
       responses:
-        200:
-          description: Usuarios obtenidos correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
+        204:
+          description: Ok
         404:
-          description: Usuario no enontrado
-        500:
-          description: Error del servidor
+          description: User not found
   /users/confirm/:
     patch:
       description: |
-        Sends supplied registration token to confirm user's registration
+        Sends supplied registration token to confirm user's registration. The user will be logged in after that (implicit login).
       consumes:
         - application/json
       produces:
@@ -176,12 +166,12 @@ paths:
               registration_token:
                 type: string
       responses:
-        204:
-          description: Registro de usuario confirmado correctamente
-        400:
-          description: Error del cliente
-        500:
-          description: Error del servidor
+        200:
+          description: Registro de usuario confirmado correctamente. An access_token is returned (implicit login).
+          schema:
+            properties:
+              access_token:
+                type: string
   /users/change_email/:
     post:
       description: |
@@ -204,13 +194,45 @@ paths:
                 type: string
               new_email:
                 type: string
+              verification_url_template:
+                type: string
+                required: false
+                description:
+                  An email template. The 'XXX' will be replaced with the token in the verification email.
+                example:
+                  'usuarios/verification_email?verification_token=XXX&algomas=1'
       responses:
         204:
-          description: Mail modificado OK. Se ha enviado un mail informativo a la dirección.
+          description: Mail modified OK. Informative email sended to user (if it has an email), to the new email address. The mail could contain a verification URL for the new address.
         400:
-          description: Error del cliente
-        500:
-          description: Error del servidor
+          description: Already exists an user with that email.
+  /users/change_username/:
+    post:
+      description: |
+        Changes username for current user
+      security:
+        - Bearer: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        -
+          name: data
+          in: body
+          required: true
+          description: parameters to update username
+          schema:
+            properties:
+              password:
+                type: string
+              new_username:
+                type: string
+      responses:
+        204:
+          description: Username modificado OK. Informative email sended to user (if it has an email).
+        400:
+          description: Already exists an user with that username.
   /users/change_password/:
     patch:
       description: |
@@ -236,21 +258,12 @@ paths:
                 type: string
       responses:
         204:
-          description: Contraseña actualizada correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        404:
-          description: Usuario no enontrado
-        500:
-          description: Error del servidor
+          description: Password updated. Informative email sended to user (if it has an email).
   /users/{id}/invite/:
     patch:
       description: |
-        Resends a mail invitation to a created user
+        Resends a mail invitation to a created user, or, if the user doesnt have an email, retrieve a registration_url (with a registration_token inside) to share with invited user to let him complete his registration.
+        The registration_token has new expiricy period, and invalidated older registration_token issued.
       security:
         - Bearer: []
       consumes:
@@ -264,20 +277,29 @@ paths:
           required: true
           description: User's id to send invitation to
           type: integer
+        -
+          name: data
+          in: body
+          description: url template
+          schema:
+            registration_url_template:
+              type: string
+              required: false
+              description:
+                An email template. The 'XXX' will be replaced with the token in the registration email.
+              example:
+                'usuarios/registration?registration_token=XXX&algomas=1'
       responses:
-        204:
-          description: Invitaión enviada correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
+        200:
+          description: Invitation sended
+          schema:
+            properties:
+              email_sended:
+                type: boolean
+              registration_url:
+                type: string
         404:
-          description: Usuario no enontrado
-        500:
-          description: Error del servidor
-
+          description: User not found.
   /users/reset_password/request/:
     post:
       description: |
@@ -293,28 +315,27 @@ paths:
           name: email
           in: body
           required: true
-          description: User's emial to send reset token to
+          description: User's emial to send reset token to.
           schema:
             properties:
               email:
                 type: string
+              reset_url_template:
+                type: string
+                required: false
+                description:
+                  An email template. The 'XXX' will be replaced with the token in the reset email.
+                example:
+                  'usuarios/reset_pass?reset_token=XXX&algomas=1'
       responses:
         204:
-          description: Mail enviado correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
+          description: Mail sended Ok.
         404:
-          description: Usuario no enontrado
-        500:
-          description: Error del servidor
+          description: No user found with that email
   /users/reset_password/confirm/:
     post:
       description: |
-        Sends supplied reset token to allow user reset his password
+        Sends supplied reset token to allow user reset his password. Makes an implicit login (returns an access_token)
       consumes:
         - application/json
       produces:
@@ -329,21 +350,21 @@ paths:
             properties:
               password:
                 type: string
-              # Comparte el nombre registration_token pq es igual en la implementacion
-              registration_token:
+              reset_token:
                 type: string
       responses:
-        204:
-          description: Reset de password de usuario realizado
-        400:
-          description: Error del cliente
-        500:
-          description: Error del servidor
-
+        200:
+          description: Password reseted OK.
+          schema:
+            properties:
+              access_token:
+                type: string
+        404:
+          description: The token is not valid.
   /users/login/:
     post:
       description: |
-        User logs in the platform
+        User logs in the platform. If remember_me the access_token has a longer expiricy period.
       consumes:
         - application/json
       produces:
@@ -356,7 +377,7 @@ paths:
           required: true
           schema:
             properties:
-              email:
+              username:
                 type: string
               password:
                 type: string
@@ -364,7 +385,7 @@ paths:
                 type: boolean
       responses:
         200:
-          description: Usuario autenticado con éxito
+          description: User logged in
           schema:
             type: object
             properties:
@@ -373,11 +394,7 @@ paths:
               user:
                 $ref: '#/definitions/UserLogin'
         400:
-          description: Error del cliente
-        404:
-          description: Usuario no enontrado
-        500:
-          description: Error del servidor
+          description: No user with that username, or auth failed (pass or username wrong).
   /users/logout/:
     post:
       description: |
@@ -387,15 +404,8 @@ paths:
       produces:
         - application/json
       responses:
-        200:
-          description:
-            Usuario desautenticado con éxito
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        404:
-          description: Recurso no enontrado
+        204:
+          description: User logged out Ok.
   ### USERS SERVICES END
 
   ### ADMINISTRATION SERVICES
