@@ -52,19 +52,16 @@ paths:
         -
           name: user
           in: body
-          description: User's info
+          description: User's info. In the email template. The 'XXX' will be replaced with the token in the registration email.
           required: false
           schema:
             properties:
               registration_url_template:
                 type: string
-                required: false
-                description:
-                  An email template. The 'XXX' will be replaced with the token in the registration email.
-                example:
-                  'usuarios/invite?registration_token=XXX&algomas=1'
               user:
                 $ref: '#/definitions/User'
+          # example:
+          #   'usuarios/invite?registration_token=XXX&algomas=1'
       responses:
         201:
           description: User created Ok.
@@ -187,7 +184,7 @@ paths:
           name: data
           in: body
           required: true
-          description: parameters to update email
+          description: parameters to update email. In the email template. The 'XXX' will be replaced with the token in the verification email.
           schema:
             properties:
               password:
@@ -196,11 +193,8 @@ paths:
                 type: string
               verification_url_template:
                 type: string
-                required: false
-                description:
-                  An email template. The 'XXX' will be replaced with the token in the verification email.
-                example:
-                  'usuarios/verification_email?verification_token=XXX&algomas=1'
+                # example:
+                #   'usuarios/verification_email?verification_token=XXX&algomas=1'
       responses:
         204:
           description: Mail modified OK. Informative email sended to user (if it has an email), to the new email address. The mail could contain a verification URL for the new address.
@@ -275,20 +269,19 @@ paths:
           name: id
           in: path
           required: true
-          description: User's id to send invitation to
+          description: User's id to send invitation to. In the email template. The 'XXX' will be replaced with the token in the registration email.
           type: integer
         -
           name: data
           in: body
           description: url template
           schema:
-            registration_url_template:
-              type: string
-              required: false
-              description:
-                An email template. The 'XXX' will be replaced with the token in the registration email.
-              example:
-                'usuarios/registration?registration_token=XXX&algomas=1'
+            type: object
+            properties:
+              registration_url_template:
+                type: string
+                # example:
+                #   'usuarios/registration?registration_token=XXX&algomas=1'
       responses:
         200:
           description: Invitation sended
@@ -315,18 +308,15 @@ paths:
           name: email
           in: body
           required: true
-          description: User's emial to send reset token to.
+          description: User's emial to send reset token to. In the email template. The 'XXX' will be replaced with the token in the reset email.
           schema:
             properties:
               email:
                 type: string
               reset_url_template:
                 type: string
-                required: false
-                description:
-                  An email template. The 'XXX' will be replaced with the token in the reset email.
-                example:
-                  'usuarios/reset_pass?reset_token=XXX&algomas=1'
+                # example:
+                #   'usuarios/reset_pass?reset_token=XXX&algomas=1'
       responses:
         204:
           description: Mail sended Ok.
@@ -1013,6 +1003,27 @@ paths:
          List providers
       security:
         - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: company_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: crea_group_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: reduced
+          in: query
+          required: false
+          type: boolean
       responses:
         200:
           description: Proveedores groups obtenidos correctamente
@@ -1396,6 +1407,93 @@ paths:
           description: El usuario no tiene permisos para realizar la acción
         500:
           description: Error del servidor
+  /forms/savings_banks/:
+    get:
+      description: |
+        Lists every field with its options to fill the savings banks forms
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Formularios obtenidos correctamente
+          schema:
+            type: object
+            properties:
+              currencies:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: integer
+                    description:
+                      type: string
+              savings_banks_categories:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: integer
+                    description:
+                      type: string
+              savings_banks_movements_types:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: integer
+                    description:
+                      type: string
+                      
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor        
+  /forms/tickets/:
+    get:
+      description: |
+        Lists every field with its options to fill the savings banks forms
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Formularios obtenidos correctamente
+          schema:
+            type: object
+            properties:
+              payment_types:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: integer
+                    description:
+                      type: string
+              ticket_types:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: integer
+                    description:
+                      type: string
+              
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor        
   ### AUX SERVICES END
 
   ### INDICATORS SERVICES
@@ -1957,7 +2055,6 @@ paths:
              properties:
               exercise:
                 type: integer
-
               summary:
                type: array
                example:
@@ -1983,6 +2080,8 @@ paths:
                 type: number
                 format: float
               closed:
+                type: boolean
+              global_deleting:
                 type: boolean
         400:
           description: Error del cliente
@@ -2162,25 +2261,38 @@ paths:
 
   ### SUPPLY BEGIN
   /inventory/supplies/:
-    #get:
-    #  description: |
-    #     List supplies for the specified establishment
-    #  security:
-    #    - Bearer: []
-    #  parameters:
-    #    -
-    #      name: establishment_id
-    #      in: query
-    #      required: true
-    #      type: integer
-    #  responses:
-    #    200:
-    #      description: Insumos obtenidos correctamente
-    #      schema:
-    #        type: array
-    #        items:
-    #          $ref: '#/definitions/Supply'
-
+    get:
+      description: |
+         List supplies for the specified establishment
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: company_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: crea_group_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Insumos obtenidos correctamente
+          schema:
+            type: array
+            items:
+              properties:
+                id:
+                  type: integer
+                description:
+                  type: string
     post:
       security:
         - Bearer: []
@@ -2195,7 +2307,7 @@ paths:
           schema:
             type: object
             properties:
-              name:
+              description:
                 type: string
               type:
                 type: integer
@@ -2283,7 +2395,7 @@ paths:
           schema:
             type: object
             properties:
-              name:
+              description:
                 type: string
               active_components:
                 type: object
@@ -2482,6 +2594,38 @@ paths:
 
   ### MAQIUNARIA BEGIN
   /inventory/farm_equipment/:
+     get:
+      description: |
+         List farm equipments for the specified establishment
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: company_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: crea_group_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Maquinaria obtenidos correctamente
+          schema:
+            type: array
+            items:
+              properties:
+                id:
+                  type: integer
+                description:
+                  type: string
     post:
       security:
         - Bearer: []
@@ -3015,13 +3159,33 @@ paths:
   ### INVESTMENT END
 
   ### Cajas BEGIN
-
   /savings_banks/:
     get:
       description: |
          List savings banks for the specified establishment
       security:
         - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: company_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: crea_group_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: reduced
+          in: query
+          required: false
+          type: boolean
       responses:
         200:
           description: Cajas obtenidas correctamente
@@ -3179,6 +3343,135 @@ paths:
         500:
           description: Error del servidor
   ### CAJAS END
+  /tickets/:
+    get:
+      description: |
+         List tickets for the specified establishment
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: company_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: crea_group_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Boletas obtenidas correctamente
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Ticket'
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Creates Ticket
+      parameters:
+        -
+          name: ticket
+          in: body
+          required: true
+          description: ticket info
+          schema:
+            $ref: '#/definitions/TicketPOST'
+      responses:
+        201:
+          description: Caja agregada correctamente
+          schema:
+            $ref: '#/definitions/Ticket'
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor
+  /tickets/{id}/:
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Updates Ticket
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          description: Ticket's id
+          type: integer
+        -
+          name: ticket
+          in: body
+          required: true
+          description: Ticket info
+          schema:
+            $ref: '#/definitions/TicketPATCH'
+      responses:
+        201:
+          description: Boleta modificada correctamente
+          schema:
+            $ref: '#/definitions/TicketDetail'
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Updates Ticket
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          description: Ticket's id
+          type: integer
+        -
+          name: ticket
+          in: body
+          required: true
+          description: ticket info
+          schema:
+            $ref: '#/definitions/TicketDetail'
+      responses:
+        201:
+          description: Boleta obtenida correctamente
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor
+  ### BOLETAS BEGIN
+  
+  ### BOLETAS END
 
   ### GIS WSs
   /gis/encode_kml/:
@@ -4477,7 +4770,7 @@ definitions:
         type: integer
       stock_quantity:
         type: string
-      name:
+      description:
         type: string
       type:
         type: string
@@ -4505,6 +4798,9 @@ definitions:
               format: float
       comments:
         type: string
+      value:
+        type: number
+        format: float
       nitrogen_concentration:
         type: number
         format: float
@@ -4678,7 +4974,7 @@ definitions:
         type: string
   ### INVESTMENTS DEFINITIONS END
 
-   ### SAVINGS BANKS DEFINITIONS START
+  ### SAVINGS BANKS DEFINITIONS START
   SavingsBank:
     type: object
     properties:
@@ -4748,6 +5044,98 @@ definitions:
       currency:
         type: integer
   ### SAVINGS BANK DEFINITIONS END
+
+  ### TICKETS DEFINITIONS START
+  Ticket:
+    type: object
+    properties:
+      id:
+        type: integer
+      description:
+        type: string
+      type:
+        type: string
+      payment_type:
+        type: string
+      ammount:
+        type: number
+        format: float
+      pending_ammount:
+        type: number
+        format: float
+      last_payment_date:
+        type: string
+        format: date
+      establishment:
+        type: string
+  TicketDetail:
+    type: object
+    properties:
+      id:
+        type: integer
+      description:
+        type: string
+      ticket_number:
+        type: string
+      provider:
+        type: integer
+      payment_type:
+        type: integer
+      ammount:
+        type: number
+        format: float
+      tax_ammount_percentage:
+        type: number
+        format: float
+      emition_date:
+        type: string
+        format: date
+      payments_ammount:
+        type: integer
+      lots:
+        type: array
+      inventory:
+        type: array
+      generic_buys:
+        type: array
+      establishment:
+        type: integer
+  TicketPOST:
+    type: object
+    properties:
+      description:
+        type: string
+      ticket_number:
+        type: string
+      provider:
+        type: integer
+      payment_type:
+        type: integer
+      ammount:
+        type: number
+        format: float
+      tax_ammount_percentage:
+        type: number
+        format: float
+      emition_date:
+        type: string
+        format: date
+      payments_ammount:
+        type: integer
+      lots:
+        type: array
+      inventory:
+        type: array
+      generic_buys:
+        type: array
+      establishment:
+        type: integer
+  TicketPATCH:
+    type: object
+    properties:
+      description:
+        type: string
+  ### TICKETS DEFINITIONS END
 
   ### GIS DEFINITIONS
   GEOJsonFeature:
