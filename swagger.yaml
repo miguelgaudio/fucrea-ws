@@ -2594,7 +2594,7 @@ paths:
 
   ### MAQIUNARIA BEGIN
   /inventory/farm_equipment/:
-     get:
+    get:
       description: |
          List farm equipments for the specified establishment
       security:
@@ -5063,6 +5063,8 @@ definitions:
       pending_ammount:
         type: number
         format: float
+      currency:
+        type: string
       last_payment_date:
         type: string
         format: date
