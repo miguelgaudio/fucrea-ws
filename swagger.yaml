@@ -696,14 +696,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/EstablishmentBrief'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /lots/:
     get:
       description: |
@@ -717,18 +709,14 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Lot'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /lots/decode_kml/:
     post:
       description: |
-         Load many lots from a KML file. It uses the KML name tag as the lot's code. Returns default values for the each lot field as metadata in the response geojson properties
+        Translates many lots from a KML file to a lots GEOJsonFeatureCollection.
+        No changes in BD are maded.
+        Uses each KML placeholder.name tag as each lot's code.
+        Keeps metadata in the KML's ExtraData translated into the properties object of each GEOJsonFeature in response. 
+        Returns default values for the each lot field as metadata in the response geojson properties.
       security:
         - Bearer: []
       consumes:
@@ -748,7 +736,12 @@ paths:
   /lots/decode_kml_single/:
     post:
       description: |
-         Load one lot geometry from a KML file. It uses the KML name tag as the lot's code. Returns default values for the each lot field as metadata in the response geojson properties. Meld all the geometries as one.
+        Translates a KML file to a Lot GEOJsonFeature.
+        No changes in BD are maded. 
+        Keeps metadata in the KML's ExtraData translated in the properties object of the response GEOJsonFeature. 
+        Returns default values for the each lot field as metadata in the response geojson properties.
+        Meld all the geometries as one.
+        Tries to takes the current lot (the one used to fill missing lot metadata, (eg: description, coneat, etc)) from the KML's tag placeholder.name (as its lot's code).
       security:
         - Bearer: []
       consumes:
@@ -787,17 +780,9 @@ paths:
           type: integer
       responses:
         204:
-          description: Potrero actualizado correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
+          description: Lote actualizado correctamente
         404:
-          description: Potrero no enontrado
-        500:
-          description: Error del servidor
+          description: Lote no enontrado
     delete:
       description: |
         Deletes a lot
@@ -813,20 +798,16 @@ paths:
       responses:
         204:
           description: Lote eliminada correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
         404:
-          description: Potrero no enontrado
-        500:
-          description: Error del servidor
+          description: Lote no enontrado
   /lots/{id}/decode_kml_single/:
     patch:
       description: |
-         Load one lot geometry from a KML file. Returns default values for the each lot field as metadata in the response geojson properties. Meld all the geometries as one.
+        Translates a KML file to a Lot GEOJsonFeature.
+        No changes in BD are maded. 
+        Keeps metadata in the KML's ExtraData translated in the properties object of the response GEOJsonFeature. 
+        Returns default values for the each lot field as metadata in the response geojson properties. 
+        Meld all the geometries as one.
       security:
         - Bearer: []
       consumes:
@@ -879,22 +860,20 @@ paths:
           description: Lote unido con otros lotes OK
           schema:
             $ref: '#/definitions/LotInEstablishmentPOST'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
         404:
-          description: Potrero del path no enontrado
-        500:
-          description: Error del servidor
-  /lots/{id}/divide/:
-    patch:
+          description: Lote del path no enontrado
+  /lots/divide/:
+    post:
       security:
         - Bearer: []
       description: |
-        Create many lots with the data passed in the body, and updates the geofence of lot in the path to the remaining geofence not used by the others.
+        Create many lots with the data passed in the body.
+        parametro parent: 
+          es un objeto similar al usado en patch de lotes, pero con un Id obligatorio que sirve para identificar al padre.
+          Si otros parámetros son pasados aparte del Id, éstos alteran a ese mismo lote, y el resto de los parámetros se mantienen iguales (partial update).
+          Se debe pasar sobre todo el parámetro geocerca pues no se calcula más como el residuo de los demás lotes desde backend, aunque sigue siendo opcional su envío (en ese caso quedaría igual que antes la geometría del lote padre, lo que es malo pq posiblemente se solape con sus hijos).
+        parametro divisions:
+          Es una lista de formato similar a parent, pero con su Id opcional, y el resto de los parámetros casi todos requeridos (como en el POST de creación de lotes).
       parameters:
         -
           name: new_lots
@@ -902,15 +881,14 @@ paths:
           required: true
           description: Many Lots infos
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/LotInEstablishmentPOST'
-        -
-          name: id
-          in: path
-          required: true
-          description: Lots's id
-          type: integer
+            type: object
+            properties:
+              divisions:
+                type: array
+                items:
+                  $ref: '#/definitions/LotInEstablishmentPOST'
+              parent:
+                $ref: '#/definitions/LotPATCH'
       responses:
         200:
           description: Lotes divididos OK
@@ -918,16 +896,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/LotInEstablishmentPOST'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
         404:
-          description: Potrero no enontrado
-        500:
-          description: Error del servidor
+          description: Lote parent no enontrado
   /crea_groups/:
     get:
       description: |
@@ -941,14 +911,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/CreaGroup'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /crea_groups/all/:
     get:
       description: |
@@ -967,14 +929,6 @@ paths:
                   type: string
                 id:
                   type: integer
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /crea_groups/establishments/:
     get:
       description: |
@@ -988,14 +942,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/CreaGroupDeep'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
 
   /providers/:
     get:
@@ -1031,14 +977,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Provider'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+
     post:
       description: |
         Creates a new provider
@@ -1055,14 +994,7 @@ paths:
       responses:
         200:
           description: Proveedor creada correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+
   /providers/{id}/:
     patch:
       description: |
@@ -1086,16 +1018,8 @@ paths:
       responses:
         204:
           description: Proveedor actualizada correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
         404:
           description: Empresa no enontrada
-        500:
-          description: Error del servidor
     delete:
       description: |
         Deletes a provider
@@ -1111,16 +1035,8 @@ paths:
       responses:
         204:
           description: Proveedor eliminada correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
         404:
           description: Empresa no enontrada
-        500:
-          description: Error del servidor
   ### ADMINISTRATION SERVICES END
 
   ### AUX SERVICES
@@ -3461,14 +3377,6 @@ paths:
       responses:
         201:
           description: Boleta obtenida correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   ### BOLETAS BEGIN
   
   ### BOLETAS END
@@ -3497,15 +3405,13 @@ paths:
           description: Traducción a GeoJson OK
           schema:
             type: file
-        400:
-          description: Error del cliente
-        500:
-          description: Error del servidor
-
   /gis/decode_kml/:
-    get:
+    post:
       description: |
-        Se le pasa un archivo KML con un conjunto de particiones y retorna el Geojson correspondiente, tomando el nombre de cada placeholder como Id de cada particion (y feature collection).
+        Translates a KML file to a GEOJsonFeatureCollection object.
+        No changes in BD are maded.
+        Keeps metadata in each KML's Placeholder.ExtraData translated into the properties object of each GEOJsonFeature in response.
+        Uses each KML placeholder.name tag as each feature id.
       consumes:
         - multipart/form-data
       produces:
@@ -3522,280 +3428,203 @@ paths:
           description: 'KML traducido OK'
           schema:
             $ref: '#/definitions/GEOJsonFeatureCollection'
-        400:
-          description: Error del cliente
-        500:
-          description: Error del servidor
-
-  /gis/partition_selection/:
-    get:
+  /gis/decode_kml_single/:
+    post:
       description: |
-        De modo similar a partition_creation, este WS crea y funde particiones.
-        Funde todas las particiones CONTENIDAS (a diferencia de partition_creation) por el poligono de entrada "blade" en un nuevo multipoligono (geocerca) con el Id de la "figura activa" (active_sahpe_id).
-        Retorna el conjunto de todas las particiones nuevas (incluso las particiones vacias de Id ya existentes como collecciones vacias).
-        Opcionalmente esta operación se realiza sin provocar un resultado fuera de otra geocerca que marca los limites "Bound" (siempre se termina intersectando el resultado contra Bound).
-        Puede modelarse la particion que no partenece a ninguna particion anterior (aka residual) asignandole un Id no usado con anterioridad, típicamente el Id = -1, de este modo también puede lograrse eliminar una particion asignando como figura activa a la de Id = -1
+        Translates a KML file to a GEOJsonFeature object.
+        No changes in BD are maded.
+        Keeps metadata in the KML's ExtraData translated in the properties object of the response GEOJsonFeature.
+        Meld all the geometries as one.
       consumes:
-        - application/json
+        - multipart/form-data
       produces:
         - application/json
       parameters:
         -
-          name: active_shape_id
-          in: body
-          description: El Id de la figura a la cual se le agrega la particion
+          name: kml_file
+          in: formData
+          description: El archivo KML a interpretar
           required: true
-          schema:
-            type: object
-            properties:
-              zoom_lvl:
-                type: integer
-              active_shape_id:
-                type: string
-              blade:
-                $ref: '#/definitions/GEOJsonFeatureCollection'
-              bound:
-                $ref: '#/definitions/GEOJsonFeatureCollection'
-              shapes:
-                $ref: '#/definitions/GEOJsonFeatureCollection'
+          type: file
       responses:
         200:
-          description: Conjunto de particiones luego de fundir, simplificar y normalizar las diferentes particiones de entrada segun el blade y la particion activa. Trae además un valor en properties llamado area_ratio para cada feature f_i resultante que representa area_de_f_i/area_de_feature_bound (siempre el cálculo del área se considera sobre las figuras fundidas, que es como las retorna este WS).
+          description: 'KML traducido OK'
           schema:
-            type: object
-            items:
-              $ref: '#/definitions/GEOJsonFeatureCollection'
-          examples:
-            {
-              "shapes": {
-                  "type": "FeatureCollection",
-                  "features": [{
-                      "geometry": {
-                          "type": "MultiPolygon",
-                          "coordinates": [
-                              [
-                                  [
-                                      [41, 71],
-                                      [42, 71],
-                                      [42, 72],
-                                      [41, 72],
-                                      [41, 71]
-                                  ]
-                              ]
-                          ]
-                      },
-                      "type": "Feature",
-                      "properties": {
-                          "id": "2"
-                      }
-                  }, {
-                      "geometry": {
-                          "type": "MultiPolygon",
-                          "coordinates": [
-                              [
-                                  [
-                                      [40, 70],
-                                      [40, 74],
-                                      [44, 74],
-                                      [44, 70],
-                                      [40, 70]
-                                  ]
-                              ]
-                          ]
-                      },
-                      "type": "Feature",
-                      "properties": {
-                          "id": "1"
-                      }
-                  }]
-              },
-              "blade": {
-                  "type": "FeatureCollection",
-                  "features": [{
-                      "geometry": {
-                          "type": "MultiPolygon",
-                          "coordinates": [
-                              [
-                                  [
-                                      [40, 70],
-                                      [40, 74],
-                                      [44, 74],
-                                      [44, 70],
-                                      [40, 70]
-                                  ]
-                              ]
-                          ]
-                      },
-                      "type": "Feature",
-                      "properties": {
-                          "id": "1"
-                      }
-                  }]
-              },
-              "bound": {
-                  "type": "FeatureCollection",
-                  "features": [{
-                      "geometry": {
-                          "type": "MultiPolygon",
-                          "coordinates": [
-                              [
-                                  [
-                                      [40, 70],
-                                      [50, 70],
-                                      [50, 80],
-                                      [40, 80],
-                                      [40, 70]
-                                  ]
-                              ]
-                          ]
-                      },
-                      "type": "Feature",
-                      "properties": {
-                          "id": "0"
-                      }
-                  }]
-              }
-          }
-        400:
-          description: Error del cliente (posiblemente en el formateo, ya que no hay otros errores semanticos posibles)
-        500:
-          description: Error del servidor
-
+            $ref: '#/definitions/GEOJsonFeatureCollection'
   /gis/partition_creation/:
     get:
       description: |
-        De modo similar a partition_selection, este WS crea y funde particiones.
-        Crea fundiendo y cortando una nueva particion definida por el poligono de entrada "blade" y el Id de la "figura activa" (active_sahpe_id). Roba superficie de cualquier otra particion con la que pudiera intersectarse
+        Crea fundiendo y cortando una nueva particion definida por el poligono de entrada "blade". Roba superficie de cualquier otra particion con la que pudiera intersectarse
         Retorna el conjunto de todas las particiones nuevas (incluso las particiones vacias de Id ya existentes como collecciones vacias).
-        Puede crear nuevas particiones si el Id de figura activa no se encontraba entre las particiones.
-        Opcionalmente esta operación se realiza sin provocar un resultado fuera de otra geocerca que marca los limites "Bound" (siempre se termina intersectando el resultado contra Bound).
-        Puede modelarse la particion que no partenece a ninguna particion anterior (aka residual) asignandole un Id no usado con anterioridad, típicamente el Id = -1, de este modo también puede lograrse eliminar una particion asignando como figura activa a la de Id = -1
+        Puede crear nuevas particiones si el Id del blade no se encontraba entre las particiones.
       consumes:
         - application/json
       produces:
         - application/json
       parameters:
         -
-          name: active_shape_id
+          name: gis params
           in: body
-          description: El Id de la figura a la cual se le agrega la particion
+          description: gis params
           required: true
           schema:
             type: object
             properties:
               zoom_lvl:
-                type: integer
-              active_shape_id:
-                type: string
+                type: number
               blade:
-                $ref: '#/definitions/GEOJsonFeatureCollection'
-              bound:
-                $ref: '#/definitions/GEOJsonFeatureCollection'
+                $ref: '#/definitions/GEOJsonFeature'
               shapes:
-                # description: Conjunto de multipoligonos (geocercas) que representan una posible particion de una region.
                 $ref: '#/definitions/GEOJsonFeatureCollection'
       responses:
         200:
-          description: Conjunto de particiones luego de fundir, simplificar y normalizar las diferentes particiones de entrada segun el blade y la particion activa. Trae además un valor en properties llamado area_ratio para cada feature f_i resultante que representa area_de_f_i/area_de_feature_bound (siempre el cálculo del área se considera sobre las figuras fundidas, que es como las retorna este WS).
+          description: Conjunto de particiones luego de fundir, Simplificar y normalizar las diferentes particiones de entrada segun el blade. Trae además un valor en properties llamado area_relation para cada feature f_i resultante que representa area_de_f_i/suma de todas las areas, sobre las features de la respuesta.
           schema:
             type: object
             items:
               $ref: '#/definitions/GEOJsonFeatureCollection'
           examples:
             {
-              "shapes": {
+              "request": {
+                "zoom_lvl": 11.5,
+                "shapes": {
                   "type": "FeatureCollection",
-                  "features": [{
+                  "features": [
+                    {
                       "geometry": {
-                          "type": "MultiPolygon",
-                          "coordinates": [
-                              [
-                                  [
-                                      [40, 70],
-                                      [40, 74],
-                                      [44, 74],
-                                      [44, 70],
-                                      [40, 70]
-                                  ]
-                              ]
+                        "type": "MultiPolygon",
+                        "coordinates": [
+                          [
+                            [
+                              [40, 70],
+                              [40, 74],
+                              [44, 74],
+                              [44, 70],
+                              [40, 70]
+                            ]
                           ]
+                        ]
                       },
                       "type": "Feature",
                       "properties": {
-                          "id": "2"
+                        "id": "2"
                       }
-                  }, {
+                    },
+                    {
                       "geometry": {
-                          "type": "MultiPolygon",
-                          "coordinates": [
-                              [
-                                  [
-                                      [40, 70],
-                                      [50, 70],
-                                      [50, 80],
-                                      [40, 80],
-                                      [40, 70]
-                                  ]
-                              ]
+                        "type": "MultiPolygon",
+                        "coordinates": [
+                          [
+                            [
+                              [40, 70],
+                              [50, 70],
+                              [50, 80],
+                              [40, 80],
+                              [40, 70]
+                            ]
                           ]
+                        ]
                       },
                       "type": "Feature",
                       "properties": {
-                          "id": "1"
+                        "id": "1",
+                        "otra_prop_a_mantener": 567
                       }
-                  }]
+                    }
+                  ]
+                },
+                "blade": {
+                  "geometry": {
+                    "type": "MultiPolygon",
+                    "coordinates": [
+                      [
+                        [
+                          [40, 70],
+                          [42, 70],
+                          [42, 74],
+                          [40, 74],
+                          [40, 70]
+                        ]
+                      ]
+                    ]
+                  },
+                  "type": "Feature",
+                  "properties": {
+                    "prop_que_se_ignora_a_menos_que_pida_un_nuevo_id": 1234
+                  }
+                }
               },
-              "blade": {
-                  "type": "FeatureCollection",
-                  "features": [{
-                      "geometry": {
-                          "type": "MultiPolygon",
-                          "coordinates": [
-                              [
-                                  [
-                                      [40, 70],
-                                      [42, 70],
-                                      [42, 74],
-                                      [40, 74],
-                                      [40, 70]
-                                  ]
-                              ]
+              "response": {
+                "type": "FeatureCollection",
+                "features": [
+                  {
+                    "geometry": {
+                      "type": "MultiPolygon",
+                      "coordinates": [
+                        [
+                          [
+                            [40, 70],
+                            [40, 74],
+                            [44, 74],
+                            [44, 70],
+                            [40, 70]
                           ]
-                      },
-                      "type": "Feature",
-                      "properties": {
-                          "id": "1"
-                      }
-                  }]
-              },
-              "bound": {
-                  "type": "FeatureCollection",
-                  "features": [{
-                      "geometry": {
-                          "type": "MultiPolygon",
-                          "coordinates": [
-                              [
-                                  [
-                                      [40, 70],
-                                      [50, 70],
-                                      [50, 80],
-                                      [40, 80],
-                                      [40, 70]
-                                  ]
-                              ]
+                        ]
+                      ]
+                    },
+                    "type": "Feature",
+                    "properties": {
+                      "id": "2",
+                      "area_relation": 0.5
+                    }
+                  },
+                  {
+                    "geometry": {
+                      "type": "MultiPolygon",
+                      "coordinates": [
+                        [
+                          [
+                            [40, 70],
+                            [50, 70],
+                            [50, 80],
+                            [40, 80],
+                            [40, 70]
                           ]
-                      },
-                      "type": "Feature",
-                      "properties": {
-                          "id": "0"
-                      }
-                  }]
+                        ]
+                      ]
+                    },
+                    "type": "Feature",
+                    "properties": {
+                      "id": "1",
+                      "area_relation": 0.2,
+                      "otra_prop_a_mantener": 567
+                    }
+                  },
+                  {
+                    "geometry": {
+                      "type": "MultiPolygon",
+                      "coordinates": [
+                        [
+                          [
+                            [40, 70],
+                            [50, 70],
+                            [50, 80],
+                            [40, 80],
+                            [40, 70]
+                          ]
+                        ]
+                      ]
+                    },
+                    "type": "Feature",
+                    "properties": {
+                      "id": "12",
+                      "area_relation": 0.3,
+                      "prop_que_se_ignora_a_menos_que_pida_un_nuevo_id": 1234
+                    }
+                  }
+                ]
               }
-          }
-        400:
-          description: Error del cliente (posiblemente en el formateo, ya que no hay otros errores semanticos posibles)
-        500:
-          description: Error del servidor
+            }
   ### GIS WSs END
 
 definitions:
@@ -4408,6 +4237,8 @@ definitions:
   LotInEstablishmentPOST:
     type: object
     properties:
+      geofence:
+        $ref: '#/definitions/GEOJson'
       description:
         type: string
       code:
@@ -5140,12 +4971,28 @@ definitions:
   ### TICKETS DEFINITIONS END
 
   ### GIS DEFINITIONS
+  GEOJson:
+    type: object
   GEOJsonFeature:
     # como en https://developers.google.com/maps/documentation/javascript/3.exp/reference#Data, el metodo toGeoJson
     type: object
+    properties:
+      geometry:
+        $ref: '#/definitions/GEOJson'
+      properties:
+        type: object
 
   GEOJsonFeatureCollection:
     # como en https://developers.google.com/maps/documentation/javascript/3.exp/reference#Data, el metodo toGeoJson
     type: object
+    properties:
+      type:
+        type: string
+        enum:
+        - "FeatureCollection"
+      geometries:
+        type: array
+        items:
+          $ref: '#/definitions/GEOJsonFeature'
 
   ### GIS DEFINITIONS END
