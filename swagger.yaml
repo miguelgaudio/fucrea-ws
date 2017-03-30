@@ -57,17 +57,17 @@ paths:
           description: User's info.
           required: false
           schema:
+            $ref: '#/definitions/UserPOST'
+      responses:
+        201:
+          description: User created Ok.
+          schema:
             type: object
             properties:
               user_already_in_system:
                 type: boolean
               user:
-                $ref: '#/definitions/UserPOST'
-      responses:
-        201:
-          description: User created Ok.
-          schema:
-            $ref: '#/definitions/User'
+                $ref: '#/definitions/User'
         400:
           description: 
             1. Already exists an user with that email.
@@ -173,8 +173,9 @@ paths:
           in: body
           description: User's info
           schema:
-            password:
-              type: string
+            properties:
+              password:
+                type: string
       responses:
         204:
           description: Ok
@@ -228,10 +229,13 @@ paths:
       responses:
         200:
           description: Info modified OK. Informative email is sent to user (if it has an email), to the email (or new email) address.
+          schema:
+            $ref: '#/definitions/User'
         400:
           description:
             1. Already exists an user with that username.
             2. Already exists an user with that email.
+            3. Password provided is not correct.
   /users/reset_password/request/:
     post:
       description: |
@@ -272,7 +276,7 @@ paths:
   /users/reset_password/confirm/:
     post:
       description: |
-        Sends supplied reset token to allow user reset his password. Makes an implicit login (returns an access_token).
+        Sends supplied reset token to allow user reset his password. Does not makes an implicit login (doesnt returns an access_token).
       consumes:
         - application/json
       produces:
@@ -290,12 +294,8 @@ paths:
               reset_token:
                 type: string
       responses:
-        200:
+        204:
           description: Password reseted OK.
-          schema:
-            properties:
-              access_token:
-                type: string
         404:
           description: The token is not valid.
   /users/login/:
@@ -649,6 +649,12 @@ paths:
          List lots
       security:
         - Bearer: []
+      parameters:
+        - 
+          name: reduced
+          in: query
+          required: false
+          type: boolean
       responses:
         200:
           description: Lotes obtenidos correctamente
@@ -2585,6 +2591,9 @@ paths:
               cost:
                 type: number
                 format: float
+              acquisition_date:
+                type: string
+                format: date
               graphic:
                 type: object
                 properties:
@@ -3188,7 +3197,7 @@ paths:
           description: Savings bank info
           schema:
             properties:
-              type:
+              movement_type:
                 type: integer
               ammount:
                 type: number
@@ -3339,7 +3348,7 @@ paths:
       security:
         - Bearer: []
       description: |
-        Updates Ticket
+        Details Ticket
       parameters:
         -
           name: id
@@ -3626,7 +3635,7 @@ definitions:
     type: object
     properties:
       profile:
-        type: string
+        $ref: '#/definitions/Profile'
       username:
         type: string
       email:
@@ -3704,9 +3713,15 @@ definitions:
         type: array
         items:
           type: integer
+      password:
+        type: string
   UserPATCH:
     type: object
     properties:
+      username:
+        type: string
+      email:
+        type: string
       role:
         enum:
           - ADMINISTRADOR
@@ -4464,7 +4479,7 @@ definitions:
         type: string
       rut:
         type: string
-      type:
+      provider_type:
         type: integer
       establishments:
         type: array
@@ -4781,6 +4796,8 @@ definitions:
       quantity:
         type: number
         format: float
+      unit:
+        type: string
       warning:
         type: boolean
   ### SUPPLY DEFINITIONS END
@@ -4917,7 +4934,7 @@ definitions:
               format: float
             description:
               type: string
-            type:
+            movement_type:
               type: string
             execution_date:
               type: string
@@ -4986,14 +5003,16 @@ definitions:
         type: string
       ticket_number:
         type: string
+      ticket_type:
+        type: string
       provider:
-        type: integer
+        type: string
       payment_type:
-        type: integer
+        type: string
       ammount:
         type: number
         format: float
-      tax_ammount_percentage:
+      tax_ammount:
         type: number
         format: float
       emition_date:
@@ -5001,14 +5020,38 @@ definitions:
         format: date
       payments_ammount:
         type: integer
-      lots:
+      items:
         type: array
-      inventory:
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            description:
+              type: string
+            ammount:
+              type: number
+              format: float
+            tax_ammount: 
+              type: number
+              format: float
+            object_type:
+              type: string
+      payments:
         type: array
-      generic_buys:
-        type: array
-      establishment:
-        type: integer
+        items:
+          type: object
+          properties:
+            description:
+              type: string
+            savings_bank:
+              type: string
+            ammount:
+              type: number
+              format: float
+            date:
+              type: string
+              format: date
   TicketPOST:
     type: object
     properties:
