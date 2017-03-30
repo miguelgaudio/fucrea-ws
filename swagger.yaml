@@ -36,12 +36,14 @@ paths:
   ### USERS SERVICES
   /users/:
     post:
-      summary: Sends user an email invitation, and creates the user.
       description: |
-        Sends an invitation via mail to the described user. If the user already exists on the system, it will be associated with the desscribed establishments, if not, an invitation will be created for him. It invitation wil be sended by email if the invited user has an email (and email was specified), or given to the guest user if not, in order to share the invitation by any other channel. Once the invited user has the invitation, it will complete the registration.
-        Note that the beavior of this POST sometimes creates objects and sometimes modifies the object (referenced by the username). Almost never raises duplicate errors.
-        Note that the email must be uniqe to let the user reset his password (maybe we could do something far complicated to handle this, but I dont know...).
-        If the user already exists in the system, the email field will be ignored.
+        Creates an user and sends him an email with the password assigned if the user with the given username does not exists.
+        Associate the user with some of my establishments.
+        If not, an invitation will be sent by email if an email was specified in request. The email will contain the assigned password.
+        Note that the beavior of this POST sometimes creates objects and sometimes modifies the object (referenced by the username).
+        Note that, if provided, the email must be uniqe to let the user reset his password.
+        If the user already exists in the system, the email field and the password field will be ignored.
+        If the user already exists in system, it must have the same role as specified in request.
       consumes:
         - application/json
       produces:
@@ -52,29 +54,26 @@ paths:
         -
           name: user
           in: body
-          description: User's info. In the email template. The 'XXX' will be replaced with the token in the registration email.
+          description: User's info.
           required: false
           schema:
+            type: object
             properties:
-              registration_url_template:
-                type: string
+              user_already_in_system:
+                type: boolean
               user:
-                $ref: '#/definitions/User'
-          # example:
-          #   'usuarios/invite?registration_token=XXX&algomas=1'
+                $ref: '#/definitions/UserPOST'
       responses:
         201:
           description: User created Ok.
           schema:
-            properties:
-              email_sended:
-                type: boolean
-              registration_url:
-                type: string
-              user:
-                $ref: '#/definitions/User'
+            $ref: '#/definitions/User'
         400:
-          description: Already exists an user with that email.
+          description: 
+            1. Already exists an user with that email.
+            2. Already exists an user with that username.
+            3. You are not allowed to create users with higher role than you.
+            4. The user already exists in the system but with other role.
     get:
       description: |
         List users in my establishments. The user itself will be not in the list. Only users with lower roles (subordinated) will be listed.
@@ -94,8 +93,10 @@ paths:
   /users/{id}/:
     patch:
       description: |
-        Updates user's info. If active user is an advisor, it will be only allow to manage producers, althouth he can list any other user in my establishments.
-        This WS cant be used to change email nor username.
+        Updates user's info.
+        If active user is an advisor, it will be only allow to manage producers, althouth he can list any other user in his establishments.
+        Only subordinate users can be changed.
+        Current user must not use this WS to chenge itself, must use POST/users/change_info/ and POST/users/change_sensitive_info/.
       security:
         - Bearer: []
       consumes:
@@ -113,17 +114,23 @@ paths:
           name: user
           in: body
           description: User's info
-          required: false
           schema:
             $ref: '#/definitions/UserPATCH'
       responses:
-        204:
+        200:
           description: Ok
+          schema:
+            $ref: '#/definitions/User'
         404:
           description: User not found
+        400:
+          description: 
+            1. Already exists an user with that email.
+            2. Already exists an user with that username.
+            3. You are not allowed to promote users to a role higher than yours.
     delete:
       description: |
-        Deasociate user from all my establishments (the user will feel like it was deleted). Only subordinate users can be deleted. Users cant delete hereselves.
+        Deasociate user from all my establishments (the user will feel like it was deleted). Only subordinate users can be deleted. Users cant delete itselves.
       security:
         - Bearer: []
       consumes:
@@ -141,123 +148,13 @@ paths:
         204:
           description: Ok
         404:
-          description: User not found
-  /users/confirm/:
+          description: User not found (or you arent allowed to delete him).
+  /users/{id}/change_password/:
     patch:
       description: |
-        Sends supplied registration token to confirm user's registration. The user will be logged in after that (implicit login).
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        -
-          name: registration_data
-          in: body
-          required: true
-          description: Authentication token sent by email to registrating user and user's password
-          schema:
-            properties:
-              password:
-                type: string
-              registration_token:
-                type: string
-      responses:
-        200:
-          description: Registro de usuario confirmado correctamente. An access_token is returned (implicit login).
-          schema:
-            properties:
-              access_token:
-                type: string
-  /users/change_email/:
-    post:
-      description: |
-        Changes email for current user
-      security:
-        - Bearer: []
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        -
-          name: data
-          in: body
-          required: true
-          description: parameters to update email. In the email template. The 'XXX' will be replaced with the token in the verification email.
-          schema:
-            properties:
-              password:
-                type: string
-              new_email:
-                type: string
-              verification_url_template:
-                type: string
-                # example:
-                #   'usuarios/verification_email?verification_token=XXX&algomas=1'
-      responses:
-        204:
-          description: Mail modified OK. Informative email sended to user (if it has an email), to the new email address. The mail could contain a verification URL for the new address.
-        400:
-          description: Already exists an user with that email.
-  /users/change_username/:
-    post:
-      description: |
-        Changes username for current user
-      security:
-        - Bearer: []
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        -
-          name: data
-          in: body
-          required: true
-          description: parameters to update username
-          schema:
-            properties:
-              password:
-                type: string
-              new_username:
-                type: string
-      responses:
-        204:
-          description: Username modificado OK. Informative email sended to user (if it has an email).
-        400:
-          description: Already exists an user with that username.
-  /users/change_password/:
-    patch:
-      description: |
-        Changes password for current user
-      security:
-        - Bearer: []
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        -
-          name: data
-          in: body
-          required: true
-          description: New user's password
-          schema:
-            type: object
-            properties:
-              old_password:
-                type: string
-              new_password:
-                type: string
-      responses:
-        204:
-          description: Password updated. Informative email sended to user (if it has an email).
-  /users/{id}/invite/:
-    patch:
-      description: |
-        Resends a mail invitation to a created user, or, if the user doesnt have an email, retrieve a registration_url (with a registration_token inside) to share with invited user to let him complete his registration.
-        The registration_token has new expiricy period, and invalidated older registration_token issued.
+        Updates user's password.
+        Current user must not use this WS to chenge itself, must use POST/users/change_sensitive_info/.
+        An email was sent (if the target user has one) with the new password.
       security:
         - Bearer: []
       consumes:
@@ -269,34 +166,76 @@ paths:
           name: id
           in: path
           required: true
-          description: User's id to send invitation to. In the email template. The 'XXX' will be replaced with the token in the registration email.
+          description: User's id
           type: integer
+        -
+          name: info
+          in: body
+          description: User's info
+          schema:
+            password:
+              type: string
+      responses:
+        204:
+          description: Ok
+        404:
+          description: User not found
+  /users/change_info/:
+    post:
+      description: |
+        Changes info for the current user. That info is not sensitive nor important for the system internals (mainly user's profile info).
+      security:
+        - Bearer: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
         -
           name: data
           in: body
-          description: url template
+          required: true
+          description: parameters to update.
           schema:
-            type: object
-            properties:
-              registration_url_template:
-                type: string
-                # example:
-                #   'usuarios/registration?registration_token=XXX&algomas=1'
+            $ref: '#/definitions/UserUnsensitiveInfo'
       responses:
         200:
-          description: Invitation sended
+          description: Info modified OK.
+          schema:
+            $ref: '#/definitions/User'
+  /users/change_sensitive_info/:
+    post:
+      description: |
+        Changes sensitive info that must be protected by password (eg. email, password, username) for current user.
+      security:
+        - Bearer: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        -
+          name: data
+          in: body
+          required: true
+          description: parameters to update.
           schema:
             properties:
-              email_sended:
-                type: boolean
-              registration_url:
+              password:
                 type: string
-        404:
-          description: User not found.
+              info:
+                $ref: '#/definitions/UserSensitiveInfo'
+      responses:
+        200:
+          description: Info modified OK. Informative email is sent to user (if it has an email), to the email (or new email) address.
+        400:
+          description:
+            1. Already exists an user with that username.
+            2. Already exists an user with that email.
   /users/reset_password/request/:
     post:
       description: |
-        Sends an email with a token to reset password
+        Sends an email with a token to reset password.
       security:
         - Bearer: []
       consumes:
@@ -308,24 +247,32 @@ paths:
           name: email
           in: body
           required: true
-          description: User's emial to send reset token to. In the email template. The 'XXX' will be replaced with the token in the reset email.
+          description: User's to send reset token to (if the user has a email). The 'XXX' in the email template will be replaced with the reset_token and included in the email.
           schema:
             properties:
-              email:
+              username:
                 type: string
               reset_url_template:
                 type: string
                 # example:
                 #   'usuarios/reset_pass?reset_token=XXX&algomas=1'
       responses:
-        204:
-          description: Mail sended Ok.
+        200:
+          description: Mail sent Ok.
+          schema:
+            properties:
+              sent_to:
+                type: string
+        400:
+          description:
+            The user has no email
         404:
-          description: No user found with that email
+          description:
+            No user found with that username
   /users/reset_password/confirm/:
     post:
       description: |
-        Sends supplied reset token to allow user reset his password. Makes an implicit login (returns an access_token)
+        Sends supplied reset token to allow user reset his password. Makes an implicit login (returns an access_token).
       consumes:
         - application/json
       produces:
@@ -335,7 +282,7 @@ paths:
           name: reset_data
           in: body
           required: true
-          description: Authentication token sent by email to reset user's password, and new password
+          description: Authentication token sent by email to reset user's password, and new password.
           schema:
             properties:
               password:
@@ -388,7 +335,7 @@ paths:
   /users/logout/:
     post:
       description: |
-        User logs out of the platform
+        User logs out of the platform. Log out all sessions (delete all active tokens) that doesnt have 'remmember'?
       security:
         - Bearer: []
       produces:
@@ -3664,12 +3611,25 @@ definitions:
   ### USERS definitions:
   Permissions:
     type: integer
+  Profile:
+    type: object
+    properties:
+      name:
+        type: string
+      departament:
+        type: integer
+      phone_number:
+        type: string
+      address:
+        type: string
   User:
     type: object
     properties:
-      email:
+      profile:
         type: string
-      name:
+      username:
+        type: string
+      email:
         type: string
       role:
         enum:
@@ -3705,30 +3665,12 @@ definitions:
         type: array
         items:
           type: integer
-  UserPATCH:
+  UserPOST:
     type: object
     properties:
-      name:
+      username:
         type: string
-      departament:
-        type: integer
-      phone_number:
-        type: string
-      address:
-        type: string
-      establishments:
-        type: array
-        items:
-          type: integer
-  UserLogin:
-    type: object
-    properties:
-      id:
-        type: integer
-        readOnly: true
       email:
-        type: string
-      name:
         type: string
       role:
         enum:
@@ -3739,12 +3681,101 @@ definitions:
           - ADMINISTRATIVO PRODUCTOR
           - INVITADO
         type: string
+      end_date:
+        type: string
+        format: date
+      permissions:
+        type: object
+        properties:
+          indicators:
+            type: object
+            properties:
+              summary:
+                $ref: '#/definitions/Permissions'
+              management:
+                $ref: '#/definitions/Permissions'
+              sustentability:
+                $ref: '#/definitions/Permissions'
+              margin:
+                $ref: '#/definitions/Permissions'
+              detail:
+                $ref: '#/definitions/Permissions'
+      establishments:
+        type: array
+        items:
+          type: integer
+  UserPATCH:
+    type: object
+    properties:
+      role:
+        enum:
+          - ADMINISTRADOR
+          - ADMINISTRATIVO SISTEMA
+          - ASESOR
+          - PRODUCTOR
+          - ADMINISTRATIVO PRODUCTOR
+          - INVITADO
+        type: string
+      end_date:
+        type: string
+        format: date
+      permissions:
+        type: object
+        properties:
+          indicators:
+            type: object
+            properties:
+              summary:
+                $ref: '#/definitions/Permissions'
+              management:
+                $ref: '#/definitions/Permissions'
+              sustentability:
+                $ref: '#/definitions/Permissions'
+              margin:
+                $ref: '#/definitions/Permissions'
+              detail:
+                $ref: '#/definitions/Permissions'
+      establishments:
+        type: array
+        items:
+          type: integer
+  UserSensitiveInfo:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+  UserUnsensitiveInfo:
+    type: object
+    properties:
+      name:
+        type: string
       departament:
         type: integer
       phone_number:
         type: string
       address:
         type: string
+  UserLogin:
+    type: object
+    properties:
+      id:
+        type: integer
+        readOnly: true
+      email:
+        type: string
+      role:
+        type: string
+        enum:
+          - ADMINISTRADOR
+          - ADMINISTRATIVO SISTEMA
+          - ASESOR
+          - PRODUCTOR
+          - ADMINISTRATIVO PRODUCTOR
+          - INVITADO
       temporary:
         type: boolean
       end_date:
@@ -3773,6 +3804,14 @@ definitions:
             type: integer
           name:
             type: string
+      name:
+        type: string
+      departament:
+        type: integer
+      phone_number:
+        type: string
+      address:
+        type: string
   UserFormList:
     type: object
     properties:
