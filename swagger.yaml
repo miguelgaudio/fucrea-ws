@@ -57,17 +57,17 @@ paths:
           description: User's info.
           required: false
           schema:
-            $ref: '#/definitions/UserPOST'
-      responses:
-        201:
-          description: User created Ok.
-          schema:
             type: object
             properties:
               user_already_in_system:
                 type: boolean
               user:
-                $ref: '#/definitions/User'
+                $ref: '#/definitions/UserPOST'
+      responses:
+        201:
+          description: User created Ok.
+          schema:
+            $ref: '#/definitions/User'
         400:
           description: 
             1. Already exists an user with that email.
@@ -229,8 +229,6 @@ paths:
       responses:
         200:
           description: Info modified OK. Informative email is sent to user (if it has an email), to the email (or new email) address.
-          schema:
-            $ref: '#/definitions/User'
         400:
           description:
             1. Already exists an user with that username.
@@ -3366,6 +3364,39 @@ paths:
       responses:
         201:
           description: Boleta obtenida correctamente
+  /tickets/{id}/payments/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Updates Ticket
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          description: Ticket's id
+          type: integer
+        -
+          name: payment
+          in: body
+          required: true
+          description: Ticket info
+          schema:
+            $ref: '#/definitions/PaymentPost'
+      responses:
+        201:
+          description: Pago ingresado correctamente
+          schema:
+            $ref: '#/definitions/Payment'
+        400:
+          description: Error del cliente
+        401:
+          description: Usuario no autenticado
+        403:
+          description: El usuario no tiene permisos para realizar la acción
+        500:
+          description: Error del servidor
   ### BOLETAS BEGIN
   
   ### BOLETAS END
@@ -3469,9 +3500,7 @@ paths:
         200:
           description: Conjunto de particiones luego de fundir, Simplificar y normalizar las diferentes particiones de entrada segun el blade. Trae además un valor en properties llamado area_relation para cada feature f_i resultante que representa area_de_f_i/suma de todas las areas, sobre las features de la respuesta.
           schema:
-            type: object
-            items:
-              $ref: '#/definitions/GEOJsonFeatureCollection'
+            $ref: '#/definitions/GEOJsonFeatureCollection'
           examples:
             {
               "request": {
@@ -5086,6 +5115,32 @@ definitions:
     type: object
     properties:
       description:
+        type: string
+  PaymentPost:
+    type: object
+    properties:
+      ammount:
+        type: number
+        format: float
+      description:
+        type: string
+      execution_date:
+        type: string
+        format: date
+      savings_bank:
+        type: integer
+  Payment:
+    type: object
+    properties:
+      ammount:
+        type: number
+        format: float
+      description:
+        type: string
+      execution_date:
+        type: string
+        format: date
+      savings_bank:
         type: string
   ### TICKETS DEFINITIONS END
 
