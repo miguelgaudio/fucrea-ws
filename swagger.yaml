@@ -57,17 +57,17 @@ paths:
           description: User's info.
           required: false
           schema:
+            $ref: '#/definitions/UserPOST'
+      responses:
+        201:
+          description: User created Ok.
+          schema:
             type: object
             properties:
               user_already_in_system:
                 type: boolean
               user:
-                $ref: '#/definitions/UserPOST'
-      responses:
-        201:
-          description: User created Ok.
-          schema:
-            $ref: '#/definitions/User'
+                $ref: '#/definitions/User'
         400:
           description: 
             1. Already exists an user with that email.
@@ -475,6 +475,12 @@ paths:
           required: true
           description: Establishment's id
           type: integer
+        -
+          name: reduced
+          in: query
+          required: false
+          description: Listado reducido
+          type: boolean
       responses:
          201:
            description: Lote retornado
@@ -900,27 +906,7 @@ paths:
          List providers
       security:
         - Bearer: []
-      parameters:
-        -
-          name: establishment_id
-          in: query
-          required: true
-          type: integer
-        -
-          name: company_id
-          in: query
-          required: true
-          type: integer
-        -
-          name: crea_group_id
-          in: query
-          required: true
-          type: integer
-        -
-          name: reduced
-          in: query
-          required: false
-          type: boolean
+
       responses:
         200:
           description: Proveedores groups obtenidos correctamente
@@ -1002,14 +988,6 @@ paths:
           description: Formularios obtenidos correctamente
           schema:
               $ref: '#/definitions/CharacterizationsAndFiltersFormList'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /forms/indicators/:
     get:
       description: |
@@ -1021,14 +999,6 @@ paths:
           description: Formularios obtenidos correctamente
           schema:
               $ref: '#/definitions/IndicatorFilterFormList'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /forms/user_forms/:
     get:
       description: |
@@ -1040,14 +1010,6 @@ paths:
           description: Formularios obtenidos correctamente
           schema:
               $ref: '#/definitions/UserFormList'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /forms/land_use/:
     get:
       description: |
@@ -1059,14 +1021,6 @@ paths:
           description: Formularios obtenidos correctamente
           schema:
               $ref: '#/definitions/LandUseFormList'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /forms/land_use/oldest/:
     get:
       description: |
@@ -1097,14 +1051,8 @@ paths:
               properties:
                 oldest_exercise:
                   type: integer
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+                latest_exercise:
+                  type: integer
   /forms/account_plans/:
     get:
       description: |
@@ -1116,14 +1064,6 @@ paths:
           description: Formularios obtenidos correctamente
           schema:
               $ref: '#/definitions/AccountPlans'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /forms/supplies/:
     get:
       description: |
@@ -1174,6 +1114,8 @@ paths:
                       type: string
                     unit:
                       type: integer
+                    category:
+                      type: integer
               active_component_units:
                 type: array
                 items:
@@ -1183,14 +1125,6 @@ paths:
                       type: integer
                     description:
                       type: integer
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
     post:
       description: |
         Requests creation of a new active component
@@ -1198,24 +1132,22 @@ paths:
         - Bearer: []
       parameters:
         -
-          name: aactive_component
+          name: active_component
           in: body
           required: false
           schema:
             properties:
               name:
                 type: string
+              comments:
+                type: string
+              unit:
+                type: integer
+              category:
+                type: integer
       responses:
         200:
           description: Pedido hecho correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /forms/investments/:
     get:
       description: |
@@ -1237,43 +1169,6 @@ paths:
                       type: integer
                     description:
                       type: string
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
-  /forms/providers/:
-    get:
-      description: |
-        Lists every field with its options to fill the providers forms
-      security:
-        - Bearer: []
-      responses:
-        200:
-          description: Formularios obtenidos correctamente
-          schema:
-            type: object
-            properties:
-              provider_types:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    value:
-                      type: integer
-                    description:
-                      type: string
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /forms/savings_banks/:
     get:
       description: |
@@ -1313,15 +1208,6 @@ paths:
                       type: integer
                     description:
                       type: string
-                      
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor        
   /forms/tickets/:
     get:
       description: |
@@ -1361,15 +1247,19 @@ paths:
                       type: integer
                     description:
                       type: string
-              
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor        
+  /forms/agro/crop_types/:
+    get:
+      description: |
+        Lists all the crop types for use in Agro section
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Formularios obtenidos correctamente
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CatalogEntryT1''
   ### AUX SERVICES END
 
   ### INDICATORS SERVICES
@@ -1475,14 +1365,6 @@ paths:
                             type: string
                       name:
                         type: string
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /indicators/graphic/management/:
     post:
       description: |
@@ -1571,14 +1453,6 @@ paths:
                             $ref: '#/definitions/IndicatorTree'
                     indicators_quantity:
                       type: integer
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /indicators/graphic/margin/:
     get:
       description: |
@@ -1652,14 +1526,6 @@ paths:
                             items:
                               type: string
 
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /indicators/detail/:
     get:
       description: |
@@ -1674,14 +1540,6 @@ paths:
                properties:
                 stored_comparatives:
                   $ref: '#/definitions/IndicatorDetailList'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
     post:
       description: |
         Calculates an indicator acording to selected chategorization and filters
@@ -1712,10 +1570,6 @@ paths:
           description: Indicadores obtenidos correctamente
           schema:
              $ref: '#/definitions/IndicatorDetailList'
-        400:
-          description: Error del cliente
-        500:
-          description: Error del servidor
     delete:
       description: |
         Deletes a stored indicator detail
@@ -1731,16 +1585,8 @@ paths:
       responses:
         204:
           description: Indicador eliminada correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
         404:
           description: Indicador no enontrado
-        500:
-          description: Error del servidor
   /indicators/detail/descriptions/:
     post:
       description: |
@@ -1763,16 +1609,8 @@ paths:
       responses:
         204:
           description: Indicador eliminada correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
         404:
           description: Indicador no enontrado
-        500:
-          description: Error del servidor
   /indicators/detail/configuration/:
     get:
       description: |
@@ -1784,14 +1622,6 @@ paths:
              type: array
              items:
               type: string
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
     post:
       description: |
         Sends an indicator identifier list to save user's indicator table configuration
@@ -1808,14 +1638,6 @@ paths:
       responses:
         200:
           description: Indicadores obtenidos correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   ### INDICATORS DEFINITIONS END
 
   ### LAND USES SERVICES
@@ -1886,14 +1708,6 @@ paths:
                         type: string
                       yAxis:
                         type: string
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /land_uses/detail/:
     get:
       description: |
@@ -1932,44 +1746,61 @@ paths:
               exercise:
                 type: integer
               summary:
-               type: array
-               example:
-                  - crop: 'Trigo'
-                    hectares: 3
-                    crop_id: 2
-                  - crop: 'undefined'
-                    hectares: 18
-               items:
-                  type: object
-                  properties:
-                    crop:
-                      type: string
-                    hectares:
+                type: object
+                properties:
+                  series:
+                    type: object
+                    properties:
+                      soja:
+                        type: array
+                        items:
+                          type: integer
+                      sorgo:
+                        type: array
+                        items:
+                          type: integer
+                      maiz:
+                        type: array
+                        items:
+                          type: integer
+                      super_pastura:
+                        type: array
+                        items:
+                          type: integer
+                  categories:
+                    type: array
+                    items:
                       type: integer
-                    crop_id:
-                      type: integer
+                  name:
+                    type: string
+                  graphic_type:
+                    type: string
+                  yAxis:
+                    type: string
               detail:
                 type: array
                 items:
                   $ref: '#/definitions/MonthlyLandUse'
-              undefined_hectares:
-                type: number
-                format: float
+              completed_hectares_percentage:
+                type: integer
               closed:
                 type: boolean
-              global_deleting:
-                type: boolean
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+              errors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    exercise:
+                      type: integer
+                    hectares:
+                      type: number
+                      format: float
+                    lot:
+                      type: string
+
     post:
       description: |
-        Updates a land use for selected months
+        Updates a land use for selected months. Actions 0=crear, 1=modificar y 2=quitar
       parameters:
         -
           name: land_use
@@ -1984,25 +1815,32 @@ paths:
                 type: integer
               month_start:
                 type: integer
-              duration:
-                type: integer
-              complete_successors:
-                type: boolean
-              crop:
-                type: integer
-              hectares:
-                type: integer
+              crops:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    crop_id:
+                      type: integer
+                    hectares:
+                      type: integer
+                    duration:
+                      type: integer
+                    description:
+                      type: string
+                    previous_duration:
+                      type: integer
+                    previous_description:
+                      type: string
+                    previous_hectares:
+                      type: number
+                      format: float
+                    action:
+                      type: integer
+                      description: 0=crear, 1=modificar y 2=quitar
       responses:
         200:
           description: Uso de suelo actualizado correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
     delete:
       description: |
         Deletes all land uses for selected months
@@ -2025,114 +1863,7 @@ paths:
       responses:
         200:
           description: Uso de suelo actualizado correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
-  /land_uses/detail/global/:
-    post:
-      description: |
-        Updates a land use globally
-      parameters:
-        -
-          name: land_use
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              establishment_id:
-                type: integer
-              exercise_date:
-                type: integer
-              hectares:
-                type: integer
-              crop:
-                type: integer
-      responses:
-        204:
-          description: Uso de suelo eliminado correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
-
-    delete:
-      description: |
-        Deletes a land use globally
-      parameters:
-        -
-          name: land_use
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              establishment_id:
-                type: integer
-              exercise_date:
-                type: integer
-              crop:
-                type: integer
-      responses:
-        204:
-          description: Uso de suelo eliminado correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
-  /land_uses/detail/copy/:
-    post:
-      description: |
-        Copies land use values from the selected lot others lots selected
-      parameters:
-        -
-          name: copy_parameters
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              exercise_date:
-                type: integer
-              origin_lot_id:
-                type: integer
-              destiny_lot_ids:
-                type: array
-                items:
-                  type: integer
-              land_uses:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    month:
-                      type: integer
-                    crop:
-                      type: integer
-      responses:
-        200:
-          description: Uso de suelo actualizado correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+ 
   ### LAND USES END
 
   ### SUPPLY BEGIN
@@ -2162,13 +1893,7 @@ paths:
         200:
           description: Insumos obtenidos correctamente
           schema:
-            type: array
-            items:
-              properties:
-                id:
-                  type: integer
-                description:
-                  type: string
+             $ref: '#/definitions/SupplyList'
     post:
       security:
         - Bearer: []
@@ -2181,51 +1906,12 @@ paths:
           required: true
           description: Supply info
           schema:
-            type: object
-            properties:
-              description:
-                type: string
-              type:
-                type: integer
-              establishment_id:
-                type: integer
-              unit:
-                type: integer
-              comments:
-                type: string
-              active_components:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    concentration:
-                      type: number
-                      format: float
-              nytrogen_concentration:
-                type: number
-                format: float
-              hydrogen_concentration:
-                type: number
-                format: float
-              phosphorus_concentration:
-                type: number
-                format: float
-              sulfur_concentration:
-                type: number
-                format: float
+            $ref: '#/definitions/SupplyPOST'
       responses:
         201:
-          description: Insumos agrados correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+          description: Insumo agrado correctamente
+          schema:
+            $ref: '#/definitions/SupplyDetail'
   /inventory/supplies/{id}/:
     get:
       description: |
@@ -2243,14 +1929,6 @@ paths:
           description: Detalle obtenidos correctamente
           schema:
             $ref: '#/definitions/SupplyDetail'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
     patch:
       security:
         - Bearer: []
@@ -2273,35 +1951,13 @@ paths:
             properties:
               description:
                 type: string
-              active_components:
-                type: object
-                properties:
-                  id_1:
-                    type: number
-                    format: float
-              nytrogen_concentration:
-                type: number
-                format: float
-              hydrogen_concentration:
-                type: number
-                format: float
-              phosphorus_concentration:
-                type: number
-                format: float
-              sulfur_concentration:
-                type: number
-                format: float
+              comments:
+                type: string
       responses:
-        204:
-          description: Insumos agrados correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+        200:
+          description: Ok
+          schema:
+            $ref: '#/definitions/SupplyDetail'
   /inventory/supplies/{id}/add/:
     post:
       security:
@@ -2323,7 +1979,7 @@ paths:
           schema:
             type: object
             properties:
-              stock_quantity:
+              quantity:
                 type: number
                 format: float
               unit_price:
@@ -2348,14 +2004,6 @@ paths:
                 format: float
               quantity:
                 type: integer
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /inventory/supplies/{id}/loss/:
     post:
       security:
@@ -2377,7 +2025,9 @@ paths:
           schema:
             type: object
             properties:
-              stock_quantity:
+              loss_reason:
+                type: string
+              quantity:
                 type: number
                 format: float
               execution_date:
@@ -2399,14 +2049,6 @@ paths:
                 format: float
               quantity:
                 type: integer
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /inventory/supplies/{id}/use/:
     post:
       security:
@@ -2428,7 +2070,7 @@ paths:
           schema:
             type: object
             properties:
-              stock_quantity:
+              quantity:
                 type: number
                 format: float
               execution_date:
@@ -2458,14 +2100,6 @@ paths:
                 format: float
               quantity:
                 type: integer
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   ### SUPPLY END
 
   ### MAQIUNARIA BEGIN
@@ -2514,43 +2148,41 @@ paths:
           required: true
           description: Farm equipment info
           schema:
-            type: object
-            properties:
-              description:
-                type: string
-              type:
-                type: integer
-              establishment_id:
-                type: integer
-              comments:
-                type: string
-              plate:
-                type: string
-              useful_life:
-                type: number
-                format: float
-              residual_value:
-                type: number
-                format: float
-              movement_date:
-                type: number
-                format: date
-              cost:
-                type: number
-                format: float
+            $ref: '#/definitions/FarmEquipmentPOST'
       responses:
         201:
-          description: Insumos agrados correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+          description: Maquinaria creada Ok
   /inventory/farm_equipment/{id}/:
     get:
+      description: |
+         Returns info about specified equipment and his movements
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: farm_equipment
+          in: body
+          required: true
+          description: Supply info
+          schema:
+            type: object
+            properties:
+              loss_reason:
+                type: string
+              acquisition_date:
+                type: string
+                format: date
+      responses:
+        200:
+          description: Maquinaria actualizada correctamente
+          schema:
+            $ref: '#/definitions/FarmEquipmentDetail'
+    patch:
       description: |
          Returns info about specified equipment and his movements
       security:
@@ -2571,84 +2203,17 @@ paths:
             properties:
               description:
                 type: string
-              type:
-                type: integer
               comments:
                 type: string
               plate:
                 type: string
-              useful_life:
-                type: number
-                format: float
-              residual_value:
-                type: number
-                format: float
-              actual_value:
-                type: number
-                format: float
-              cost:
-                type: number
-                format: float
-              acquisition_date:
-                type: string
-                format: date
-              graphic:
-                type: object
-                properties:
-                  series:
-                    type: object
-                    properties:
-                      depreciation:
-                        type: array
-                        items:
-                          type: integer
-                  categories:
-                    type: array
-                    items:
-                      type: integer
-                  type_graphic:
-                    type: string
-                  name:
-                    type: string
-                  yAxis:
-                    type: string
-      responses:
-        200:
-          description: Maquinaria actualizada correctamente
-          schema:
-            $ref: '#/definitions/FarmEquipmentDetail'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
-    patch:
-      description: |
-         Returns info about specified equipment and his movements
-      security:
-        - Bearer: []
-      parameters:
-        -
-          name: id
-          in: path
-          required: true
-          type: integer
+              category: 
+                type: integer
       responses:
         200:
           description: Detalle obtenidos correctamente
           schema:
             $ref: '#/definitions/FarmEquipmentDetail'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /inventory/farm_equipment/{id}/loss/:
     post:
       security:
@@ -2670,9 +2235,11 @@ paths:
           schema:
             type: object
             properties:
-              movement_date:
-                type: number
+              execution_date:
+                type: string
                 format: date
+              loss_reason:
+                type: string
       responses:
         201:
           description: Pérdida de maquinaria declarada correctamente
@@ -2689,14 +2256,8 @@ paths:
                 format: float
               quantity:
                 type: integer
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+              loss_reason:
+                type: string
   /inventory/farm_equipment/types/:
     get:
       description: |
@@ -2725,20 +2286,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
-              properties:
-                id:
-                  type: integer
-                name:
-                  type: string
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+              $ref: '#/definitions/FarmEquipmentType'
     post:
       security:
         - Bearer: []
@@ -2757,18 +2305,11 @@ paths:
                 type: string
               establishment_id:
                 type: integer
-
       responses:
         201:
-          description: Insumos agrados correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+          description: Tipo de maquinaria agregado Ok
+          schema:
+            $ref: '#/definitions/FarmEquipmentType'
   /inventory/farm_equipment/types/{id}/:
     patch:
       description: |
@@ -2785,18 +2326,7 @@ paths:
         200:
           description: Equipamiento modificado correctamente
           schema:
-            type: object
-            properties:
-              name:
-                type: string
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+            $ref: '#/definitions/FarmEquipmentType'
     delete:
       description: |
          Deletes specified equipment type
@@ -2809,16 +2339,8 @@ paths:
           required: true
           type: integer
       responses:
-        200:
+        204:
           description: Equipamiento eliminado correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   ### MAQUINARIA END
 
 
@@ -2857,14 +2379,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Movement'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /inventory/:
     get:
       description: |
@@ -2894,14 +2408,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Inventory'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   ### INVENTORY END
 
 
@@ -2946,14 +2452,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Investment'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
     post:
       security:
         - Bearer: []
@@ -2972,14 +2470,6 @@ paths:
           description: Insumos agrados correctamente
           schema:
             $ref: '#/definitions/Investment'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /investments/{id}/:
     patch:
       security:
@@ -2999,18 +2489,10 @@ paths:
           required: true
           description: investment info
           schema:
-            $ref: '#/definitions/InvestmentDetail'
+            $ref: '#/definitions/InvestmentPATCH'
       responses:
         201:
-          description: Insumos agrados correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+          description: Insumos modificada Ok
     get:
       security:
         - Bearer: []
@@ -3032,15 +2514,7 @@ paths:
             $ref: '#/definitions/InvestmentDetail'
       responses:
         201:
-          description: Insumos agrados correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+          description: Inversion get Ok
   ### INVESTMENT END
 
   ### Cajas BEGIN
@@ -3078,14 +2552,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/SavingsBank'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
     post:
       security:
         - Bearer: []
@@ -3104,15 +2570,7 @@ paths:
           description: Caja agregada correctamente
           schema:
             $ref: '#/definitions/SavingsBank'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
-  /savings_bank/{id}/:
+  /savings_banks/{id}/:
     patch:
       security:
         - Bearer: []
@@ -3137,14 +2595,6 @@ paths:
           description: Caja modificada correctamente
           schema:
             $ref: '#/definitions/SavingsBankDetail'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
     get:
       security:
         - Bearer: []
@@ -3167,15 +2617,29 @@ paths:
       responses:
         201:
           description: Caja obtenida correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
-  /savings_bank/{id}/movements/:
+    delete:
+      description: |
+        Deletes a savings_bank.
+      security:
+        - Bearer: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          description: Saving Bank's id
+          type: integer
+      responses:
+        204:
+          description: Ok
+        404:
+          description: Saving Bank not found (or you arent allowed to delete him).
+
+  /savings_banks/{id}/movements/:
     post:
       security:
         - Bearer: []
@@ -3194,39 +2658,12 @@ paths:
           required: true
           description: Savings bank info
           schema:
-            properties:
-              movement_type:
-                type: integer
-              ammount:
-                type: number
-                format: float
-              description:
-                type: string
-              execution_date:
-                type: string
-                format: float
+            $ref: '#/definitions/SavingsBankMovementPOST'
       responses:
         201:
           description: Caja modificada correctamente
           schema:
-            properties:
-              type:
-                type: string
-              ammount:
-                type: string
-              description:
-                type: string
-              execution_date:
-                type: string
-                format: float
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+            $ref: '#/definitions/SavingsBankMovement'
   ### CAJAS END
   /tickets/:
     get:
@@ -3275,19 +2712,12 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Ticket'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+  /tickets/buy/:  
     post:
       security:
         - Bearer: []
       description: |
-        Creates Ticket
+        Creates buying Ticket
       parameters:
         -
           name: ticket
@@ -3295,20 +2725,57 @@ paths:
           required: true
           description: ticket info
           schema:
-            $ref: '#/definitions/TicketPOST'
+            $ref: '#/definitions/TicketPurchasePOST'
       responses:
         201:
           description: Caja agregada correctamente
           schema:
             $ref: '#/definitions/Ticket'
         400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
+          description: Algunos de los items tienen errores
+          schema:
+            type: object
+            properties:
+              farm_equipments:
+                type: array
+                items:
+                  type: object
+              supplies:
+                type: array
+                items:
+                  type: object
+  /tickets/sell/:  
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Creates selling Ticket
+      parameters:
+        -
+          name: ticket
+          in: body
+          required: true
+          description: ticket info
+          schema:
+            $ref: '#/definitions/TicketSellPOST'
+      responses:
+        201:
+          description: Caja agregada correctamente
+          schema:
+            $ref: '#/definitions/Ticket'
+        400:
+          description: Algunos de los items tienen errores
+          schema:
+            type: object
+            properties:
+              farm_equipments:
+                type: array
+                items:
+                  type: object
+              supplies:
+                type: array
+                items:
+                  type: object
   /tickets/{id}/:
     patch:
       security:
@@ -3334,14 +2801,6 @@ paths:
           description: Boleta modificada correctamente
           schema:
             $ref: '#/definitions/TicketDetail'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
     get:
       security:
         - Bearer: []
@@ -3389,17 +2848,287 @@ paths:
           description: Pago ingresado correctamente
           schema:
             $ref: '#/definitions/Payment'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   ### BOLETAS BEGIN
   
   ### BOLETAS END
+  
+  ### AGRO BEGIN
+  /agro/summary/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns a list of crop types with asociated data
+      parameters:
+        -
+          name: establishment
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Cultivos obtenidos correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                crop_type:
+                  type: object
+                  properties:
+                    id: 
+                      type: string
+                    description:
+                      type: string
+                description:
+                  type: string
+                sown_hectares:
+                  type: number
+                  format: float
+                harvested_hectares:
+                  type: number
+                  format: float
+                harvested_throwput:
+                  type: number
+                  format: float
+                sown_throwput:
+                  type: number
+                  format: float
+                sales_throwput:
+                  type: number
+                  format: float  
+  /agro/production/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns all info for specified crop type
+      parameters:
+        -
+          name: establishment
+          in: query
+          required: true
+          type: integer
+        -
+          name: crop_type
+          in: query
+          required: true
+          type: string
+        -
+          name: exercise
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Cultivo obtenido correctamente
+          schema:
+            type: object
+            properties:
+              lots:
+                type: array
+                items:
+                  $ref: '#/definitions/CropLotSummary'
+              movements:
+                type: array
+                items:
+                  $ref: '#/definitions/CropTypeMovement'
+  /agro/production/harvest/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Harvests a specified quantity for the selected land use
+      parameters:
+        -
+          name: harvest
+          in: body
+          required: true
+          description: Harvest info
+          schema:
+            type: object
+            properties:
+              area:
+                type: number
+                format: float
+              execution_date:
+                type: string
+                format: date
+              tons:
+                type: number
+                format: float
+              land_use_id:
+                type: integer
+      responses:
+        201:
+          description: Cosecha agrados correctamente
+  /agro/production/consume/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Consumes a specified quantity for the selected crop
+      parameters:
+        -
+          name: harvest
+          in: body
+          required: true
+          description: Consumption info
+          schema:
+            type: object
+            properties:
+              establishment:
+                type: integer
+              exercise:
+                type: integer
+              crop_type:
+                type: string
+              tons:
+                type: number
+                format: float
+              execution_date:
+                type: string
+                format: date
+              unit_value:
+                type: number
+                format: float
+              description:
+                type: string
+              first_plan:
+                type: string
+              second_plan:
+                type: string
+              investment:
+                type: integer
+
+      responses:
+        201:
+          description: Cultivo consumido correctamente        
+  /agro/production/general_harvest/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Harvest a specified quantity for the selected crop divided equally for all lots
+      parameters:
+        -
+          name: harvest
+          in: body
+          required: true
+          description: Harvest info
+          schema:
+            type: object
+            properties:
+              establishment:
+                type: integer
+              exercise:
+                type: integer
+              crop_type:
+                type: string
+              description:
+                type: string
+              general_tons:
+                type: number
+                format: float
+              execution_date:
+                type: string
+                format: date
+              land_uses:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    crop: 
+                      type: integer
+                    area:
+                      type: number
+                      format: float
+                    tons:
+                      type: number
+                      format: float
+      responses:
+        201:
+          description: Cultivo cosechado correctamente
+  /agro/production/fix_throwput/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Fixes throwput for the selected crop divided equally for all lots 
+      parameters:
+        -
+          name: stock
+          in: body
+          required: true
+          description: Throwput info
+          schema:
+            type: object
+            properties:
+              establishment:
+                type: integer
+              exercise:
+                type: integer
+              crop_type:
+                type: string
+              real_stock:
+                type: number
+                format: float
+      responses:
+        201:
+          description: Cultivo cosechado correctamente
+  /agro/production/adjust/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Creates an adjust stock movement 
+      parameters:
+        -
+          name: stock
+          in: body
+          required: true
+          description: Adjust mov info
+          schema:
+            type: object
+            properties:
+              establishment:
+                type: integer
+              crop_type:
+                type: string
+              
+              execution_date:
+                type: string
+                format: date
+              tons:
+                type: number
+                format: float
+      responses:
+        201:
+          description: Stock ajustado Ok
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              execution_date:
+                type: string
+                format: date
+              tons:
+                type: number
+                format: float
+              
+              establishment:
+                type: integer
+              crop_type:
+                type: string
+              exercise:
+                type: integer
+  ### AGRO END
 
   ### GIS WSs
   /gis/encode_kml/:
@@ -3646,6 +3375,21 @@ paths:
   ### GIS WSs END
 
 definitions:
+  ### AUX definitions:
+  CatalogEntryT1:
+    type: object
+    properties:
+      name:
+        type: string
+      id:
+        type: integer
+  CatalogEntryT2:
+    value:
+      type: integer
+    description:
+      type: string
+  ### AUX DEFINITIONS END
+  
   ### USERS definitions:
   Permissions:
     type: integer
@@ -3862,21 +3606,11 @@ definitions:
       departaments:
         type: array
         items:
-          type: object
-          properties:
-            id:
-              type: integer
-            name:
-              type: string
+          $ref: '#/definitions/CatalogEntryT1'
       roles:
         type: array
         items:
-          type: object
-          properties:
-            value:
-              type: integer
-            description:
-              type: string
+          $ref: '#/definitions/CatalogEntryT2'
       permissions:
         type: object
         properties:
@@ -4068,102 +3802,47 @@ definitions:
       agriculture:
         type: array
         items:
-          type: object
-          properties:
-            value:
-              type: integer
-            description:
-              type: string
+          $ref: '#/definitions/CatalogEntryT2'
       sistema_producto_vacuno:
         type: array
         items:
-          type: object
-          properties:
-            value:
-              type: integer
-            description:
-              type: string
+          $ref: '#/definitions/CatalogEntryT2'
       sistema_producto_ovino:
         type: array
         items:
-          type: object
-          properties:
-            value:
-              type: integer
-            description:
-              type: string
+          $ref: '#/definitions/CatalogEntryT2'
       forestacion_comercial:
         type: array
         items:
-          type: object
-          properties:
-            value:
-              type: integer
-            description:
-              type: string
+          $ref: '#/definitions/CatalogEntryT2'
       evolucion_propiedad_empresas_familiares:
         type: array
         items:
-          type: object
-          properties:
-            value:
-              type: integer
-            description:
-              type: string
+          $ref: '#/definitions/CatalogEntryT2'
       riego:
         type: array
         items:
-          type: object
-          properties:
-            value:
-              type: integer
-            description:
-              type: string
+          $ref: '#/definitions/CatalogEntryT2'
       nivel_instruccion_decisor:
         type: array
         items:
-          type: object
-          properties:
-            value:
-              type: integer
-            description:
-              type: string
+          $ref: '#/definitions/CatalogEntryT2'
       residencia_decisor:
         type: array
         items:
-          type: object
-          properties:
-            value:
-              type: integer
-            description:
-              type: string
+          $ref: '#/definitions/CatalogEntryT2'
       dias_semana_decisor:
         type: array
         items:
-          type: object
-          properties:
-            value:
-              type: integer
-            description:
-              type: string
+          $ref: '#/definitions/CatalogEntryT2'
       geographic_zone:
         type: array
         items:
-          type: object
-          properties:
-            id:
-              type: string
-            name:
-              type: string
+          $ref: '#/definitions/CatalogEntryT2'
       category:
         type: array
         items:
-          type: object
-          properties:
-            value:
-              type: integer
-            description:
-              type: string
+          $ref: '#/definitions/CatalogEntryT2'
   IndicatorFilterFormList:
     type: object
     properties:
@@ -4172,33 +3851,18 @@ definitions:
         items:
           type: integer
       indicator_types:
-        type: object
-        properties:
-          value:
-            type: string
-          description:
-            type: string
+        $ref: '#/definitions/CatalogEntryT2'
       filters:
         type: object
         properties:
           comparative_groups:
             type: array
             items:
-              type: object
-              properties:
-                value:
-                  type: integer
-                description:
-                  type: string
+              $ref: '#/definitions/CatalogEntryT2'
           ordering_type:
             type: array
             items:
-              type: object
-              properties:
-                value:
-                  type: integer
-                description:
-                  type: string
+              $ref: '#/definitions/CatalogEntryT2'
           indicators:
             type: array
             items:
@@ -4245,12 +3909,7 @@ definitions:
       characterizations:
         $ref: '#/definitions/CharacterizationFormList'
       zones:
-        type: object
-        properties:
-          id:
-            type: integer
-          name:
-            type: string
+        $ref: '#/definitions/CatalogEntryT1'
   Lot:
     type: object
     properties:
@@ -4508,8 +4167,6 @@ definitions:
         type: string
       rut:
         type: string
-      provider_type:
-        type: integer
       establishments:
         type: array
         items:
@@ -4602,42 +4259,44 @@ definitions:
           properties:
               month:
                 type: integer
-              productive_hectares:
-                type: integer
-              crop:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-      closed:
+              has_error:
                 type: boolean
+              crops:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    crop_id:
+                      type: integer
+                    crop_name:
+                      type: string
+                    duration:
+                      type: integer
+                    hectares:
+                      type: integer
+                    description:
+                      type: string
+              closed:
+                type: boolean
+  CropCatalog:
+    allOf:
+    - $ref: "#/definitions/CatalogEntryT1"
+    - properties:
+        children:
+          type: array
+          items:
+            $ref: '#/definitions/CropCatalog'
   LandUseFormList:
     type: object
     properties:
       months:
         type: array
         items:
-          type: object
-          properties:
-            value:
-              type: integer
-            name:
-              type: string
+          $ref: '#/definitions/CatalogEntryT2'
       crops:
-        type: object
-        properties:
-          id:
-            type: integer
-          name:
-            type: string
-          children:
-            type: array
-            items:
-              $ref: '#/definitions/LandUseFormList'
-          duration:
-            type: integer
+        type: array
+        items:
+          $ref: '#/definitions/CropCatalog'
   ### LAND USE DEFINITIONS END
 
   ### SUPPLY DEFINITIONS
@@ -4710,21 +4369,76 @@ definitions:
               type: array
               items:
                 type: object
+  SupplyPOST:
+    type: object
+    properties:
+      description:
+        type: string
+      category:
+        type: string
+        enum:
+          - Fungicida
+          - Herbicida
+          - Insecticida
+          - Fertilizante
+          - Otro
+      establishment_id:
+        type: integer
+      unit:
+        type: string
+        enum:
+          - Kilos
+          - Litros
+      comments:
+        type: string
+      active_components:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            concentration:
+              type: number
+              format: float
+      nitrogen_concentration:
+        type: number
+        format: float
+      potassium_concentration:
+        type: number
+        format: float
+      phosphorus_concentration:
+        type: number
+        format: float
+      sulfur_concentration:
+        type: number
+        format: float
   SupplyDetail:
     type: object
     properties:
       id:
         type: integer
-      stock_quantity:
+      quantity:
         type: string
       description:
         type: string
-      type:
+      category:
         type: string
+        enum:
+          - Fungicida
+          - Herbicida
+          - Insecticida
+          - Fertilizante
+          - Otro
       establishment_name:
         type: string
+      unit_price:
+        type: number
       unit:
         type: string
+        enum:
+          - Kilos
+          - Litros
       movements:
         type: array
         items:
@@ -4745,7 +4459,7 @@ definitions:
               format: float
       comments:
         type: string
-      value:
+      stock_value:
         type: number
         format: float
       nitrogen_concentration:
@@ -4765,45 +4479,6 @@ definitions:
             name:
               type: string
             concentration:
-              type: number
-              format: float
-  FarmEquipmentDetail:
-    type: object
-    properties:
-      id:
-        type: integer
-      description:
-        type: string
-      type:
-        type: string
-      establishment_name:
-        type: string
-      comments:
-        type: string
-      plate:
-        type: string
-      depreciation:
-              type: number
-              format: float
-      useful_life:
-              type: number
-              format: float
-      residual_value:
-              type: number
-              format: float
-      movements:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: integer
-            execution_date:
-              type: string
-              format: date
-            movement_type:
-              type: string
-            cost:
               type: number
               format: float
   Inventory:
@@ -4827,9 +4502,128 @@ definitions:
         format: float
       unit:
         type: string
+      unit_price:
+        type: number
       warning:
         type: boolean
+  SupplyList:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+        unit:
+          type: string
+        stock_value:
+          type: number
+          format: float
   ### SUPPLY DEFINITIONS END
+
+  ### FARM EQUIPMENT DEFINITIONS START
+  FarmEquipmentPOST:
+    type: object
+    properties:
+      description:
+        type: string
+      category:
+        type: integer
+      establishment_id:
+        type: integer
+      comments:
+        type: string
+      plate:
+        type: string
+      useful_life:
+        type: number
+        format: float
+      residual_value:
+        type: number
+        format: float
+      acquisition_date:
+        type: number
+        format: date
+      cost:
+        type: number
+        format: float
+  FarmEquipmentDetail:
+    type: object
+    properties:
+      id:
+        type: integer
+      description:
+        type: string
+      category:
+        type: string
+      establishment_name:
+        type: string
+      comments:
+        type: string
+      plate:
+        type: string
+      depreciation:
+        type: number
+        format: float
+      useful_life:
+        type: number
+        format: float
+      residual_value:
+        type: number
+        format: float
+      actual_value:
+        type: number
+        format: float
+      cost:
+        type: number
+        format: float
+      acquisition_date:
+        type: string
+        format: date
+      graphic:
+        type: object
+        properties:
+          series:
+            type: object
+            properties:
+              depreciation:
+                type: array
+                items:
+                  type: integer
+          categories:
+            type: array
+            items:
+              type: integer
+          type_graphic:
+            type: string
+          name:
+            type: string
+          yAxis:
+            type: string
+      movements:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            execution_date:
+              type: string
+              format: date
+            movement_type:
+              type: string
+            cost:
+              type: number
+              format: float
+  FarmEquipmentType:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+  ### FARM EQUIPMENT DEFINITIONS END
 
   ### INVESTMENTS DEFINITIONS START
   Investment:
@@ -4839,13 +4633,15 @@ definitions:
         type: integer
       description:
         type: string
-      type:
+      category:
         type: integer
       establishment_name:
         type: string
-      end_date:
+      start_date:
         type: string
         format: date
+      duration:
+        type: integer
   InvestmentDetail:
     type: object
     properties:
@@ -4937,6 +4733,34 @@ definitions:
         format: float
       curency:
         type: string
+      # establishment:
+      #   type: integer
+  SavingsBankMovementPOST:
+    type: object
+    properties:
+      movement_type:
+        type: integer
+      cost:
+        type: number
+        format: float
+      description:
+        type: string
+      execution_date:
+        type: string
+        format: float
+  SavingsBankMovement:
+    type: object
+    properties:
+      movement_type:
+        type: string
+      ammount:
+        type: number
+        format: float
+      description:
+        type: string
+      execution_date:
+        type: string
+        format: float
   SavingsBankDetail:
     type: object
     properties:
@@ -4956,18 +4780,7 @@ definitions:
       movements:
         type: array
         items:
-          type: object
-          properties:
-            ammount:
-              type: number
-              format: float
-            description:
-              type: string
-            movement_type:
-              type: string
-            execution_date:
-              type: string
-              format: date
+          $ref: '#/definitions/SavingsBankMovement'
   SavingsBankPOST:
     type: object
     properties:
@@ -5004,84 +4817,125 @@ definitions:
         type: integer
       description:
         type: string
-      type:
-        type: string
-      payment_type:
-        type: string
-      ammount:
-        type: number
-        format: float
-      pending_ammount:
-        type: number
-        format: float
-      currency:
-        type: string
-      last_payment_date:
-        type: string
-        format: date
-      establishment:
-        type: string
-      ticket_number:
-        type: string
-  TicketDetail:
-    type: object
-    properties:
-      id:
-        type: integer
-      description:
-        type: string
-      ticket_number:
-        type: string
-      ticket_type:
-        type: string
-      provider:
-        type: string
-      payment_type:
-        type: string
       ammount:
         type: number
         format: float
       tax_ammount:
         type: number
         format: float
+      pending_ammount:
+        type: number
+        format: float
       emition_date:
         type: string
         format: date
+      ticket_number:
+        type: string
+      ticket_type:
+        type: string
+        enum:
+          - Compra
+          - Venta
+      payment_type:
+        type: string
+        enum:
+          - Cash
+          - Credit
       payments_ammount:
         type: integer
-      items:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: integer
-            description:
-              type: string
-            ammount:
-              type: number
-              format: float
-            tax_ammount: 
-              type: number
-              format: float
-            object_type:
-              type: string
-      payments:
-        type: array
-        items:
-          type: object
-          properties:
-            description:
-              type: string
-            savings_bank:
-              type: string
-            ammount:
-              type: number
-              format: float
-            date:
-              type: string
-              format: date
-  TicketPOST:
+      establishment_name:
+        type: string
+      provider_name:
+        type: string
+      currency:
+        type: string
+        enum:
+          - USD
+          - UYU
+      last_payment_date:
+        type: string
+        format: date
+  TicketDetail:
+    type: object
+    allOf:
+      - $ref: "#/definitions/Ticket"
+      - properties:
+          lots:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                cost:
+                  type: number
+                  format: float
+                tax_ammount: 
+                  type: number
+                  format: float
+          farm_equipments:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                description:
+                  type: string
+                cost:
+                  type: number
+                  format: float
+                tax_ammount: 
+                  type: number
+                  format: float
+          supplies:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                description:
+                  type: string
+                cost:
+                  type: number
+                  format: float
+                tax_ammount: 
+                  type: number
+                  format: float
+          generals:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                description:
+                  type: string
+                cost:
+                  type: number
+                  format: float
+                tax_ammount: 
+                  type: number
+                  format: float
+          payments:
+            type: array
+            items:
+              type: object
+              properties:
+                description:
+                  type: string
+                savings_bank_desc:
+                  type: string
+                ammount:
+                  type: number
+                  format: float
+                execution_date:
+                  type: string
+                  format: date
+          notifications:
+            $ref: '#/definitions/TicketNotification'
+  TicketBasePOST:
     type: object
     properties:
       description:
@@ -5091,31 +4945,256 @@ definitions:
       provider:
         type: integer
       payment_type:
-        type: integer
-      ammount:
-        type: number
-        format: float
-      tax_ammount_percentage:
-        type: number
-        format: float
+        # ToDo: Enumerado
+        type: string
+        enum:
+          - Cash
+          - Credit
+        
       emition_date:
         type: string
         format: date
+      payment_savings_bank:
+        type: integer
       payments_ammount:
         type: integer
-      lots:
-        type: array
-      inventory:
-        type: array
-      generic_buys:
-        type: array
       establishment:
         type: integer
+      notifications:
+        $ref: '#/definitions/TicketNotification'
+  TicketPurchasePOST:
+    type: object
+    allOf:
+      - $ref: "#/definitions/TicketBasePOST"
+      - properties:
+          lots:
+            type: array
+            items:
+              type: object
+              properties:
+                cost:
+                  type: number
+                  format: float
+                tax_ammount:
+                  type: number
+                  format: float
+                
+                geofence:
+                  $ref: '#/definitions/GEOJson'
+                description:
+                  type: string
+                code:
+                  type: string
+                area:
+                  type: number
+                  format: float
+                productive_area:
+                  type: number
+                  format: float
+                coneat:
+                  type: integer
+          farm_equipment:
+            type: array
+            items:
+              type: object
+              properties:
+                cost:
+                  type: number
+                  format: float  
+                tax_ammount:
+                  type: number
+                  format: float
+                
+                description:
+                  type: string
+                category:
+                  type: integer
+                comments:
+                  type: string
+                plate:
+                  type: string
+                useful_life:
+                  type: number
+                  format: float
+                residual_value:
+                  type: number
+                  format: float
+          supplies:
+            type: array
+            items:
+              type: object
+              properties:
+                cost:
+                  type: number
+                  format: float  
+                tax_ammount:
+                  type: number
+                  format: float
+                
+                supply_id:
+                  type: integer
+                quantity:
+                  type: integer
+          generals:
+            type: array
+            items:
+              type: object
+              properties:
+                cost:
+                  type: number
+                  format: float  
+                tax_ammount:
+                  type: number
+                  format: float
+                
+                description:
+                  type: string
+                comments:
+                  type: string
+                first_plan:
+                  type: string
+                second_plan:
+                  type: string
+                investment_id:
+                  type: integer
+          agro_stock:
+            type: array
+            items:
+              type: object
+              properties:
+                cost:
+                  type: number
+                  format: float
+                tax_ammount:
+                  type: number
+                  format: float
+                
+                crop_type:
+                  type: string
+                tons:
+                  type: number
+                  format: float
+                extra_expenses:
+                  type: number
+                  format: float
+  TicketSellPOST:
+    type: object
+    allOf:
+      - $ref: "#/definitions/TicketBasePOST"
+      - properties:
+          lots:
+            type: array
+            items:
+              type: object
+              properties:
+                cost:
+                  type: number
+                  format: float
+                tax_ammount:
+                  type: number
+                  format: float
+                
+                lot_id:
+                  type: integer
+          farm_equipment:
+            type: array
+            items:
+              type: object
+              properties:
+                cost:
+                  type: number
+                  format: float
+                tax_ammount:
+                  type: number
+                  format: float
+                
+                equipment_id:
+                  type: integer
+          supplies:
+            type: array
+            items:
+              type: object
+              properties:
+                cost:
+                  type: number
+                  format: float  
+                tax_ammount:
+                  type: number
+                  format: float
+                
+                supply_id:
+                  type: integer
+                quantity:
+                  type: integer
+          generals:
+            type: array
+            items:
+              type: object
+              properties:
+                cost:
+                  type: number
+                  format: float  
+                tax_ammount:
+                  type: number
+                  format: float
+                comments:
+                  type: string
+                
+                description:
+                  type: string
+                first_plan:
+                  type: string
+                second_plan:
+                  type: string
+                investment_id:
+                  type: integer
+          agro_stock:
+            type: array
+            items:
+              type: object
+              properties:
+                cost:
+                  type: number
+                  format: float
+                tax_ammount:
+                  type: number
+                  format: float
+                
+                crop_type:
+                  type: string
+                tons:
+                  type: number
+                  format: float
+                extra_expenses:
+                  type: number
+                  format: float
+                imeba:
+                  type: number
+                  format: float
+  TicketNotification:
+    type: object
+    properties:
+      addressees:
+        type: array
+        items: 
+          type: string
+          format: email
+      execution_dates:
+        type: array
+        items:
+          type: object
+          properties:
+            notif_date:
+              type: string
+              format: date
+            ammount:
+              type: number
+              format: float
   TicketPATCH:
     type: object
     properties:
-      description:
-        type: string
+      notifications:
+        $ref: '#/definitions/TicketNotification'
   PaymentPost:
     type: object
     properties:
@@ -5140,9 +5219,70 @@ definitions:
       execution_date:
         type: string
         format: date
-      savings_bank:
+      savings_bank_desc:
         type: string
   ### TICKETS DEFINITIONS END
+  
+  ### AGRO DEFINITIONS BEGIN
+  CropLotSummary:
+    type: object
+    properties:
+      lot:
+        type: object
+        properties:
+          id: 
+            type: integer
+          description:
+            type: string
+      crop:
+        type: object
+        properties:
+          id:
+            type: integer
+          description:
+            type: string
+      land_use_description:
+        type: string
+      land_use_end_date:
+        type: object
+        properties:
+          month:
+            type: integer
+          year:
+            type: integer
+      harvest_date:
+        type: string
+        format: date
+      sown_hectares:
+        type: number
+        format: float
+      harvested_hectares:
+        type: number
+        format: float
+      throwput:
+        type: number
+        format: float
+      can_harvest:
+        type: boolean
+  CropTypeMovement:
+    type: object
+    properties:
+      movement_type:
+        type: string
+      quantity:
+        type: number
+        format: float
+      cost:
+        type: number
+        format: float
+      total_cost:
+        type: number
+        format: float
+      execution_date:
+        type: string
+        format: date      
+  
+  ### AGRO DEFINITIONS END
 
   ### GIS DEFINITIONS
 
