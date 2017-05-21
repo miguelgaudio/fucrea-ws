@@ -69,7 +69,7 @@ paths:
               user:
                 $ref: '#/definitions/User'
         400:
-          description: 
+          description:
             1. Already exists an user with that email.
             2. Already exists an user with that username.
             3. You are not allowed to create users with higher role than you.
@@ -124,7 +124,7 @@ paths:
         404:
           description: User not found
         400:
-          description: 
+          description:
             1. Already exists an user with that email.
             2. Already exists an user with that username.
             3. You are not allowed to promote users to a role higher than yours.
@@ -654,7 +654,7 @@ paths:
       security:
         - Bearer: []
       parameters:
-        - 
+        -
           name: reduced
           in: query
           required: false
@@ -672,7 +672,7 @@ paths:
         Translates many lots from a KML file to a lots GEOJsonFeatureCollection.
         No changes in BD are maded.
         Uses each KML placeholder.name tag as each lot's code.
-        Keeps metadata in the KML's ExtraData translated into the properties object of each GEOJsonFeature in response. 
+        Keeps metadata in the KML's ExtraData translated into the properties object of each GEOJsonFeature in response.
         Returns default values for the each lot field as metadata in the response geojson properties.
       security:
         - Bearer: []
@@ -694,8 +694,8 @@ paths:
     post:
       description: |
         Translates a KML file to a Lot GEOJsonFeature.
-        No changes in BD are maded. 
-        Keeps metadata in the KML's ExtraData translated in the properties object of the response GEOJsonFeature. 
+        No changes in BD are maded.
+        Keeps metadata in the KML's ExtraData translated in the properties object of the response GEOJsonFeature.
         Returns default values for the each lot field as metadata in the response geojson properties.
         Meld all the geometries as one.
         Tries to takes the current lot (the one used to fill missing lot metadata, (eg: description, coneat, etc)) from the KML's tag placeholder.name (as its lot's code).
@@ -761,9 +761,9 @@ paths:
     patch:
       description: |
         Translates a KML file to a Lot GEOJsonFeature.
-        No changes in BD are maded. 
-        Keeps metadata in the KML's ExtraData translated in the properties object of the response GEOJsonFeature. 
-        Returns default values for the each lot field as metadata in the response geojson properties. 
+        No changes in BD are maded.
+        Keeps metadata in the KML's ExtraData translated in the properties object of the response GEOJsonFeature.
+        Returns default values for the each lot field as metadata in the response geojson properties.
         Meld all the geometries as one.
       security:
         - Bearer: []
@@ -825,7 +825,7 @@ paths:
         - Bearer: []
       description: |
         Create many lots with the data passed in the body.
-        parametro parent: 
+        parametro parent:
           es un objeto similar al usado en patch de lotes, pero con un Id obligatorio que sirve para identificar al padre.
           Si otros parámetros son pasados aparte del Id, éstos alteran a ese mismo lote, y el resto de los parámetros se mantienen iguales (partial update).
           Se debe pasar sobre todo el parámetro geocerca pues no se calcula más como el residuo de los demás lotes desde backend, aunque sigue siendo opcional su envío (en ese caso quedaría igual que antes la geometría del lote padre, lo que es malo pq posiblemente se solape con sus hijos).
@@ -1863,7 +1863,7 @@ paths:
       responses:
         200:
           description: Uso de suelo actualizado correctamente
- 
+
   ### LAND USES END
 
   ### SUPPLY BEGIN
@@ -2207,7 +2207,7 @@ paths:
                 type: string
               plate:
                 type: string
-              category: 
+              category:
                 type: integer
       responses:
         200:
@@ -2444,7 +2444,7 @@ paths:
           in: query
           required: false
           type: boolean
-        
+
       responses:
         200:
           description: Inversiones obtenidas correctamente
@@ -2704,7 +2704,7 @@ paths:
           required: false
           type: string
           format: date
-          
+
       responses:
         200:
           description: Boletas obtenidas correctamente
@@ -2712,7 +2712,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Ticket'
-  /tickets/buy/:  
+  /tickets/buy/:
     post:
       security:
         - Bearer: []
@@ -2744,7 +2744,7 @@ paths:
                 type: array
                 items:
                   type: object
-  /tickets/sell/:  
+  /tickets/sell/:
     post:
       security:
         - Bearer: []
@@ -2849,9 +2849,9 @@ paths:
           schema:
             $ref: '#/definitions/Payment'
   ### BOLETAS BEGIN
-  
+
   ### BOLETAS END
-  
+
   ### AGRO BEGIN
   /agro/summary/:
     get:
@@ -2881,7 +2881,7 @@ paths:
                 crop_type:
                   type: object
                   properties:
-                    id: 
+                    id:
                       type: string
                     description:
                       type: string
@@ -2901,7 +2901,7 @@ paths:
                   format: float
                 sales_throwput:
                   type: number
-                  format: float  
+                  format: float
   /agro/production/:
     get:
       security:
@@ -3008,7 +3008,7 @@ paths:
 
       responses:
         201:
-          description: Cultivo consumido correctamente        
+          description: Cultivo consumido correctamente
   /agro/production/general_harvest/:
     post:
       security:
@@ -3043,7 +3043,7 @@ paths:
                 items:
                   type: object
                   properties:
-                    crop: 
+                    crop:
                       type: integer
                     area:
                       type: number
@@ -3059,7 +3059,7 @@ paths:
       security:
         - Bearer: []
       description: |
-        Fixes throwput for the selected crop divided equally for all lots 
+        Fixes throwput for the selected crop divided equally for all lots
       parameters:
         -
           name: stock
@@ -3086,7 +3086,7 @@ paths:
       security:
         - Bearer: []
       description: |
-        Creates an adjust stock movement 
+        Creates an adjust stock movement
       parameters:
         -
           name: stock
@@ -3100,7 +3100,7 @@ paths:
                 type: integer
               crop_type:
                 type: string
-              
+
               execution_date:
                 type: string
                 format: date
@@ -3121,7 +3121,7 @@ paths:
               tons:
                 type: number
                 format: float
-              
+
               establishment:
                 type: integer
               crop_type:
@@ -3389,7 +3389,7 @@ definitions:
     description:
       type: string
   ### AUX DEFINITIONS END
-  
+
   ### USERS definitions:
   Permissions:
     type: integer
@@ -4870,7 +4870,7 @@ definitions:
                 cost:
                   type: number
                   format: float
-                tax_ammount: 
+                tax_ammount:
                   type: number
                   format: float
           farm_equipments:
@@ -4885,7 +4885,7 @@ definitions:
                 cost:
                   type: number
                   format: float
-                tax_ammount: 
+                tax_ammount:
                   type: number
                   format: float
           supplies:
@@ -4900,7 +4900,7 @@ definitions:
                 cost:
                   type: number
                   format: float
-                tax_ammount: 
+                tax_ammount:
                   type: number
                   format: float
           generals:
@@ -4915,7 +4915,7 @@ definitions:
                 cost:
                   type: number
                   format: float
-                tax_ammount: 
+                tax_ammount:
                   type: number
                   format: float
           payments:
@@ -4950,7 +4950,7 @@ definitions:
         enum:
           - Cash
           - Credit
-        
+
       emition_date:
         type: string
         format: date
@@ -4978,7 +4978,7 @@ definitions:
                 tax_ammount:
                   type: number
                   format: float
-                
+
                 geofence:
                   $ref: '#/definitions/GEOJson'
                 description:
@@ -5000,11 +5000,11 @@ definitions:
               properties:
                 cost:
                   type: number
-                  format: float  
+                  format: float
                 tax_ammount:
                   type: number
                   format: float
-                
+
                 description:
                   type: string
                 category:
@@ -5026,11 +5026,11 @@ definitions:
               properties:
                 cost:
                   type: number
-                  format: float  
+                  format: float
                 tax_ammount:
                   type: number
                   format: float
-                
+
                 supply_id:
                   type: integer
                 quantity:
@@ -5042,11 +5042,11 @@ definitions:
               properties:
                 cost:
                   type: number
-                  format: float  
+                  format: float
                 tax_ammount:
                   type: number
                   format: float
-                
+
                 description:
                   type: string
                 comments:
@@ -5068,7 +5068,7 @@ definitions:
                 tax_ammount:
                   type: number
                   format: float
-                
+
                 crop_type:
                   type: string
                 tons:
@@ -5093,7 +5093,7 @@ definitions:
                 tax_ammount:
                   type: number
                   format: float
-                
+
                 lot_id:
                   type: integer
           farm_equipment:
@@ -5107,7 +5107,7 @@ definitions:
                 tax_ammount:
                   type: number
                   format: float
-                
+
                 equipment_id:
                   type: integer
           supplies:
@@ -5117,11 +5117,11 @@ definitions:
               properties:
                 cost:
                   type: number
-                  format: float  
+                  format: float
                 tax_ammount:
                   type: number
                   format: float
-                
+
                 supply_id:
                   type: integer
                 quantity:
@@ -5133,13 +5133,13 @@ definitions:
               properties:
                 cost:
                   type: number
-                  format: float  
+                  format: float
                 tax_ammount:
                   type: number
                   format: float
                 comments:
                   type: string
-                
+
                 description:
                   type: string
                 first_plan:
@@ -5159,7 +5159,7 @@ definitions:
                 tax_ammount:
                   type: number
                   format: float
-                
+
                 crop_type:
                   type: string
                 tons:
@@ -5176,7 +5176,7 @@ definitions:
     properties:
       addressees:
         type: array
-        items: 
+        items:
           type: string
           format: email
       execution_dates:
@@ -5222,7 +5222,7 @@ definitions:
       savings_bank_desc:
         type: string
   ### TICKETS DEFINITIONS END
-  
+
   ### AGRO DEFINITIONS BEGIN
   CropLotSummary:
     type: object
@@ -5230,7 +5230,7 @@ definitions:
       lot:
         type: object
         properties:
-          id: 
+          id:
             type: integer
           description:
             type: string
@@ -5280,8 +5280,8 @@ definitions:
         format: float
       execution_date:
         type: string
-        format: date      
-  
+        format: date
+
   ### AGRO DEFINITIONS END
 
   ### GIS DEFINITIONS
