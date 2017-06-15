@@ -1,9 +1,7 @@
 swagger: '2.0'
-
 info:
   version: "1"
   title: fucrea
-
 host: basic-auth-server.herokuapp.com
 schemes:
   - https
@@ -12,8 +10,6 @@ securityDefinitions:
     type: apiKey
     name: Authorization
     in: header
-
-
 #responseCodesDefinition:
 #  200:
 #    descripcion: Success, no modifica estados de base de datos
@@ -31,7 +27,6 @@ securityDefinitions:
 #    descripcion: Recurso no encontrado
 #  500:
 #    descripcion: Error proveniente del servidor
-
 paths:
   ### USERS SERVICES
   /users/:
@@ -338,32 +333,55 @@ paths:
         - Bearer: []
       produces:
         - application/json
+      parameters:
+        -
+          name: credentials
+          in: body
+          description: User's login credentials
+          required: true
+          schema:
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+              remember_me:
+                type: boolean
       responses:
         204:
           description: User logged out Ok.
   ### USERS SERVICES END
-
   ### ADMINISTRATION SERVICES
   /establishments/:
-     get:
-       description: |
-         List establishments
-       security:
+    get:
+      description: |
+        List establishments
+      security:
         - Bearer: []
-       responses:
-         200:
-           description: Establecimientos obtenidos correctamente
-           schema:
-             type: array
-             items:
+      parameters:
+        -
+          name: data
+          in: body
+          description: some paramentrs
+          required: false
+          schema:
+            properties:
+              reduced:
+                type: boolean
+      responses:
+        200:
+          description: Establecimientos obtenidos correctamente
+          schema:
+            type: array
+            items:
               $ref: '#/definitions/Establishment'
-         400:
+        400:
           description: Error del cliente
-         401:
+        401:
           description: Usuario no autenticado
-         403:
+        403:
           description: El usuario no tiene permisos para realizar la acción
-         500:
+        500:
           description: Error del servidor
   /establishments/unasigned/:
     get:
@@ -461,7 +479,6 @@ paths:
           description: Establecimiento no enontrado
          500:
           description: Error del servidor
-
   /establishments/{id}/lots/:
     get:
       description: |
@@ -530,7 +547,6 @@ paths:
           description: Establecimiento no enontrado
          500:
           description: Error del servidor
-
   /companies/:
     get:
       description: |
@@ -899,14 +915,12 @@ paths:
             type: array
             items:
               $ref: '#/definitions/CreaGroupDeep'
-
   /providers/:
     get:
       description: |
          List providers
       security:
         - Bearer: []
-
       responses:
         200:
           description: Proveedores groups obtenidos correctamente
@@ -914,7 +928,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Provider'
-
     post:
       description: |
         Creates a new provider
@@ -931,7 +944,6 @@ paths:
       responses:
         200:
           description: Proveedor creada correctamente
-
   /providers/{id}/:
     patch:
       description: |
@@ -975,7 +987,6 @@ paths:
         404:
           description: Empresa no enontrada
   ### ADMINISTRATION SERVICES END
-
   ### AUX SERVICES
   /forms/characterizations/:
     get:
@@ -1079,30 +1090,15 @@ paths:
               supply_types:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    value:
-                      type: integer
-                    description:
-                      type: string
+                  $ref: '#/definitions/CatalogEntryT2'
               movements_choices:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    value:
-                      type: integer
-                    description:
-                      type: string
+                  $ref: '#/definitions/CatalogEntryT2'
               units_choices:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    value:
-                      type: integer
-                    description:
-                      type: string
+                  $ref: '#/definitions/CatalogEntryT2'
               active_components:
                 type: array
                 items:
@@ -1119,12 +1115,7 @@ paths:
               active_component_units:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    value:
-                      type: integer
-                    description:
-                      type: integer
+                  $ref: '#/definitions/CatalogEntryT2'
     post:
       description: |
         Requests creation of a new active component
@@ -1163,12 +1154,7 @@ paths:
               investment_types:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    value:
-                      type: integer
-                    description:
-                      type: string
+                  $ref: '#/definitions/CatalogEntryT2'
   /forms/savings_banks/:
     get:
       description: |
@@ -1184,30 +1170,15 @@ paths:
               currencies:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    value:
-                      type: integer
-                    description:
-                      type: string
+                  $ref: '#/definitions/CatalogEntryT2'
               savings_banks_categories:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    value:
-                      type: integer
-                    description:
-                      type: string
+                  $ref: '#/definitions/CatalogEntryT2'
               savings_banks_movements_types:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    value:
-                      type: integer
-                    description:
-                      type: string
+                  $ref: '#/definitions/CatalogEntryT2'
   /forms/tickets/:
     get:
       description: |
@@ -1223,30 +1194,19 @@ paths:
               currencies:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    value:
-                      type: integer
-                    description:
-                      type: string
+                  $ref: '#/definitions/CatalogEntryT2'
               payment_types:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    value:
-                      type: integer
-                    description:
-                      type: string
+                  $ref: '#/definitions/CatalogEntryT2'
               ticket_types:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    value:
-                      type: integer
-                    description:
-                      type: string
+                  $ref: '#/definitions/CatalogEntryT2'
+              ticket_object_types:
+                type: array
+                items:
+                  $ref: '#/definitions/CatalogEntryT2'
   /forms/agro/crop_types/:
     get:
       description: |
@@ -1260,8 +1220,57 @@ paths:
             type: array
             items:
               $ref: '#/definitions/CatalogEntryT1'
+  /forms/cattle/:
+    get:
+      description: |
+        Lists all the forms to use in cattle section
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Formularios obtenidos correctamente
+          schema:
+            type: object
+            properties:
+              categories:
+                type: object
+                properties:
+                  ovine:
+                    type: array
+                    items:
+                      $ref: '#/definitions/CatalogEntryT2'
+                  bovine:
+                    type: array
+                    items:
+                      $ref: '#/definitions/CatalogEntryT2'
+                  horse:
+                    type: array
+                    items:
+                      $ref: '#/definitions/CatalogEntryT2'
+              next_categories:
+                type: object
+                properties:
+                  ovine:
+                    type: array
+                    items:
+                      $ref: '#/definitions/CatalogEntryT2'
+                  bovine:
+                    type: array
+                    items:
+                      $ref: '#/definitions/CatalogEntryT2'
+                  horse:
+                    type: array
+                    items:
+                      $ref: '#/definitions/CatalogEntryT2'
+              adjust_reasons:
+                  type: array
+                  items:
+                    $ref: '#/definitions/CatalogEntryT2'
+              trimesters:
+                  type: array
+                  items:
+                    $ref: '#/definitions/CatalogEntryT2'
   ### AUX SERVICES END
-
   ### INDICATORS SERVICES
   /indicators/summary/:
     get:
@@ -1378,6 +1387,10 @@ paths:
             Company_id=0 significa "Sin empresa", no "Todas las empresas", company_id=null significa todas las empresas. Establishment_id=0 o =null significa "Todos los establecimientos". Company_id=null y establishment_id=null significa todos los establecimientos de todas las empresas
            schema:
               properties:
+                comparative_only:
+                  type: boolean
+                expanded:
+                  type: boolean
                 company_id:
                   type: integer
                 crea_group_id:
@@ -1525,7 +1538,6 @@ paths:
                             type: array
                             items:
                               type: string
-
   /indicators/detail/:
     get:
       description: |
@@ -1639,7 +1651,6 @@ paths:
         200:
           description: Indicadores obtenidos correctamente
   ### INDICATORS DEFINITIONS END
-
   ### LAND USES SERVICES
   /land_uses/summary/:
     get:
@@ -1797,7 +1808,6 @@ paths:
                       format: float
                     lot:
                       type: string
-
     post:
       description: |
         Updates a land use for selected months. Actions 0=crear, 1=modificar y 2=quitar
@@ -1863,9 +1873,7 @@ paths:
       responses:
         200:
           description: Uso de suelo actualizado correctamente
-
   ### LAND USES END
-
   ### SUPPLY BEGIN
   /inventory/supplies/:
     get:
@@ -2101,7 +2109,6 @@ paths:
               quantity:
                 type: integer
   ### SUPPLY END
-
   ### MAQIUNARIA BEGIN
   /inventory/farm_equipment/:
     get:
@@ -2342,8 +2349,6 @@ paths:
         204:
           description: Equipamiento eliminado correctamente
   ### MAQUINARIA END
-
-
   ### INVENTORY BEGIN
   /inventory/movements/:
     get:
@@ -2409,8 +2414,6 @@ paths:
             items:
               $ref: '#/definitions/Inventory'
   ### INVENTORY END
-
-
   ### INVESTMENT BEGIN
   /investments/:
     get:
@@ -2444,7 +2447,6 @@ paths:
           in: query
           required: false
           type: boolean
-
       responses:
         200:
           description: Inversiones obtenidas correctamente
@@ -2516,7 +2518,6 @@ paths:
         201:
           description: Inversion get Ok
   ### INVESTMENT END
-
   ### Cajas BEGIN
   /savings_banks/:
     get:
@@ -2638,7 +2639,6 @@ paths:
           description: Ok
         404:
           description: Saving Bank not found (or you arent allowed to delete him).
-
   /savings_banks/{id}/movements/:
     post:
       security:
@@ -2704,14 +2704,13 @@ paths:
           required: false
           type: string
           format: date
-
       responses:
         200:
           description: Boletas obtenidas correctamente
           schema:
             type: array
             items:
-              $ref: '#/definitions/Ticket'
+              $ref: '#/definitions/TicketResponse'
   /tickets/buy/:
     post:
       security:
@@ -2730,7 +2729,7 @@ paths:
         201:
           description: Caja agregada correctamente
           schema:
-            $ref: '#/definitions/Ticket'
+            $ref: '#/definitions/TicketResponse'
         400:
           description: Algunos de los items tienen errores
           schema:
@@ -2762,7 +2761,7 @@ paths:
         201:
           description: Caja agregada correctamente
           schema:
-            $ref: '#/definitions/Ticket'
+            $ref: '#/definitions/TicketResponse'
         400:
           description: Algunos de los items tienen errores
           schema:
@@ -2849,9 +2848,7 @@ paths:
           schema:
             $ref: '#/definitions/Payment'
   ### BOLETAS BEGIN
-
   ### BOLETAS END
-
   ### AGRO BEGIN
   /agro/summary/:
     get:
@@ -2885,8 +2882,6 @@ paths:
                       type: string
                     description:
                       type: string
-                description:
-                  type: string
                 sown_hectares:
                   type: number
                   format: float
@@ -2938,6 +2933,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/CropTypeMovement'
+              summary:
+                $ref: '#/definitions/CropTypeSummary'
+              lots_graphics:
+                type: array
+                items:
+                  $ref: '#/definitions/CropGraphic'
   /agro/production/harvest/:
     post:
       security:
@@ -2964,6 +2965,8 @@ paths:
                 format: float
               land_use_id:
                 type: integer
+              description:
+                type: string
       responses:
         201:
           description: Cosecha agrados correctamente
@@ -2982,9 +2985,7 @@ paths:
           schema:
             type: object
             properties:
-              establishment:
-                type: integer
-              exercise:
+              establishment_id:
                 type: integer
               crop_type:
                 type: string
@@ -3003,9 +3004,8 @@ paths:
                 type: string
               second_plan:
                 type: string
-              investment:
+              investment_id:
                 type: integer
-
       responses:
         201:
           description: Cultivo consumido correctamente
@@ -3024,17 +3024,10 @@ paths:
           schema:
             type: object
             properties:
-              establishment:
+              establishment_id:
                 type: integer
-              exercise:
-                type: integer
-              crop_type:
-                type: string
               description:
                 type: string
-              general_tons:
-                type: number
-                format: float
               execution_date:
                 type: string
                 format: date
@@ -3069,7 +3062,7 @@ paths:
           schema:
             type: object
             properties:
-              establishment:
+              establishment_id:
                 type: integer
               exercise:
                 type: integer
@@ -3096,11 +3089,12 @@ paths:
           schema:
             type: object
             properties:
-              establishment:
+              establishment_id:
                 type: integer
               crop_type:
                 type: string
-
+              description:
+                type: string
               execution_date:
                 type: string
                 format: date
@@ -3121,15 +3115,740 @@ paths:
               tons:
                 type: number
                 format: float
-
-              establishment:
+              establishment_id:
                 type: integer
               crop_type:
                 type: string
               exercise:
                 type: integer
   ### AGRO END
-
+  ### CATTLE BEGIN
+  /cattle/summary/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Bovine stock
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Resumen obtenido correctamente
+          schema:
+            type: object
+            properties:
+              land_use:
+                  type: object
+                  properties:
+                    series:
+                      type: object
+                      properties:
+                        verdeo:
+                          type: array
+                          items:
+                            type: integer
+                        meadows:
+                          type: array
+                          items:
+                            type: integer
+                        natural_field:
+                          type: array
+                          items:
+                            type: integer
+                        improved_natural_field:
+                          type: array
+                          items:
+                            type: integer
+                        renovations:
+                          type: array
+                          items:
+                            type: integer
+                    categories:
+                      type: array
+                      items:
+                        type: integer
+                    type_graphic:
+                      type: string
+                    name:
+                      type: string
+                    yAxis:
+                      type: string
+              heads:
+                  type: object
+                  properties:
+                    series:
+                      type: object
+                      properties:
+                        toritos:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              cattle_type:
+                                type: string
+                              stock:
+                                type: integer
+                        vacas_cria:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              cattle_type:
+                                type: string
+                              stock:
+                                type: integer
+                        ovino_1:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              cattle_type:
+                                type: string
+                              stock:
+                                type: integer
+                        ovino_2:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              cattle_type:
+                                type: string
+                              stock:
+                                type: integer
+                    categories:
+                      type: array
+                      items:
+                        type: integer
+                    type_graphic:
+                      type: string
+                    name:
+                      type: string
+                    yAxis:
+                      type: string
+              production:
+                  type: object
+                  properties:
+                    series:
+                      type: object
+                      properties:
+                        vacuno:
+                          type: array
+                          items:
+                            type: integer
+                        ovino:
+                          type: array
+                          items:
+                            type: integer
+                    categories:
+                      type: array
+                      items:
+                        type: integer
+                    type_graphic:
+                      type: string
+                    name:
+                      type: string
+                    yAxis:
+                      type: string
+  /cattle/{cattle_type}/reproductive/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Cattle reproductive stats
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise
+          in: query
+          required: true
+          type: integer
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+      responses:
+        200:
+          description: Historico de reproductivo obtenido ok
+          # schema:
+          #   type: array
+          #   items:
+          #     type: object
+          #     properties:
+          #       category:
+          #         type: string
+          #       movement_type:
+          #         type: string
+          #       quantity:
+          #         type: integer
+          #       execution_date:
+          #         type: string
+          #         format: date
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Cattle reproductive stats
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise
+          in: query
+          required: true
+          type: integer
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+      responses:
+        201:
+          description: Historico de reproductivo obtenido ok
+  /cattle/{cattle_type}/reproductive/{id}/:
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Cattle reproductive stats
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          description: Hitoric entry id
+          type: integer
+      responses:
+        200:
+          description: Historico de reproductivo modificado ok
+    delete:
+      security:
+        - Bearer: []
+      description: |
+        Cattle reproductive stats
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          description: Hitoric entry id
+          type: integer
+      responses:
+        204:
+          description: Historico de reproductivo eliminado ok
+  /cattle/{cattle_type}/movements/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Cattle movements
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: date_from
+          in: query
+          required: true
+          type: string
+          format: date
+        -
+          name: date_to
+          in: query
+          required: true
+          type: string
+          format: date
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+      responses:
+        200:
+          description: Movimientos obtenidos correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                category:
+                  type: string
+                movement_type:
+                  type: string
+                quantity:
+                  type: integer
+                execution_date:
+                  type: string
+                  format: date
+  /cattle/{cattle_type}/config_weighs/mode/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Blah
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: weigh_defaults
+          in: body
+          required: true
+          description: Blah
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              weighing_yearly:
+                type: boolean
+      responses:
+        204:
+          description: Blah
+  /cattle/{cattle_type}/config_weighs/defaults/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Blah
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Blah
+          schema:
+            type: array
+            items:
+              $ref : '#/definitions/WeighingCategoryConfiguration'
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Blah
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: weigh_defaults
+          in: body
+          required: true
+          description: Blah
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              weighing_yearly:
+                type: boolean
+      responses:
+        201:
+          description: Blah
+          schema:
+            type: array
+            items:
+              $ref : '#/definitions/WeighingCategoryConfiguration'
+  /cattle/{cattle_type}/weigh/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Blah
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Blah
+          schema:
+            type: object
+            properties:
+              weighing_yearly:
+                type: boolean
+              last_weighings:
+                type: array
+                items:
+                  $ref : '#/definitions/Weighing'
+              current_weighings:
+                type: array
+                items:
+                  $ref : '#/definitions/Weighing'
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Blah
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: weigh_defaults
+          in: body
+          required: true
+          description: Blah
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              weighing_yearly:
+                type: boolean
+      responses:
+        201:
+          description: Blah
+          schema:
+            type: array
+            items:
+              $ref : '#/definitions/Weighing'
+  /cattle/{cattle_type}/stock/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Bovine stock
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: date_from
+          in: query
+          required: true
+          type: string
+          format: date
+        -
+          name: date_to
+          in: query
+          required: true
+          type: string
+          format: date
+        -
+          name: reduced
+          in: query
+          required: false
+          type: boolean
+      responses:
+        200:
+          description: Stock obtenido correctamente
+          schema:
+            type: array
+            items:
+              $ref : '#/definitions/CattleStock'
+  /cattle/{cattle_type}/birth/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Birth movement for bovine cattle
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: births
+          in: body
+          required: true
+          description: Birth info
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              birth_list:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    category:
+                      type: integer
+                    quantity:
+                      type: integer
+                    execution_date:
+                      type: string
+                      format: date
+      responses:
+        201:
+          description: Movimientos creados correctamente
+  /cattle/{cattle_type}/death/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Death movement for bovines
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: deaths
+          in: body
+          required: true
+          description: Deaths info
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              death_list:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    category:
+                      type: integer
+                    quantity:
+                      type: integer
+                    execution_date:
+                      type: string
+                      format: date
+      responses:
+        201:
+          description: Movimientos creados correctamente
+  /cattle/{cattle_type}/adjust/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Adjust movement for bovines
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: adjust
+          in: body
+          required: true
+          description: Adjust info
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              category:
+                type: integer
+              quantity:
+                type: integer
+              execution_date:
+                type: string
+                format: date
+              reason:
+                type: integer
+      responses:
+        201:
+          description: Movimiento creados correctamente
+  /cattle/{cattle_type}/category_change/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Category change movement for bovines
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: change
+          in: body
+          required: true
+          description: Category change info
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              category:
+                type: integer
+              quantity:
+                type: integer
+              execution_date:
+                type: string
+                format: date
+              destination_category:
+                type: integer
+      responses:
+        201:
+          description: Movimiento creado correctamente
+  /cattle/{cattle_type}/consumption/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Consumption movement for bovines
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: consumption
+          in: body
+          required: true
+          description: Category change info
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              category:
+                type: integer
+              quantity:
+                type: integer
+              execution_date:
+                type: string
+                format: date
+              unit_weight:
+                type: number
+                format: float
+              unit_price:
+                type: number
+                format: float
+              first_plan:
+                type: string
+              second_plan:
+                type: string
+              investment_id:
+                type: integer
+      responses:
+        201:
+          description: Movimiento creado correctamente
+  ### CATTLE END
   ### GIS WSs
   /gis/encode_kml/:
     get:
@@ -3373,16 +4092,15 @@ paths:
               }
             }
   ### GIS WSs END
-
 definitions:
   ### AUX definitions:
   CatalogEntryT1:
     type: object
     properties:
-      name:
+      value:
         type: string
-      id:
-        type: integer
+      description:
+        type: string
   CatalogEntryT2:
     type: object
     properties:
@@ -3391,7 +4109,6 @@ definitions:
       description:
         type: string
   ### AUX DEFINITIONS END
-
   ### USERS definitions:
   Permissions:
     type: integer
@@ -3631,7 +4348,6 @@ definitions:
                   puede_editar:
                     type: integer
   ### USERS DEFINITIONS END
-
   ### ADMINISTRATION DEFINITIONS
   Establishment:
     type: object
@@ -3880,6 +4596,10 @@ definitions:
                   type: string
                 kindof:
                   type: integer
+  CropTypeFormList:
+    type: array
+    items:
+      $ref: '#/definitions/CatalogEntryT2'
   CharacterizationsAndFiltersFormList:
     type: object
     properties:
@@ -4185,7 +4905,6 @@ definitions:
       type:
         type: integer
   ### ADMINISTRATION DEFINITIONS END
-
   ### INDICATORS DEFINITIONS
   IndicatorTree:
     type: object
@@ -4238,7 +4957,6 @@ definitions:
       id:
         type: string
   ### INDICATORS DEFINITIONS END
-
   ### LAND USE DEFINITIONS
   MonthlyLandUse:
     type: object
@@ -4300,7 +5018,6 @@ definitions:
         items:
           $ref: '#/definitions/CropCatalog'
   ### LAND USE DEFINITIONS END
-
   ### SUPPLY DEFINITIONS
   #Supply:
   #  type: object
@@ -4523,7 +5240,6 @@ definitions:
           type: number
           format: float
   ### SUPPLY DEFINITIONS END
-
   ### FARM EQUIPMENT DEFINITIONS START
   FarmEquipmentPOST:
     type: object
@@ -4626,7 +5342,6 @@ definitions:
       name:
         type: string
   ### FARM EQUIPMENT DEFINITIONS END
-
   ### INVESTMENTS DEFINITIONS START
   Investment:
     type: object
@@ -4653,7 +5368,7 @@ definitions:
         type: string
       establishment_name:
         type: string
-      total_cost:
+      total_value:
         type: number
         format: float
       start_date:
@@ -4719,7 +5434,6 @@ definitions:
       comments:
         type: string
   ### INVESTMENTS DEFINITIONS END
-
   ### SAVINGS BANKS DEFINITIONS START
   SavingsBank:
     type: object
@@ -4755,7 +5469,7 @@ definitions:
     properties:
       movement_type:
         type: string
-      ammount:
+      cost:
         type: number
         format: float
       description:
@@ -4771,12 +5485,12 @@ definitions:
       description:
         type: string
       category:
-        type: string
+        type: integer
       current_savings:
         type: number
         format: float
       currency:
-        type: string
+        type: integer
       establishment:
         type: string
       movements:
@@ -4807,12 +5521,9 @@ definitions:
       current_savings:
         type: number
         format: float
-      currency:
-        type: integer
   ### SAVINGS BANK DEFINITIONS END
-
   ### TICKETS DEFINITIONS START
-  Ticket:
+  TicketResponse:
     type: object
     properties:
       id:
@@ -4835,91 +5546,237 @@ definitions:
         type: string
       ticket_type:
         type: string
-        enum:
-          - Compra
-          - Venta
       payment_type:
         type: string
-        enum:
-          - Cash
-          - Credit
-      payments_ammount:
-        type: integer
       establishment_name:
         type: string
       provider_name:
         type: string
       currency:
         type: string
-        enum:
-          - USD
-          - UYU
       last_payment_date:
         type: string
         format: date
+  TicketItemBaseDetail:
+    type: object
+    properties:
+      id:
+        type: integer
+      description:
+        type: string
+      cost:
+        type: number
+        format: float
+      tax_ammount:
+        type: number
+        format: float
+  PurchaseAgroItem:
+    type: object
+    properties:
+      cost:
+        type: number
+        format: float
+      tax_ammount:
+        type: number
+        format: float
+      crop_type:
+        type: string
+      tons:
+        type: number
+        format: float
+      extra_expenses:
+        type: number
+        format: float
+  PurchaseCattleItem:
+    type: object
+    properties:
+      cost:
+        type: number
+        format: float
+      tax_ammount:
+        type: number
+        format: float
+      category:
+        type: integer
+      unit_weight:
+        type: number
+        format: float
+      extra_expenses:
+        type: number
+        format: float
+  EconomicSupplyItem:
+    type: object
+    properties:
+      cost:
+        type: number
+        format: float
+      tax_ammount:
+        type: number
+        format: float
+      supply_id:
+        type: integer
+      quantity:
+        type: integer
+  LotPurchaseItem:
+    type: object
+    properties:
+      cost:
+        type: number
+        format: float
+      tax_ammount:
+        type: number
+        format: float
+      geofence:
+        $ref: '#/definitions/GEOJson'
+      description:
+        type: string
+      code:
+        type: string
+      area:
+        type: number
+        format: float
+      productive_area:
+        type: number
+        format: float
+      coneat:
+        type: integer
+  FarmEquipPurchaseItem:
+    type: object
+    properties:
+      cost:
+        type: number
+        format: float
+      tax_ammount:
+        type: number
+        format: float
+      description:
+        type: string
+      category:
+        type: integer
+      comments:
+        type: string
+      plate:
+        type: string
+      useful_life:
+        type: number
+        format: float
+      residual_value:
+        type: number
+        format: float
+  EconomicGeneralItem:
+    type: object
+    properties:
+      cost:
+        type: number
+        format: float
+      tax_ammount:
+        type: number
+        format: float
+      description:
+        type: string
+      comments:
+        type: string
+      first_plan:
+        type: string
+      second_plan:
+        type: string
+      investment_id:
+        type: integer
   TicketDetail:
     type: object
     allOf:
-      - $ref: "#/definitions/Ticket"
+      - $ref: "#/definitions/TicketResponse"
       - properties:
           lots:
             type: array
             items:
               type: object
-              properties:
-                id:
-                  type: integer
-                cost:
-                  type: number
-                  format: float
-                tax_ammount:
-                  type: number
-                  format: float
+              allOf:
+                - $ref: "#/definitions/TicketItemBaseDetail"
+                - properties:
+                    lot_info:
+                      type: object
+                      properties:
+                        geofence:
+                          $ref: '#/definitions/GEOJson'
+                        description:
+                          type: string
+                        code:
+                          type: string
+                        area:
+                          type: number
+                          format: float
+                        productive_area:
+                          type: number
+                          format: float
+                        coneat:
+                          type: integer
           farm_equipments:
             type: array
             items:
               type: object
-              properties:
-                id:
-                  type: integer
-                description:
-                  type: string
-                cost:
-                  type: number
-                  format: float
-                tax_ammount:
-                  type: number
-                  format: float
+              allOf:
+                - $ref: "#/definitions/TicketItemBaseDetail"
+                - properties:
+                    equip_info:
+                      type: object
+                      properties:
+                        description:
+                          type: string
+                        category:
+                          type: integer
+                        category_name:
+                          type: string
+                        comments:
+                          type: string
+                        plate:
+                          type: string
+                        useful_life:
+                          type: number
+                          format: float
+                        residual_value:
+                          type: number
+                          format: float
           supplies:
             type: array
             items:
               type: object
-              properties:
-                id:
-                  type: integer
-                description:
-                  type: string
-                cost:
-                  type: number
-                  format: float
-                tax_ammount:
-                  type: number
-                  format: float
+              allOf:
+                - $ref: "#/definitions/TicketItemBaseDetail"
+                - $ref: "#/definitions/EconomicSupplyItem"
+                - properties:
+                    first_plan_description:
+                      type: string
+                    second_plan_description:
+                      type: string
+                    investment_description:
+                      type: string
           generals:
             type: array
             items:
               type: object
-              properties:
-                id:
-                  type: integer
-                description:
-                  type: string
-                cost:
-                  type: number
-                  format: float
-                tax_ammount:
-                  type: number
-                  format: float
+              allOf:
+                - $ref: "#/definitions/TicketItemBaseDetail"
+                - $ref: "#/definitions/EconomicGeneralItem"
+          agro_stock:
+            type: array
+            items:
+              type: object
+              allOf:
+                - $ref: "#/definitions/TicketItemBaseDetail"
+                - $ref: "#/definitions/PurchaseAgroItem"
+          horse_stock:
+            type: array
+            items:
+              $ref: "#/definitions/TicketItemBaseDetail"
+          ovine_stock:
+            type: array
+            items:
+              $ref: "#/definitions/TicketItemBaseDetail"
+          bovine_stock:
+            type: array
+            items:
+              $ref: "#/definitions/TicketItemBaseDetail"
           payments:
             type: array
             items:
@@ -4946,20 +5803,16 @@ definitions:
         type: string
       provider:
         type: integer
+      currency:
+        type: integer
       payment_type:
-        type: string
-        enum:
-          - Cash
-          - Credit
-
+        type: integer
       emition_date:
         type: string
         format: date
       payment_savings_bank:
         type: integer
-      payments_ammount:
-        type: integer
-      establishment:
+      establishment_id:
         type: integer
       notifications:
         $ref: '#/definitions/TicketNotification'
@@ -4971,113 +5824,51 @@ definitions:
           lots:
             type: array
             items:
-              type: object
-              properties:
-                cost:
-                  type: number
-                  format: float
-                tax_ammount:
-                  type: number
-                  format: float
-
-                geofence:
-                  $ref: '#/definitions/GEOJson'
-                description:
-                  type: string
-                code:
-                  type: string
-                area:
-                  type: number
-                  format: float
-                productive_area:
-                  type: number
-                  format: float
-                coneat:
-                  type: integer
+              $ref: "#/definitions/LotPurchaseItem"
           farm_equipment:
             type: array
             items:
-              type: object
-              properties:
-                cost:
-                  type: number
-                  format: float
-                tax_ammount:
-                  type: number
-                  format: float
-
-                description:
-                  type: string
-                category:
-                  type: integer
-                comments:
-                  type: string
-                plate:
-                  type: string
-                useful_life:
-                  type: number
-                  format: float
-                residual_value:
-                  type: number
-                  format: float
+              $ref: "#/definitions/FarmEquipPurchaseItem"
           supplies:
             type: array
             items:
-              type: object
-              properties:
-                cost:
-                  type: number
-                  format: float
-                tax_ammount:
-                  type: number
-                  format: float
-
-                supply_id:
-                  type: integer
-                quantity:
-                  type: integer
+              $ref: "#/definitions/EconomicSupplyItem"
           generals:
             type: array
             items:
-              type: object
-              properties:
-                cost:
-                  type: number
-                  format: float
-                tax_ammount:
-                  type: number
-                  format: float
-
-                description:
-                  type: string
-                comments:
-                  type: string
-                first_plan:
-                  type: string
-                second_plan:
-                  type: string
-                investment_id:
-                  type: integer
+              $ref: "#/definitions/EconomicGeneralItem"
           agro_stock:
             type: array
             items:
-              type: object
-              properties:
-                cost:
-                  type: number
-                  format: float
-                tax_ammount:
-                  type: number
-                  format: float
-
-                crop_type:
-                  type: string
-                tons:
-                  type: number
-                  format: float
-                extra_expenses:
-                  type: number
-                  format: float
+              $ref: "#/definitions/PurchaseAgroItem"
+          horse_stock:
+            type: array
+            items:
+              $ref: "#/definitions/PurchaseCattleItem"
+          ovine_stock:
+            type: array
+            items:
+              $ref: "#/definitions/PurchaseCattleItem"
+          bovine_stock:
+            type: array
+            items:
+              $ref: "#/definitions/PurchaseCattleItem"
+  SaleCattleItem:
+    type: object
+    allOf:
+      - $ref: "#/definitions/PurchaseCattleItem"
+      - properties:
+          imeba:
+            type: number
+            format: float
+  SaleAgroItem:
+    type: object
+    allOf:
+      - $ref: "#/definitions/PurchaseAgroItem"
+      - properties:
+          imeba:
+            type: number
+            format: float
   TicketSellPOST:
     type: object
     allOf:
@@ -5094,7 +5885,6 @@ definitions:
                 tax_ammount:
                   type: number
                   format: float
-
                 lot_id:
                   type: integer
           farm_equipment:
@@ -5108,70 +5898,32 @@ definitions:
                 tax_ammount:
                   type: number
                   format: float
-
                 equipment_id:
                   type: integer
           supplies:
             type: array
             items:
-              type: object
-              properties:
-                cost:
-                  type: number
-                  format: float
-                tax_ammount:
-                  type: number
-                  format: float
-
-                supply_id:
-                  type: integer
-                quantity:
-                  type: integer
+              $ref: "#/definitions/EconomicSupplyItem"
           generals:
             type: array
             items:
-              type: object
-              properties:
-                cost:
-                  type: number
-                  format: float
-                tax_ammount:
-                  type: number
-                  format: float
-                comments:
-                  type: string
-
-                description:
-                  type: string
-                first_plan:
-                  type: string
-                second_plan:
-                  type: string
-                investment_id:
-                  type: integer
+              $ref: "#/definitions/EconomicGeneralItem"
           agro_stock:
             type: array
             items:
-              type: object
-              properties:
-                cost:
-                  type: number
-                  format: float
-                tax_ammount:
-                  type: number
-                  format: float
-
-                crop_type:
-                  type: string
-                tons:
-                  type: number
-                  format: float
-                extra_expenses:
-                  type: number
-                  format: float
-                imeba:
-                  type: number
-                  format: float
+              $ref: "#/definitions/SaleAgroItem"
+          horse_stock:
+            type: array
+            items:
+              $ref: "#/definitions/SaleCattleItem"
+          ovine_stock:
+            type: array
+            items:
+              $ref: "#/definitions/SaleCattleItem"
+          bovine_stock:
+            type: array
+            items:
+              $ref: "#/definitions/SaleCattleItem"
   TicketNotification:
     type: object
     properties:
@@ -5223,7 +5975,6 @@ definitions:
       savings_bank_desc:
         type: string
   ### TICKETS DEFINITIONS END
-
   ### AGRO DEFINITIONS BEGIN
   CropLotSummary:
     type: object
@@ -5244,10 +5995,14 @@ definitions:
             type: string
       land_use_description:
         type: string
+      land_use_id:
+        type: integer
       land_use_end_date:
         type: object
         properties:
           month:
+            type: integer
+          real_month:
             type: integer
           year:
             type: integer
@@ -5282,11 +6037,131 @@ definitions:
       execution_date:
         type: string
         format: date
-
+  CropTypeSummary:
+    type: object
+    properties:
+      initial_stock:
+        type: number
+        format: float
+      production:
+        type: number
+        format: float
+      sales:
+        type: number
+        format: float
+      purchases:
+        type: number
+        format: float
+      adjusts:
+        type: number
+        format: float
+      consumptions:
+        type: number
+        format: float
+      losses:
+        type: number
+        format: float
+  CropGraphic:
+    type: object
+    properties:
+      name:
+        type: string
+      crop:
+        type: string
+      yAxis:
+        type: array
+        items:
+          type: string
+      type_graphic:
+        type: string
+      categories:
+        type: array
+        items:
+          type: string
+      series:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            type:
+              type: string
+            data:
+              type: array
+              items:
+                type: number
+                format: float
   ### AGRO DEFINITIONS END
-
+  ### CATTLE DEFINITIONS BEGIN
+  Weighing:
+    type: object
+    properties:
+      category:
+        type: integer
+      year_trimester:
+        type: integer
+      weigh:
+        type: number
+        format: float
+  WeighingCategoryConfiguration:
+    type: object
+    properties:
+      configuration_category:
+        type: integer
+      configuration_value:
+        type: number
+        format: float
+  CattleStock:
+    type: object
+    properties:
+      category:
+        type: string
+      initial_stock:
+        type: integer
+      purchases:
+        type: integer
+      sales:
+        type: integer
+      consumptions:
+        type: integer
+      adjusts:
+        type: integer
+      deaths:
+        type: integer
+      births:
+        type: integer
+      category_plus:
+        type: integer
+      category_minus:
+        type: integer
+      current_stock:
+        type: integer
+  HorseStock:
+    type: object
+    properties:
+      category:
+        type: string
+      initial_stock:
+        type: integer
+      purchases:
+        type: integer
+      sales:
+        type: integer
+      adjusts:
+        type: integer
+      deaths:
+        type: integer
+      births:
+        type: integer
+      category_plus:
+        type: integer
+      category_minus:
+        type: integer
+      current_stock:
+        type: integer
+  ### CATTLE DEFINITIONS END
   ### GIS DEFINITIONS
-
   Position:
     type: array
     minItems: 2
@@ -5354,7 +6229,6 @@ definitions:
         $ref: '#/definitions/GEOJson'
       properties:
         type: object
-
   GEOJsonFeatureCollection:
     # como en https://developers.google.com/maps/documentation/javascript/3.exp/reference#Data, el metodo toGeoJson
     type: object
@@ -5367,5 +6241,4 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/GEOJsonFeature'
-
   ### GIS DEFINITIONS END
