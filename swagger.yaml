@@ -1087,6 +1087,10 @@ paths:
           schema:
             type: object
             properties:
+              service_types:
+                type: array
+                items:
+                  $ref: '#/definitions/CatalogEntryT2'
               supply_types:
                 type: array
                 items:
@@ -1263,13 +1267,35 @@ paths:
                     items:
                       $ref: '#/definitions/CatalogEntryT2'
               adjust_reasons:
-                  type: array
-                  items:
-                    $ref: '#/definitions/CatalogEntryT2'
+                type: array
+                items:
+                  $ref: '#/definitions/CatalogEntryT2'
               trimesters:
-                  type: array
-                  items:
-                    $ref: '#/definitions/CatalogEntryT2'
+                type: array
+                items:
+                  $ref: '#/definitions/CatalogEntryT2'
+              pregnancy_handle:
+                type: object
+                properties:
+                  ovine:
+                    type: array
+                    items:
+                      $ref: '#/definitions/CatalogEntryT2'
+                  bovine:
+                    type: array
+                    items:
+                      $ref: '#/definitions/CatalogEntryT2'
+              pregnancy_categories:
+                type: object
+                properties:
+                  ovine:
+                    type: array
+                    items:
+                      $ref: '#/definitions/CatalogEntryT2'
+                  bovine:
+                    type: array
+                    items:
+                      $ref: '#/definitions/CatalogEntryT2'
   ### AUX SERVICES END
   ### INDICATORS SERVICES
   /indicators/summary/:
@@ -1313,33 +1339,33 @@ paths:
                 type: object
                 properties:
                   economical_evolution:
+                    type: object
+                    properties:
+                      series:
                         type: object
                         properties:
-                          series:
-                            type: object
-                            properties:
-                              producto_bruto_total:
-                                type: array
-                                items:
-                                  type: integer
-                              ingreso_capital_real:
-                                type: array
-                                items:
-                                  type: integer
-                              total_insumos_supuesto_propiedad:
-                                type: array
-                                items:
-                                  type: integer
-                          categories:
+                          producto_bruto_total:
                             type: array
                             items:
                               type: integer
-                          type_graphic:
-                            type: string
-                          name:
-                            type: string
-                          yAxis:
-                            type: string
+                          ingreso_capital_real:
+                            type: array
+                            items:
+                              type: integer
+                          total_insumos_supuesto_propiedad:
+                            type: array
+                            items:
+                              type: integer
+                      categories:
+                        type: array
+                        items:
+                          type: integer
+                      type_graphic:
+                        type: string
+                      name:
+                        type: string
+                      yAxis:
+                        type: string
                   area_evolution:
                     type: object
                     properties:
@@ -1873,6 +1899,28 @@ paths:
       responses:
         200:
           description: Uso de suelo actualizado correctamente
+  /land_use/by_lot/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Lists land uses by lot
+      parameters:
+        -
+         name: establishment_id
+         in: query
+         required: true
+         type: integer
+        -
+         name: exercise
+         in: query
+         required: true
+         type: integer
+      responses:
+        200:
+          description: Usos de suelo obtenidos correctamente
+          schema:
+            $ref : "#/definitions/LandUseByLot"
   ### LAND USES END
   ### SUPPLY BEGIN
   /inventory/supplies/:
@@ -2350,6 +2398,38 @@ paths:
           description: Equipamiento eliminado correctamente
   ### MAQUINARIA END
   ### INVENTORY BEGIN
+  /inventory/catalog_items/:
+    get:
+      description: |
+         Lista los tipos de Inventarios aplicables para la creacion de labores
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Items obtenidos correctamente
+          schema:
+            type: object
+            properties:
+              supply:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    assad:
+                      type: number
+              service:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    assad:
+                      type: number
   /inventory/movements/:
     get:
       description: |
@@ -2665,6 +2745,7 @@ paths:
           schema:
             $ref: '#/definitions/SavingsBankMovement'
   ### CAJAS END
+  ### BOLETAS BEGIN
   /tickets/:
     get:
       description: |
@@ -2847,9 +2928,56 @@ paths:
           description: Pago ingresado correctamente
           schema:
             $ref: '#/definitions/Payment'
-  ### BOLETAS BEGIN
   ### BOLETAS END
   ### AGRO BEGIN
+  /agro/margin/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns the margin graphics given a price
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise
+          in: query
+          required: true
+          type: integer
+        -
+          name: crop_type
+          in: query
+          required: true
+          type: string
+        -
+          name: estimated_price
+          in: query
+          required: true
+          type: number
+          format: float
+      responses:
+        200:
+          description: Margen obtenido Ok
+          schema:
+            type: object
+            properties:
+              crop_margins_graphic:
+                $ref: '#/definitions/DoubleGraphic'
+              crop_type_margins:
+                type: object
+                properties:
+                  pb:
+                    type: number
+                    format: float
+                  cost:
+                    type: number
+                    format: float
+                  margin:
+                    type: number
+                    format: float
   /agro/summary/:
     get:
       security:
@@ -3004,8 +3132,10 @@ paths:
                 type: string
               second_plan:
                 type: string
+                # required: false
               investment_id:
                 type: integer
+                # required: false
       responses:
         201:
           description: Cultivo consumido correctamente
@@ -3280,27 +3410,16 @@ paths:
           in: path
           required: true
           enum:
-          - horse
           - bovine
           - ovine
           type: string
       responses:
         200:
           description: Historico de reproductivo obtenido ok
-          # schema:
-          #   type: array
-          #   items:
-          #     type: object
-          #     properties:
-          #       category:
-          #         type: string
-          #       movement_type:
-          #         type: string
-          #       quantity:
-          #         type: integer
-          #       execution_date:
-          #         type: string
-          #         format: date
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CattleReproductiveEntry'
     post:
       security:
         - Bearer: []
@@ -3308,27 +3427,25 @@ paths:
         Cattle reproductive stats
       parameters:
         -
-          name: establishment_id
-          in: query
+          name: reproductive
+          in: body
           required: true
-          type: integer
-        -
-          name: exercise
-          in: query
-          required: true
-          type: integer
+          description: Reproductive Entry info
+          schema:
+            $ref: '#/definitions/CattleReproductiveEntry'
         -
           name: cattle_type
           in: path
           required: true
           enum:
-          - horse
           - bovine
           - ovine
           type: string
       responses:
         201:
           description: Historico de reproductivo obtenido ok
+          schema:
+            $ref: '#/definitions/CattleReproductiveEntry'
   /cattle/{cattle_type}/reproductive/{id}/:
     patch:
       security:
@@ -3341,7 +3458,6 @@ paths:
           in: path
           required: true
           enum:
-          - horse
           - bovine
           - ovine
           type: string
@@ -3351,9 +3467,18 @@ paths:
           required: true
           description: Hitoric entry id
           type: integer
+        -
+          name: reproductive
+          in: body
+          required: true
+          description: Reproductive Entry info
+          schema:
+            $ref: '#/definitions/CattleReproductiveEntry'
       responses:
         200:
           description: Historico de reproductivo modificado ok
+          schema:
+            $ref: '#/definitions/CattleReproductiveEntry'
     delete:
       security:
         - Bearer: []
@@ -3365,7 +3490,6 @@ paths:
           in: path
           required: true
           enum:
-          - horse
           - bovine
           - ovine
           type: string
@@ -3428,6 +3552,47 @@ paths:
                 execution_date:
                   type: string
                   format: date
+                unit_weight:
+                  type: number
+                  format: float
+                  # required: false
+                total_weight:
+                  type: number
+                  format: float
+                  # required: false
+                gross_cost:
+                  type: number
+                  format: float
+                  # required: false
+                  description: "Importe bruto"
+                cost:
+                  type: number
+                  format: float
+                  # required: false
+                  description: "Importe neto"
+                tax_ammount:
+                  type: number
+                  format: float
+                  # required: false
+                extra_expenses:
+                  type: number
+                  format: float
+                  # required: false
+                  description: "Gastos de comercializacion"
+                imeba:
+                  type: number
+                  format: float
+                  # required: false
+                gross_price:
+                  type: number
+                  format: float
+                  # required: false
+                  description: "Precio bruto"
+                price:
+                  type: number
+                  format: float
+                  # required: false
+                  description: "Precio neto"
   /cattle/{cattle_type}/config_weighs/mode/:
     post:
       security:
@@ -3440,7 +3605,6 @@ paths:
           in: path
           required: true
           enum:
-          - horse
           - bovine
           - ovine
           type: string
@@ -3459,6 +3623,38 @@ paths:
       responses:
         204:
           description: Blah
+  /cattle/{cattle_type}/config_weighs/reset/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Blah
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - bovine
+          - ovine
+          type: string
+        -
+          name: weigh_defaults
+          in: body
+          required: true
+          description: Blah
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+      responses:
+        200:
+          description: Blah
+          schema:
+            type: array
+            items:
+              $ref : '#/definitions/WeighingCategoryConfiguration'
   /cattle/{cattle_type}/config_weighs/defaults/:
     get:
       security:
@@ -3471,7 +3667,6 @@ paths:
           in: path
           required: true
           enum:
-          - horse
           - bovine
           - ovine
           type: string
@@ -3498,7 +3693,6 @@ paths:
           in: path
           required: true
           enum:
-          - horse
           - bovine
           - ovine
           type: string
@@ -3512,8 +3706,10 @@ paths:
             properties:
               establishment_id:
                 type: integer
-              weighing_yearly:
-                type: boolean
+              weighing_defaults:
+                type: array
+                items:
+                  $ref : '#/definitions/WeighingCategoryConfiguration'
       responses:
         201:
           description: Blah
@@ -3533,7 +3729,6 @@ paths:
           in: path
           required: true
           enum:
-          - horse
           - bovine
           - ovine
           type: string
@@ -3558,11 +3753,11 @@ paths:
               last_weighings:
                 type: array
                 items:
-                  $ref : '#/definitions/Weighing'
+                  $ref : '#/definitions/WeighingWStock'
               current_weighings:
                 type: array
                 items:
-                  $ref : '#/definitions/Weighing'
+                  $ref : '#/definitions/WeighingWStock'
     post:
       security:
         - Bearer: []
@@ -3574,12 +3769,11 @@ paths:
           in: path
           required: true
           enum:
-          - horse
           - bovine
           - ovine
           type: string
         -
-          name: weigh_defaults
+          name: weigh
           in: body
           required: true
           description: Blah
@@ -3596,7 +3790,7 @@ paths:
           schema:
             type: array
             items:
-              $ref : '#/definitions/Weighing'
+              $ref : '#/definitions/WeighingWStock'
   /cattle/{cattle_type}/stock/:
     get:
       security:
@@ -3848,7 +4042,281 @@ paths:
       responses:
         201:
           description: Movimiento creado correctamente
+  /cattle/{cattle_type}/indicators/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Cattle indicators
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Stock obtenido correctamente
+          schema:
+            type: object
+            properties:
+              kg_ug:
+                $ref: '#/definitions/DoubleGraphic'
+              heads:
+                $ref: '#/definitions/DoubleGraphic'
+              production:
+                type: object
+                properties:
+                  series:
+                    type: object
+                    properties:
+                      production:
+                        type: array
+                        items:
+                          type: integer
+                  categories:
+                    type: array
+                    items:
+                      type: integer
+                  type_graphic:
+                        type: string
+                  name:
+                    type: string
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Cattle indicators
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: weighs
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              date_to:
+                type: string
+                format: date
+              weighs:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    category:
+                      type: integer
+                    weight:
+                      type: number
+                      format: float
+      responses:
+        200:
+          description: Stock obtenido correctamente
+          schema:
+            type: object
+            properties:
+              kg_ug:
+                $ref: '#/definitions/DoubleGraphic'
+              heads:
+                $ref: '#/definitions/DoubleGraphic'
+              production:
+                type: object
+                properties:
+                  series:
+                    type: object
+                    properties:
+                      production:
+                        type: array
+                        items:
+                          type: integer
+                  categories:
+                    type: array
+                    items:
+                      type: integer
+                  type_graphic:
+                        type: string
+                  name:
+                    type: string
   ### CATTLE END
+  ### LABOUR BEGIN
+  /labours/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Creates a new labour
+      parameters:
+        -
+          name: labour
+          in: body
+          required: true
+          schema:
+            $ref : "#/definitions/Labour"
+      responses:
+        201:
+          description: Labor creada correctamente
+          schema:
+            $ref : "#/definitions/LabourResponse"
+  /labours/{id}/:
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Creates a new labour
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: labour
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/LabourPATCH"
+      responses:
+        204:
+          description: Stock obtenido correctamente
+          schema:
+            $ref : "#/definitions/LabourResponse"
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Shows labour
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Stock obtenido correctamente
+          schema:
+            $ref : "#/definitions/LabourDetail"
+  /labours/tecno_pkg/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Lista los paquetes tecnológicos
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Paquetes obtenidos Ok
+          schema:
+            type: object
+            properties:
+              owned:
+                type: array
+                items:
+                  $ref : "#/definitions/TecnoPackageBrief"
+              globals:
+                type: array
+                items:
+                  $ref : "#/definitions/TecnoPackageBrief"
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Crea un nuevo paquete tecnológico
+      parameters:
+        -
+          name: tecno_pkg
+          in: body
+          required: true
+          schema:
+            $ref : "#/definitions/TecnoPackagePOST"
+      responses:
+        201:
+          description: Labor creada correctamente
+          schema:
+            $ref : "#/definitions/TecnoPackageDetail"
+  /labours/tecno_pkg/{id}/:
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Modifica un pquete
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: tecno_pkg
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/TecnoPackagePOST"
+      responses:
+        200:
+          description: Paquete modificado Ok
+          schema:
+            $ref : "#/definitions/TecnoPackageDetail"
+    delete:
+      security:
+        - Bearer: []
+      description: |
+        Detalla paquete tecnológico
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        204:
+          description: Paquete borrado Ok
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Detalla paquete tecnológico
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Paquete obtenido Ok
+          schema:
+            $ref : "#/definitions/TecnoPackageDetail"
+  ### LABOUR END
   ### GIS WSs
   /gis/encode_kml/:
     get:
@@ -4108,6 +4576,55 @@ definitions:
         type: integer
       description:
         type: string
+  DoubleGraphic:
+    type: object
+    properties:
+      type_graphic:
+        type: string
+      name:
+        type: string
+      yAxis:
+        type: array
+        items:
+          type: string
+      categories:
+        type: array
+        items:
+          type: string
+      series:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            type:
+              type: string
+            data:
+              type: array
+              items:
+                type: number
+                format: float
+  # SimpleGraphic:
+  #   type: object
+  #   properties:
+  #     series:
+  #       type: object
+  #       properties:
+  #         depreciation:
+  #           type: array
+  #           items:
+  #             type: integer
+  #     categories:
+  #       type: array
+  #       items:
+  #         type: integer
+  #     type_graphic:
+  #       type: string
+  #     name:
+  #       type: string
+  #     yAxis:
+  #       type: string
   ### AUX DEFINITIONS END
   ### USERS definitions:
   Permissions:
@@ -5017,6 +5534,31 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/CropCatalog'
+  LandUseByLot:
+    type: object
+    properties:
+      lot_description:
+        type: string
+      land_uses:
+        type: array
+        items:
+          type: object
+          properties:
+            description:
+              type: string
+            id:
+              type: integer
+            area:
+              type: number
+              format: float
+            crop:
+              type: string
+            start_date:
+              type: string
+              format: date
+            end_date:
+              type: string
+              format: date
   ### LAND USE DEFINITIONS END
   ### SUPPLY DEFINITIONS
   #Supply:
@@ -5598,6 +6140,8 @@ definitions:
         format: float
       category:
         type: integer
+      quantity:
+        type: integer
       unit_weight:
         type: number
         format: float
@@ -6023,6 +6567,8 @@ definitions:
   CropTypeMovement:
     type: object
     properties:
+      description:
+        type: string
       movement_type:
         type: string
       quantity:
@@ -6063,35 +6609,11 @@ definitions:
         format: float
   CropGraphic:
     type: object
-    properties:
-      name:
-        type: string
-      crop:
-        type: string
-      yAxis:
-        type: array
-        items:
-          type: string
-      type_graphic:
-        type: string
-      categories:
-        type: array
-        items:
-          type: string
-      series:
-        type: array
-        items:
-          type: object
-          properties:
-            name:
-              type: string
-            type:
-              type: string
-            data:
-              type: array
-              items:
-                type: number
-                format: float
+    allOf:
+      - $ref: "#/definitions/DoubleGraphic"
+      - properties:
+          crop:
+            type: string
   ### AGRO DEFINITIONS END
   ### CATTLE DEFINITIONS BEGIN
   Weighing:
@@ -6104,6 +6626,13 @@ definitions:
       weigh:
         type: number
         format: float
+  WeighingWStock:
+    type: object
+    allOf:
+      - $ref: "#/definitions/Weighing"
+      - properties:
+          quantity:
+            type: integer
   WeighingCategoryConfiguration:
     type: object
     properties:
@@ -6112,6 +6641,45 @@ definitions:
       configuration_value:
         type: number
         format: float
+  CattleReproductiveEntry:
+    type: object
+    properties:
+      id:
+        type: string
+        # readOnly: true
+      pregnancy_category:
+        type: integer
+      service_end:
+        type: string
+        format: date
+      service_start:
+        type: string
+        format: date
+      tact_date:
+        type: string
+        format: date
+      marking_date:
+        type: string
+        format: date
+      entored_heads:
+        type: integer
+      marked_heads:
+        type: integer
+      pregnant_heads:
+        type: integer
+      lot:
+        type: string
+      handle:
+        type: integer
+      pregnancy_percent:
+        type: number
+        format: float
+      marking_percent:
+        type: number
+        format: float
+      establishment_id:
+        type: integer
+        # writeOnly: true
   CattleStock:
     type: object
     properties:
@@ -6161,6 +6729,274 @@ definitions:
       current_stock:
         type: integer
   ### CATTLE DEFINITIONS END
+  ### LABOUR DEFINITIONS BEGIN
+  Labour:
+    type: object
+    properties:
+      establishment_id:
+        type: integer
+      description:
+        type: string
+      labour_type:
+        type: integer
+      estimated_date:
+        type: string
+        format: date
+      land_use_id:
+        type: integer
+      inventory:
+        type: array
+        items:
+          type: object
+          properties:
+            dose:
+              type: number
+              format: float
+            inventory_id:
+              type: integer
+  LabourResponse:
+    type: object
+    properties:
+      code:
+        type: string
+      description:
+        type: string
+      labour_type:
+        type: string
+      lot:
+        type: string
+      land_use_description:
+        type: string
+      lot_area:
+        type: number
+        format: float
+      execution_stage:
+        type: string
+      execution_date:
+        type: string
+  LabourPATCH:
+    type: object
+    properties:
+      description:
+        type: string
+      labour_type:
+        type: integer
+      estimated_date:
+        type: string
+        format: date
+      land_use_id:
+        type: integer
+      inventory:
+        type: array
+        items:
+          type: object
+          properties:
+            dose:
+              type: number
+              format: float
+            inventory_id:
+              type: integer
+  LabourDetail:
+    type: object
+    properties:
+      description:
+        type: string
+      labour_type:
+        type: integer
+      estimated_date:
+        type: string
+        format: date
+      execution_date:
+        type: string
+        format: date
+      execution_stage:
+        type: string
+      land_use:
+        type: object
+        properties:
+          id:
+            type: integer
+          lot_description:
+            type: string
+          area:
+            type: number
+            format: float
+          land_use_description:
+            type: string
+          crop:
+            type: string
+          start_date:
+            type: string
+            format: date
+          start_end:
+            type: string
+            format: date
+      inventory:
+        type: array
+        items:
+          type: object
+          properties:
+            dose:
+              type: number
+              format: float
+            inventory_id:
+              type: integer
+            description:
+              type: string
+            inventory_type:
+              type: string
+            category:
+              type: string
+            unit_cost:
+              type: integer
+  TecnoPackageBrief:
+    type: object
+    properties:
+      id:
+        type: integer
+      description:
+        type: string
+      edit_date:
+        type: string
+        format: date
+      cost_p_hectares:
+        type: number
+        format: float
+  TecnoPackageDetail:
+    type: object
+    properties:
+      description:
+        type: string
+      edit_date:
+        type: string
+        format: date
+      cost_p_hectares:
+        type: number
+        format: float
+      labour_templates:
+        type: array
+        items:
+          type: object
+          properties:
+            description:
+              type: string
+            crop:
+              type: integer
+            estimated_date_day:
+              type: integer
+            estimated_date_month:
+              type: integer
+            estimated_date_relative_year:
+              type: integer
+            labour_type:
+              type: integer
+            supply_applications:
+              type: array
+              items:
+                type: object
+                properties:
+                  dose:
+                    type: number
+                    format: float
+                  supply:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      unit:
+                        type: integer
+                      category:
+                        type: integer
+                      # nitrogen_concentration:
+                      #   type: number
+                      #   format: float
+                      # sulfur_concentration:
+                      #   type: number
+                      #   format: float
+                      # phosphorus_concentration:
+                      #   type: number
+                      #   format: float
+                      # potassium_concentration:
+                      #   type: number
+                      #   format: float
+                      # active_components:
+                      #   type: array
+                      #   items:
+                      #     type: integer
+            service_applications:
+              type: array
+              items:
+                type: object
+                properties:
+                  dose:
+                    type: number
+                    format: float
+                  service:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      unit:
+                        type: integer
+                      category:
+                        type: integer
+  TecnoPackagePOST:
+    type: object
+    properties:
+      establishment:
+        type: object
+        properties:
+          id:
+            type: integer
+      description:
+        type: string
+      edit_date:
+        type: string
+        format: date
+      labour_templates:
+        type: array
+        items:
+          type: object
+          properties:
+            description:
+              type: string
+            crop:
+              type: integer
+            estimated_date_day:
+              type: integer
+            estimated_date_month:
+              type: integer
+            estimated_date_relative_year:
+              type: integer
+            labour_type:
+              type: integer
+            supply_applications:
+              type: array
+              items:
+                type: object
+                properties:
+                  dose:
+                    type: number
+                    format: float
+                  supply:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+            service_applications:
+              type: array
+              items:
+                type: object
+                properties:
+                  dose:
+                    type: number
+                    format: float
+                  service:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+  ### LABOUR DEFINITIONS END
   ### GIS DEFINITIONS
   Position:
     type: array
