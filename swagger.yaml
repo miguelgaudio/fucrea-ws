@@ -360,14 +360,10 @@ paths:
         - Bearer: []
       parameters:
         -
-          name: data
-          in: body
-          description: some paramentrs
+          name: reduced
+          in: query
           required: false
-          schema:
-            properties:
-              reduced:
-                type: boolean
+          type: boolean
       responses:
         200:
           description: Establecimientos obtenidos correctamente
@@ -375,40 +371,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Establishment'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
-  /establishments/unasigned/:
-    get:
-      description: |
-         List unasigned establishments
-      security:
-        - Bearer: []
-      responses:
-        200:
-          description: Establecimientos obtenidos correctamente
-          schema:
-            type: array
-            items:
-              type: object
-              properties:
-                id:
-                  type: integer
-                name:
-                  type: string
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /establishments/{id}/:
     patch:
        description: |
@@ -436,16 +398,6 @@ paths:
        responses:
          204:
            description: Establecimiento actualizado correctamente
-         400:
-          description: Error del cliente
-         401:
-          description: Usuario no autenticado
-         403:
-          description: El usuario no tiene permisos para realizar la acción
-         404:
-          description: Establecimiento no enontrado
-         500:
-          description: Error del servidor
   /establishments/{id}/characterizations/:
     post:
       description: |
@@ -469,16 +421,6 @@ paths:
       responses:
          201:
            description: Categorización creada con éxito
-         400:
-          description: Error del cliente
-         401:
-          description: Usuario no autenticado
-         403:
-          description: El usuario no tiene permisos para realizar la acción
-         404:
-          description: Establecimiento no enontrado
-         500:
-          description: Error del servidor
   /establishments/{id}/lots/:
     get:
       description: |
@@ -505,16 +447,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/LotInEstablishmentPOST'
-         400:
-          description: Error del cliente
-         401:
-          description: Usuario no autenticado
-         403:
-          description: El usuario no tiene permisos para realizar la acción
-         404:
-          description: Establecimiento no enontrado
-         500:
-          description: Error del servidor
     post:
       description: |
         Create new lot in establishment
@@ -537,16 +469,6 @@ paths:
       responses:
          201:
            description: Lote modificado con éxito
-         400:
-          description: Error del cliente
-         401:
-          description: Usuario no autenticado
-         403:
-          description: El usuario no tiene permisos para realizar la acción
-         404:
-          description: Establecimiento no enontrado
-         500:
-          description: Error del servidor
   /companies/:
     get:
       description: |
@@ -560,14 +482,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Company'
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
     post:
       description: |
         Creates a new company
@@ -584,14 +498,6 @@ paths:
       responses:
         200:
           description: Empresas creada correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        500:
-          description: Error del servidor
   /companies/{id}/:
     patch:
       description: |
@@ -615,16 +521,6 @@ paths:
       responses:
         204:
           description: Empresa actualizada correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        404:
-          description: Empresa no enontrada
-        500:
-          description: Error del servidor
     delete:
       description: |
         Deletes a company
@@ -640,16 +536,22 @@ paths:
       responses:
         204:
           description: Empresa eliminada correctamente
-        400:
-          description: Error del cliente
-        401:
-          description: Usuario no autenticado
-        403:
-          description: El usuario no tiene permisos para realizar la acción
-        404:
-          description: Empresa no enontrada
-        500:
-          description: Error del servidor
+  /companies/{id}/unasigned_establishments/:
+    get:
+      description: |
+        Obitenen los establecimientos no asignados a la empresa
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          description: Company's id
+          type: integer
+      responses:
+        200:
+          description: Ok
   /companies/establishments/:
     get:
       description: |
@@ -921,6 +823,17 @@ paths:
          List providers
       security:
         - Bearer: []
+      parameters:
+        -
+          name: reduced
+          in: query
+          required: false
+          type: boolean
+        -
+          name: establishment_id
+          in: query
+          required: false
+          type: integer
       responses:
         200:
           description: Proveedores groups obtenidos correctamente
@@ -1236,6 +1149,10 @@ paths:
           schema:
             type: object
             properties:
+              movement_types:
+                type: array
+                items:
+                  type: string
               categories:
                 type: object
                 properties:
@@ -1296,6 +1213,42 @@ paths:
                     type: array
                     items:
                       $ref: '#/definitions/CatalogEntryT2'
+  /forms/labours/:
+    get:
+      description: |
+        Lists every field with its options to fill the labours forms
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Formularios obtenidos correctamente
+          schema:
+            type: object
+            properties:
+              labour_types:
+                type: array
+                items:
+                  $ref: '#/definitions/CatalogEntryT3'
+              execution_stages:
+                type: array
+                items:
+                  $ref: '#/definitions/CatalogEntryT3'
+  /forms/perform_period/:
+    get:
+      description: |
+        Forms de listado para ejercicios de asesores
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: object
+            properties:
+              closing_stages:
+                type: array
+                items:
+                  $ref: '#/definitions/CatalogEntryT3'
   ### AUX SERVICES END
   ### INDICATORS SERVICES
   /indicators/summary/:
@@ -1899,7 +1852,7 @@ paths:
       responses:
         200:
           description: Uso de suelo actualizado correctamente
-  /land_use/by_lot/:
+  /land_uses/by_lot/:
     get:
       security:
         - Bearer: []
@@ -1920,9 +1873,316 @@ paths:
         200:
           description: Usos de suelo obtenidos correctamente
           schema:
-            $ref : "#/definitions/LandUseByLot"
+            type: array
+            items:
+              $ref : "#/definitions/LandUseByLot"
+  /land_uses/sequences/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Lists land uses by lot
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise
+          in: query
+          required: true
+          type: integer
+        -
+          name: crop_id
+          in: query
+          required: false
+          type: integer
+        -
+          name: lot_id
+          in: query
+          required: false
+          type: integer
+      responses:
+        200:
+          description: Usos de suelo obtenidos correctamente
+          schema:
+            $ref : "#/definitions/LandUseSequence"
+  /land_uses/validate_exercise/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Validates exercise for closing
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer        
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema: 
+            $ref : "#/definitions/LandUseExerciseValidations"          
   ### LAND USES END
+
+  ### SSERVICE BEGIN
+  /inventory/services/:
+    get:
+      description: |
+         List services for the specified establishment
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: company_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: crea_group_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Insumos obtenidos correctamente
+          schema:
+             $ref: '#/definitions/ServiceList'
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Creates service
+      parameters:
+        -
+          name: supply
+          in: body
+          required: true
+          description: Supply info
+          schema:
+            $ref: '#/definitions/ServicePOST'
+      responses:
+        201:
+          description: Insumo agrado correctamente
+          schema:
+            $ref: '#/definitions/ServiceDetail'
+  /inventory/services/{id}/:
+    get:
+      description: |
+         Returns info about specified service and his movements
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Detalle obtenidos correctamente
+          schema:
+            $ref: '#/definitions/ServiceDetail'
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Updates a the selected service
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          description: Supply's id
+          type: integer
+        -
+          name: supply
+          in: body
+          required: true
+          description: Supply info
+          schema:
+            type: object
+            properties:
+              description:
+                type: string
+              comments:
+                type: string
+      responses:
+        200:
+          description: Ok
+          schema:
+            $ref: '#/definitions/ServiceDetail'
+  /inventory/services/{id}/add/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Adds a specified quantity for the selected service
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          description: Supply's id
+          type: integer
+        -
+          name: supply
+          in: body
+          required: true
+          description: Supply info
+          schema:
+            type: object
+            properties:
+              quantity:
+                type: number
+                format: float
+              unit_price:
+                type: number
+                format: float
+              execution_date:
+                type: string
+                format: date
+      responses:
+        201:
+          description: Insumos agrados correctamente
+          schema:
+            type: object
+            properties:
+              execution_date:
+                type: string
+                format: date
+              id:
+                type: integer
+              cost:
+                type: number
+                format: float
+              quantity:
+                type: integer
+  # /inventory/services/{id}/loss/:
+  #   post:
+  #     security:
+  #       - Bearer: []
+  #     description: |
+  #       Decrements a specified quantity for the selected supply
+  #     parameters:
+  #       -
+  #         name: id
+  #         in: path
+  #         required: true
+  #         description: Supply's id
+  #         type: integer
+  #       -
+  #         name: supply
+  #         in: body
+  #         required: true
+  #         description: Supply info
+  #         schema:
+  #           type: object
+  #           properties:
+  #             loss_reason:
+  #               type: string
+  #             quantity:
+  #               type: number
+  #               format: float
+  #             execution_date:
+  #               type: string
+  #               format: date
+  #     responses:
+  #       201:
+  #         description: Pérdida de servicio declarada correctamente
+  #         schema:
+  #           type: object
+  #           properties:
+  #             execution_date:
+  #               type: string
+  #               format: date
+  #             id:
+  #               type: integer
+  #             cost:
+  #               type: number
+  #               format: float
+  #             quantity:
+  #               type: integer
+  /inventory/services/{id}/use/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Decrements a specified quantity for the selected supply
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          description: Supply's id
+          type: integer
+        -
+          name: supply
+          in: body
+          required: true
+          description: Supply info
+          schema:
+            type: object
+            properties:
+              quantity:
+                type: number
+                format: float
+              execution_date:
+                type: string
+                format: date
+              first_plan:
+                type: string
+              second_plan:
+                type: string
+              investment:
+                type: integer
+              description:
+                type: string
+      responses:
+        201:
+          description: Uso de servicio declarado correctamente
+          schema:
+            type: object
+            properties:
+              execution_date:
+                type: string
+                format: date
+              id:
+                type: integer
+              cost:
+                type: number
+                format: float
+              quantity:
+                type: integer
+  ### SSERVICE END
+
   ### SUPPLY BEGIN
+  /inventory/supplies/catalogs/:
+    get:
+      description: |
+         Lista los catalogos de insumos del establecimiento y los globales
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/SupplyCatalogItem'
   /inventory/supplies/:
     get:
       description: |
@@ -2136,7 +2396,7 @@ paths:
                 type: string
               second_plan:
                 type: string
-              investment_id:
+              investment:
                 type: integer
               description:
                 type: string
@@ -2421,15 +2681,39 @@ paths:
                 items:
                   type: object
                   properties:
-                    assad:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    unit:
+                      type: integer
+                    category:
+                      type: integer
+                    unit_price:
                       type: number
+                      format: float
+                    unit_price_update_date:
+                      type: string
+                      format: date
               service:
                 type: array
                 items:
                   type: object
                   properties:
-                    assad:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    unit:
+                      type: integer
+                    category:
+                      type: integer
+                    unit_price:
                       type: number
+                      format: float
+                    unit_price_update_date:
+                      type: string
+                      format: date
   /inventory/movements/:
     get:
       description: |
@@ -2464,6 +2748,117 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Movement'
+  /inventory/by_type/:
+    get:
+      description: |
+         Lista maquinarias, insumos y servicios agrupados por tipo
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: company_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: crea_group_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: object
+            properties:
+              services:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    by:
+                      type: integer
+                    elems:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          description:
+                            type: string
+                          category:
+                            type: integer
+                          unit:
+                            type: integer
+                          unit_price:
+                            type: number
+                            format: float
+                          unit_price_update_date:
+                            type: string
+                            format: date
+              supplies:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    by:
+                      type: integer
+                    elems:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          description:
+                            type: string
+                          category:
+                            type: integer
+                          unit:
+                            type: integer
+                          unit_price:
+                            type: number
+                            format: float
+                          unit_price_update_date:
+                            type: string
+                            format: date
+              equipments:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    by:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                    elems:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          description:
+                            type: string
+                          category:
+                            type: integer
+                          unit:
+                            type: integer
+                          unit_price:
+                            type: number
+                            format: float
+                          unit_price_update_date:
+                            type: string
+                            format: date
   /inventory/:
     get:
       description: |
@@ -2744,6 +3139,23 @@ paths:
           description: Caja modificada correctamente
           schema:
             $ref: '#/definitions/SavingsBankMovement'
+  /savings_banks/validate_exercise/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Validates exercise for closing
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer        
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema: 
+            $ref : "#/definitions/BanksExerciseValidations"          
   ### CAJAS END
   ### BOLETAS BEGIN
   /tickets/:
@@ -2928,6 +3340,40 @@ paths:
           description: Pago ingresado correctamente
           schema:
             $ref: '#/definitions/Payment'
+  /tickets/{id}/cancel/:   
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Cancel Ticket
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          description: Ticket's id
+          type: integer
+      responses:
+        204:
+          description: Boleta cancelada Ok
+  /tickets/validate_exercise/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Validates exercise for closing
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer        
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema: 
+            $ref : "#/definitions/TicketExerciseValidations" 
+          
   ### BOLETAS END
   ### AGRO BEGIN
   /agro/margin/:
@@ -3025,48 +3471,10 @@ paths:
                 sales_throwput:
                   type: number
                   format: float
-  /agro/production/:
-    get:
-      security:
-        - Bearer: []
-      description: |
-        Returns all info for specified crop type
-      parameters:
-        -
-          name: establishment
-          in: query
-          required: true
-          type: integer
-        -
-          name: crop_type
-          in: query
-          required: true
-          type: string
-        -
-          name: exercise
-          in: query
-          required: true
-          type: integer
-      responses:
-        200:
-          description: Cultivo obtenido correctamente
-          schema:
-            type: object
-            properties:
-              lots:
-                type: array
-                items:
-                  $ref: '#/definitions/CropLotSummary'
-              movements:
-                type: array
-                items:
-                  $ref: '#/definitions/CropTypeMovement'
-              summary:
-                $ref: '#/definitions/CropTypeSummary'
-              lots_graphics:
-                type: array
-                items:
-                  $ref: '#/definitions/CropGraphic'
+                current_stock:
+                  type: number
+                  format: float
+  
   /agro/production/harvest/:
     post:
       security:
@@ -3251,6 +3659,55 @@ paths:
                 type: string
               exercise:
                 type: integer
+
+  /agro/exercise_costs/:
+       
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Sets exercise crop costs
+      parameters:
+        -
+          name: stock
+          in: body
+          required: true
+          description: Adjust mov info
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              land_uses:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    crop_id:
+                      type: integer
+                    harvested_percentage:
+                      type: integer
+
+      responses:
+        204:
+          description: Costos asignados correctamente     
+  /agro/validate_for_closing/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Validates exercise for closing
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer        
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema: 
+            $ref : "#/definitions/AgroExerciseValidations"          
   ### AGRO END
   ### CATTLE BEGIN
   /cattle/summary/:
@@ -3388,97 +3845,8 @@ paths:
                       type: string
                     yAxis:
                       type: string
-  /cattle/{cattle_type}/reproductive/:
-    get:
-      security:
-        - Bearer: []
-      description: |
-        Cattle reproductive stats
-      parameters:
-        -
-          name: establishment_id
-          in: query
-          required: true
-          type: integer
-        -
-          name: exercise
-          in: query
-          required: true
-          type: integer
-        -
-          name: cattle_type
-          in: path
-          required: true
-          enum:
-          - bovine
-          - ovine
-          type: string
-      responses:
-        200:
-          description: Historico de reproductivo obtenido ok
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/CattleReproductiveEntry'
-    post:
-      security:
-        - Bearer: []
-      description: |
-        Cattle reproductive stats
-      parameters:
-        -
-          name: reproductive
-          in: body
-          required: true
-          description: Reproductive Entry info
-          schema:
-            $ref: '#/definitions/CattleReproductiveEntry'
-        -
-          name: cattle_type
-          in: path
-          required: true
-          enum:
-          - bovine
-          - ovine
-          type: string
-      responses:
-        201:
-          description: Historico de reproductivo obtenido ok
-          schema:
-            $ref: '#/definitions/CattleReproductiveEntry'
+
   /cattle/{cattle_type}/reproductive/{id}/:
-    patch:
-      security:
-        - Bearer: []
-      description: |
-        Cattle reproductive stats
-      parameters:
-        -
-          name: cattle_type
-          in: path
-          required: true
-          enum:
-          - bovine
-          - ovine
-          type: string
-        -
-          name: id
-          in: path
-          required: true
-          description: Hitoric entry id
-          type: integer
-        -
-          name: reproductive
-          in: body
-          required: true
-          description: Reproductive Entry info
-          schema:
-            $ref: '#/definitions/CattleReproductiveEntry'
-      responses:
-        200:
-          description: Historico de reproductivo modificado ok
-          schema:
-            $ref: '#/definitions/CattleReproductiveEntry'
     delete:
       security:
         - Bearer: []
@@ -3623,38 +3991,7 @@ paths:
       responses:
         204:
           description: Blah
-  /cattle/{cattle_type}/config_weighs/reset/:
-    post:
-      security:
-        - Bearer: []
-      description: |
-        Blah
-      parameters:
-        -
-          name: cattle_type
-          in: path
-          required: true
-          enum:
-          - bovine
-          - ovine
-          type: string
-        -
-          name: weigh_defaults
-          in: body
-          required: true
-          description: Blah
-          schema:
-            type: object
-            properties:
-              establishment_id:
-                type: integer
-      responses:
-        200:
-          description: Blah
-          schema:
-            type: array
-            items:
-              $ref : '#/definitions/WeighingCategoryConfiguration'
+  
   /cattle/{cattle_type}/config_weighs/defaults/:
     get:
       security:
@@ -3791,6 +4128,47 @@ paths:
             type: array
             items:
               $ref : '#/definitions/WeighingWStock'
+  /cattle/{cattle_type}/suggested_weigh/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Blah
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - bovine
+          - ovine
+          type: string
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise
+          in: query
+          required: true
+          type: string
+          format: date
+      responses:
+        200:
+          description: Blah
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                category:
+                  type: integer
+                weigh:
+                  type: number
+                  format: float
+                quantity:
+                  type: integer
   /cattle/{cattle_type}/stock/:
     get:
       security:
@@ -4074,6 +4452,12 @@ paths:
           schema:
             type: object
             properties:
+              table_for_export:
+                type: array
+                items:
+                  type: array
+                  items:  
+                    type: string
               kg_ug:
                 $ref: '#/definitions/DoubleGraphic'
               heads:
@@ -4161,9 +4545,78 @@ paths:
                         type: string
                   name:
                     type: string
+  /cattle/validate_for_closing/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Validates exercise for closing
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer        
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema: 
+            $ref : "#/definitions/CattleExerciseValidations"                  
   ### CATTLE END
   ### LABOUR BEGIN
   /labours/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Gets labours inventory summary
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: date_from
+          in: query
+          required: true
+          type: string
+          format: date
+        -
+          name: date_to
+          in: query
+          required: true
+          type: string
+          format: date
+      responses:
+        200:
+          description: Labores obtenidas correctamente
+          schema: 
+            type: object
+            properties:
+              filters:
+                type: object
+                properties:
+                  lots:
+                    type: array
+                    items:
+                      type: string
+                  execution_stages:
+                    type: array
+                    items:
+                      type: string
+                  crops:
+                    type: array
+                    items:
+                      type: string
+                  labour_types:
+                    type: array
+                    items:
+                      type: string
+              labours:
+                type: array
+                items:
+                  $ref : "#/definitions/LaboursListItem"
     post:
       security:
         - Bearer: []
@@ -4180,7 +4633,31 @@ paths:
         201:
           description: Labor creada correctamente
           schema:
-            $ref : "#/definitions/LabourResponse"
+            $ref : "#/definitions/LaboursListItem"
+  /labours/{id}/notes/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Creates a new labour note
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: labour_note
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              note:
+                type: string
+      responses:
+        204:
+          description: Nota agregada Ok
   /labours/{id}/:
     patch:
       security:
@@ -4203,7 +4680,7 @@ paths:
         204:
           description: Stock obtenido correctamente
           schema:
-            $ref : "#/definitions/LabourResponse"
+            $ref : "#/definitions/LabourDetail"
     get:
       security:
         - Bearer: []
@@ -4220,6 +4697,108 @@ paths:
           description: Stock obtenido correctamente
           schema:
             $ref : "#/definitions/LabourDetail"
+  /labours/finalize/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Gets labours info
+      parameters:
+        -
+          name: labours
+          in: query
+          required: true
+          type: array
+          items:
+            type: integer      
+        
+      responses:
+        200:
+          description: Labores obtenidas correctamente
+          schema: 
+            $ref : "#/definitions/LaboursToEnd"
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Finalizes labours
+      parameters:
+        -
+          name: labours
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/LaboursEnd"
+      responses:
+        204:
+          description: Labores obtenidas correctamente
+  /labours/cancel/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Cancellates a labour
+      parameters:
+        -
+          name: labours
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              labours:
+                type: array
+                items:
+                  type: integer
+              cancellation_date:
+                type: string
+                format: date
+              note:
+                type: string
+      responses:
+        204:
+          description: Labores canceladas correctamente
+  /labours/inventory_summary/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Gets labours inventory summary
+      parameters:
+        -
+          name: labours
+          in: query
+          required: true
+          type: array
+          items:
+            type: integer      
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Labores obtenidas correctamente
+          schema: 
+            $ref : "#/definitions/LaboursInventorySummary"        
+  /labours/validate_exercise/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Validates exercise for closing
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer        
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema: 
+            $ref : "#/definitions/LabourExerciseValidations"
   /labours/tecno_pkg/:
     get:
       security:
@@ -4317,6 +4896,114 @@ paths:
           schema:
             $ref : "#/definitions/TecnoPackageDetail"
   ### LABOUR END
+  
+  ### FIN_DE_EJERCICIO
+  /perform_period//:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Lista ejercicios y su estado
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: array
+            items:
+              $ref : "#/definitions/PerfomrPeriodDetail"
+  /perform_period/{id}/notes/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Lista notas de un ejercicio
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: array
+            items:
+              $ref : "#/definitions/ClosingProcessNote"
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Crea una nota de un ejercicio
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: note
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              content:
+                type: string
+      responses:
+        201:
+          description: Ok
+          schema:
+            $ref : "#/definitions/ClosingProcessNote"
+  /perform_period/{id}/review/:
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Permite enviara revisión un ejercicio. Solo para productores
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: array
+            items:
+              $ref : "#/definitions/PerfomrPeriodDetail"
+  /perform_period/{id}/close/:
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Permite cerrar un ejercicio. Solo para asesores
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: period
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              confirm_close:
+                type: boolean
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: array
+            items:
+              $ref : "#/definitions/PerfomrPeriodDetail"
+  ### FIN_DE_EJERCICIO END
+  
   ### GIS WSs
   /gis/encode_kml/:
     get:
@@ -4575,6 +5262,13 @@ definitions:
       value:
         type: integer
       description:
+        type: string
+  CatalogEntryT3:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
         type: string
   DoubleGraphic:
     type: object
@@ -5017,6 +5711,33 @@ definitions:
         type: array
         items:
           type: integer
+  Characterization:
+    type: object
+    properties:
+      agriculture:
+        type: integer
+      sistema_producto_vacuno:
+        type: integer
+      sistema_producto_ovino:
+        type: integer
+      forestacion_comercial:
+        type: integer
+      evolucion_propiedad_empresas_familiares:
+        type: integer
+      edad_decisor:
+        type: integer
+      riego:
+        type: integer
+      nivel_instruccion_decisor:
+        type: integer
+      residencia_decisor:
+        type: integer
+      dias_semana_decisor:
+        type: integer
+      geographic_zone:
+        type: integer
+      category:
+        type: integer
   IndicatorFilterPOSTList:
     type: object
     properties:
@@ -5513,6 +6234,10 @@ definitions:
                       type: integer
                     description:
                       type: string
+                    warning_labour_on_delete:
+                      type: boolean
+                    warning_harvest_on_delete:
+                      type: boolean
               closed:
                 type: boolean
   CropCatalog:
@@ -5539,6 +6264,8 @@ definitions:
     properties:
       lot_description:
         type: string
+      lot_id:
+        type: integer
       land_uses:
         type: array
         items:
@@ -5559,6 +6286,122 @@ definitions:
             end_date:
               type: string
               format: date
+  LandUseSequence:
+    type: object
+    properties:
+      id:
+        type: integer
+      description:
+        type: string
+      area:
+        type: number
+        format: float
+      lot:
+        type: object
+        properties:
+          code:
+            type: string
+          id:
+            type: integer
+      crop:
+        type: object
+        properties:
+          name:
+            type: string
+          id:
+            type: integer
+      starting_date:
+        type: string
+        format: date
+      ending_date:
+        type: string
+        format: date
+  LandUseExerciseValidations:
+    type: object
+    properties:    
+      errors:
+        type: object
+        properties:
+          area_errors:
+            type: object
+            properties:
+              description:
+                type: string
+              land_uses:
+                type: array
+                items:
+                  type: boolean
+          cost_errors:
+            type: array
+            items:
+              type: object
+              properties:
+                category:
+                  type: string
+                movement_id:
+                  type: integer
+                description:
+                  type: string
+                crop:
+                  type: string
+                cost:
+                  type: number
+                  format: float
+                execution_date:
+                  type: string
+                  format: date
+          
+      warnings:
+        type: object
+        properties:
+          harvest_warnings:
+            type: array
+            items:
+              type: object
+              properties:
+                description:
+                  type: string
+                crop:
+                  type: string
+                area:
+                  type: number
+                  format: float
+                end_date:
+                  type: string
+                  format: date
+                sowing_date:
+                  type: string
+                  format: date
+                harvest_date:
+                  type: string
+                  format: date
+                start_date:
+                  type: string
+                  format: date
+          sow_warnings:
+            type: array
+            items:
+              type: object
+              properties:
+                description:
+                  type: string
+                crop:
+                  type: string
+                area:
+                  type: number
+                  format: float
+                end_date:
+                  type: string
+                  format: date
+                sowing_date:
+                  type: string
+                  format: date
+                harvest_date:
+                  type: string
+                  format: date
+                start_date:
+                  type: string
+                  format: date      
   ### LAND USE DEFINITIONS END
   ### SUPPLY DEFINITIONS
   #Supply:
@@ -5630,6 +6473,108 @@ definitions:
               type: array
               items:
                 type: object
+
+  ### SUPPLY/SERVICE AUX DEFINITIONS
+  Inventory:
+    type: object
+    properties:
+      id:
+        type: integer
+      description:
+        type: string
+      establishment_name:
+        type: string
+      inventory_type:
+        type: string
+      category:
+        type: string
+      value:
+        type: number
+        format: float
+      quantity:
+        type: number
+        format: float
+      unit:
+        type: string
+      unit_price:
+        type: number
+      warning:
+        type: boolean
+  ### SUPPLY/SERVICE AUX DEFINITIONS END
+
+  ### SERVICE DEFINITIONS
+  ServicePOST:
+    type: object
+    properties:
+      description:
+        type: string
+      establishment_id:
+        type: integer
+      unit:
+        type: string
+        enum:
+          - Kilos
+          - Litros
+      comments:
+        type: string
+  ServiceDetail:
+    type: object
+    properties:
+      id:
+        type: integer
+      quantity:
+        type: string
+      description:
+        type: string
+      establishment_name:
+        type: string
+      unit_price:
+        type: number
+      unit:
+        type: string
+        enum:
+          - Kilos
+          - Litros
+      movements:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            quantity:
+              type: number
+              format: float
+            execution_date:
+              type: string
+              format: date
+            movement_type:
+              type: string
+            cost:
+              type: number
+              format: float
+      comments:
+        type: string
+      stock_value:
+        type: number
+        format: float
+  ServiceList:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+        unit:
+          type: string
+        stock_value:
+          type: number
+          format: float
+  ### SERVICE DEFINITIONS END
+
+  ### SUPPLY DEFINITIONS
   SupplyPOST:
     type: object
     properties:
@@ -5742,31 +6687,15 @@ definitions:
             concentration:
               type: number
               format: float
-  Inventory:
+  SupplyCatalogItem:
     type: object
     properties:
       id:
         type: integer
       description:
         type: string
-      establishment_name:
-        type: string
-      inventory_type:
-        type: string
-      category:
-        type: string
-      value:
-        type: number
-        format: float
-      quantity:
-        type: number
-        format: float
       unit:
         type: string
-      unit_price:
-        type: number
-      warning:
-        type: boolean
   SupplyList:
     type: array
     items:
@@ -6063,6 +6992,30 @@ definitions:
       current_savings:
         type: number
         format: float
+  BanksExerciseValidations:
+    type: object
+    properties:    
+      errors:
+        type: object
+        properties:
+          negative_savings:
+            type: array
+            items:
+              type: object
+              properties:
+                category:
+                  type: string
+                description:
+                  type: string
+                currency:
+                  type: string
+                current_savings:
+                  type: number
+                  format: float            
+          
+      warnings:
+        type: object
+            
   ### SAVINGS BANK DEFINITIONS END
   ### TICKETS DEFINITIONS START
   TicketResponse:
@@ -6518,104 +7471,497 @@ definitions:
         format: date
       savings_bank_desc:
         type: string
-  ### TICKETS DEFINITIONS END
-  ### AGRO DEFINITIONS BEGIN
-  CropLotSummary:
+  TicketDuplicate:
     type: object
     properties:
-      lot:
-        type: object
-        properties:
-          id:
-            type: integer
-          description:
-            type: string
-      crop:
-        type: object
-        properties:
-          id:
-            type: integer
-          description:
-            type: string
-      land_use_description:
-        type: string
-      land_use_id:
+      id:
         type: integer
-      land_use_end_date:
-        type: object
-        properties:
-          month:
-            type: integer
-          real_month:
-            type: integer
-          year:
-            type: integer
-      harvest_date:
+      description:
+        type: string
+      ticket_type:
+        type: string
+      ammount:
+        type: number
+        format: float
+      pending_ammount:
+        type: number
+        format: float
+      currency:
+        type: string
+      payment_type:
+        type: string
+      ticket_number:
+        type: integer
+      provider_name:
+        type: string
+      emition_date:
         type: string
         format: date
-      sown_hectares:
+  TicketExerciseValidations:
+    type: object
+    properties:
+      warnings: 
+        type: object
+      errors:
+        type: object
+        properties:
+          duplicates:
+            type: object
+            properties:
+              description_emition_date:
+                type: array
+                items:
+                  type: array
+                  items:
+                    $ref: "#/definitions/TicketDuplicate"
+              emition_date_provider_id:
+                type: array
+                items:
+                  type: array
+                  items:
+                    $ref: "#/definitions/TicketDuplicate"
+              provider_id_ticket_number:
+                type: array
+                items:
+                  type: array
+                  items:
+                    $ref: "#/definitions/TicketDuplicate"
+                    
+  ### END TICKET MODELS
+  
+  ### BEGIN LABOUR MODELS ###
+  LaboursListItem:
+    type: object
+    properties:
+      id:
+        type: integer
+      code:
+        type: string
+  
+      description:
+        type: string      
+      date:
+        type: string
+        format: date      
+      labour_type:
+        type: string
+      lot:
+        type: string
+      crop:
+        type: string
+      land_use_description:
+        type: string
+      area:
         type: number
         format: float
-      harvested_hectares:
-        type: number
-        format: float
-      throwput:
-        type: number
-        format: float
-      can_harvest:
-        type: boolean
-  CropTypeMovement:
+      execution_stage:
+        type: string    
+      inventory:
+        type: string
+  Labour:
+    type: object
+    properties:
+      establishment_id:
+        type: integer
+      description:
+        type: string      
+      land_use_id:
+        type: integer     
+      labour_type:
+        type: integer
+      investment_id:
+        type: integer
+      first_plan:
+        type: string
+      second_plan:
+        type: string
+      estimated_date:
+        type: string    
+      inventory:
+        type: array
+        items:
+          type: object
+          properties:
+            dose:
+              type: number
+              format: float
+            inventory_id:
+              type: integer
+  LabourPATCH:
     type: object
     properties:
       description:
+        type: string      
+      land_use_id:
+        type: integer     
+      labour_type:
+        type: integer
+      investment_id:
+        type: integer
+      first_plan:
         type: string
-      movement_type:
+      second_plan:
         type: string
-      quantity:
-        type: number
-        format: float
-      cost:
-        type: number
-        format: float
-      total_cost:
-        type: number
+      estimated_date:
+        type: string   
+        format: date
+      inventory:
+        type: array
+        items:
+          type: object
+          properties:
+            dose:
+              type: number
+              format: float
+            inventory_id:
+              type: integer
+  LabourDetail:
+    type: object
+    properties:
+      description:
+        type: string      
+      land_use_id:
+        type: integer     
+      labour_type:
+        type: integer
+      investment_id:
+        type: integer
+      first_plan:
+        type: string
+      second_plan:
+        type: string
+      estimated_date:
+        type: string    
+        format: date
+      estimated_cost:
+        type: number    
         format: float
       execution_date:
         type: string
         format: date
-  CropTypeSummary:
-    type: object
-    properties:
-      initial_stock:
-        type: number
+      execution_cost:
+        type: number    
         format: float
-      production:
-        type: number
-        format: float
-      sales:
-        type: number
-        format: float
-      purchases:
-        type: number
-        format: float
-      adjusts:
-        type: number
-        format: float
-      consumptions:
-        type: number
-        format: float
-      losses:
-        type: number
-        format: float
-  CropGraphic:
-    type: object
-    allOf:
-      - $ref: "#/definitions/DoubleGraphic"
-      - properties:
+      execution_stage:
+        type: string    
+      inventory:
+        type: array
+        items:
+          type: object
+          properties:
+            inventory_id:
+              type: integer
+            dose:
+              type: number
+              format: float
+            unit_cost:
+              type: number
+              format: float
+            description:
+              type: string
+            inventory_type:
+              type: string
+            category:
+              type: integer
+      land_use:
+        type: object
+        properties:
+          id:
+            type: integer
+          land_use_description:
+            type: string
+          lot_description:
+            type: string
+          area:
+            type: number
+            format: float
           crop:
             type: string
-  ### AGRO DEFINITIONS END
-  ### CATTLE DEFINITIONS BEGIN
+          start_date:
+            type: string
+            format: float
+          end_date:
+            type: string
+            format: float
+      notes:
+        type: array
+        items:
+          type: object
+          properties:
+            author:
+              type: string
+            content:
+              type: string
+            date:
+              type: string
+              format: date
+      pending:
+        type: boolean
+  LaboursToEnd:
+    type: object
+    properties:
+      inventory:
+        type: array
+        items:
+          type: object
+          properties:
+            planned_quantity:
+              type: number
+              format: float
+            inventory_id:
+              type: integer
+            category: 
+              type: integer
+            inventory_type: 
+              type: string
+            unit:
+              type: string
+      land_uses:
+        type: array
+        items:
+          type: object
+          properties:
+            land_use_id:
+              type: integer
+            crop_name:
+              type: string
+            crop_id:
+              type: integer
+            harvested_area:
+              type: number
+              format: float
+            harvested_tons:
+              type: number
+              format: float
+            sown_area:
+              type: number
+              format: float
+      lots:
+        type: array
+        items:
+          type: object
+          properties:
+            area:
+              type: number
+              format: float
+            description:
+              type: string        
+  LaboursEnd:
+    type: object
+    properties:
+      establishment_id:
+        type: integer
+      investment_id:
+        type: integer
+      first_plan:
+        type: string
+      second_plan:
+        type: string
+      labours:
+        type: array
+        items:
+          type: integer
+      execution_date:
+        type: string
+        format: date
+      note:
+        type: string
+      inventory:
+        type: array
+        items:
+          type: object
+          properties:
+            inventory_id:
+              type: integer
+            planned_quantity:
+              type: integer
+            used_quantity:
+              type: integer
+      land_uses:
+        type: array
+        items:
+          type: object
+          properties:
+            crop_id:
+              type: integer
+            harvested_area:
+              type: number
+              format: float
+            harvested_tons:
+              type: number
+              format: float           
+  LaboursInventorySummary:
+    type: array
+    items:
+      type: object
+      properties:
+        quantity:
+          type: number
+          format: float
+        category:
+          type: integer
+        description:
+          type: string
+        cost:
+          type: number
+          format: float
+        inventory_type:
+          type: string
+        unit:
+          type: string        
+        first_use_date:
+          type: string
+          format: date
+        last_use_date:
+          type: string
+          format: date              
+### Labours END
+  
+### AGRO BEGIN
+  AgroExerciseValidations:
+    type: object
+    properties:
+      errors:
+        type: object
+        properties:
+          unharvested_land_uses:
+            type: array
+            items:
+              type: object
+              properties:
+                crop:
+                  type: string
+                lot: 
+                  type: string
+                description:
+                  type: string
+                end_date: 
+                  type: string
+                  format: date
+                hectares: 
+                  type: number
+                  format: float
+          stock_errors:
+            type: array
+            items:
+              type: object
+              properties:
+                crop_type:
+                  type: string
+                final_stock:
+                  type: integer
+                initial_stock:
+                  type: integer
+                production:
+                  type: integer
+                purchases:
+                  type: integer
+                adjusts:
+                  type: integer
+                sales:
+                  type: integer
+                losses:
+                  type: integer
+                consumptions:
+                  type: integer
+          uncosted_harvests:
+            type: array
+            items:
+              type: object
+              properties:
+                crop:
+                  type: string
+                area:
+                  type: number
+                  format: float
+                tons:
+                  type: number
+                  format: float
+      warnings:
+        type: object
+        properties:
+          agro_with_no_data_warning:
+            $ref: '#/definitions/Characterization'
+          bad_characterization_warning:
+            $ref: '#/definitions/Characterization'
+### AGRO END
+
+### CATTLE BEGIN
+  CattleStock:
+    type: array
+    items:
+      type: object
+      properties:
+        births:
+          type: integer
+        deaths:
+          type: integer
+        consumptions:
+          type: integer
+        category_minus:
+          type: integer
+        category_plus:
+          type: integer
+        sales:
+          type: integer
+        purchases:
+          type: integer
+        adjusts:
+          type: integer
+        current_stock:
+          type: integer
+        initial_stock:
+          type: integer
+        category_name:
+          type: string
+  CattleExerciseValidations:  
+    type: object
+    properties:
+      errors:
+        type: object
+        properties:
+          weigh_errors:
+            type: object
+            properties:
+              category:
+                type: string
+              weighs:
+                type: array
+                items:
+                  type: boolean
+          stock_errors:
+            type: array
+            items:
+              type: object
+              properties:
+                category:
+                  type: string
+                final_stock:
+                  type: integer
+                initial_stock:
+                  type: integer
+                births:
+                  type: integer
+                deaths:
+                  type: integer
+                adjusts:
+                  type: integer
+                category_changes:
+                  type: integer
+                consumptions:
+                  type: integer
+                purchases:
+                  type: integer
+                sales:
+                  type: integer
+      warnings:
+        type: object
+        properties:
+          bad_caracterization_warning:
+            $ref: '#/definitions/Characterization'
+          cattle_with_no_data_warning:
+            $ref: '#/definitions/Characterization'
+
   Weighing:
     type: object
     properties:
@@ -6641,214 +7987,9 @@ definitions:
       configuration_value:
         type: number
         format: float
-  CattleReproductiveEntry:
-    type: object
-    properties:
-      id:
-        type: string
-        # readOnly: true
-      pregnancy_category:
-        type: integer
-      service_end:
-        type: string
-        format: date
-      service_start:
-        type: string
-        format: date
-      tact_date:
-        type: string
-        format: date
-      marking_date:
-        type: string
-        format: date
-      entored_heads:
-        type: integer
-      marked_heads:
-        type: integer
-      pregnant_heads:
-        type: integer
-      lot:
-        type: string
-      handle:
-        type: integer
-      pregnancy_percent:
-        type: number
-        format: float
-      marking_percent:
-        type: number
-        format: float
-      establishment_id:
-        type: integer
-        # writeOnly: true
-  CattleStock:
-    type: object
-    properties:
-      category:
-        type: string
-      initial_stock:
-        type: integer
-      purchases:
-        type: integer
-      sales:
-        type: integer
-      consumptions:
-        type: integer
-      adjusts:
-        type: integer
-      deaths:
-        type: integer
-      births:
-        type: integer
-      category_plus:
-        type: integer
-      category_minus:
-        type: integer
-      current_stock:
-        type: integer
-  HorseStock:
-    type: object
-    properties:
-      category:
-        type: string
-      initial_stock:
-        type: integer
-      purchases:
-        type: integer
-      sales:
-        type: integer
-      adjusts:
-        type: integer
-      deaths:
-        type: integer
-      births:
-        type: integer
-      category_plus:
-        type: integer
-      category_minus:
-        type: integer
-      current_stock:
-        type: integer
-  ### CATTLE DEFINITIONS END
-  ### LABOUR DEFINITIONS BEGIN
-  Labour:
-    type: object
-    properties:
-      establishment_id:
-        type: integer
-      description:
-        type: string
-      labour_type:
-        type: integer
-      estimated_date:
-        type: string
-        format: date
-      land_use_id:
-        type: integer
-      inventory:
-        type: array
-        items:
-          type: object
-          properties:
-            dose:
-              type: number
-              format: float
-            inventory_id:
-              type: integer
-  LabourResponse:
-    type: object
-    properties:
-      code:
-        type: string
-      description:
-        type: string
-      labour_type:
-        type: string
-      lot:
-        type: string
-      land_use_description:
-        type: string
-      lot_area:
-        type: number
-        format: float
-      execution_stage:
-        type: string
-      execution_date:
-        type: string
-  LabourPATCH:
-    type: object
-    properties:
-      description:
-        type: string
-      labour_type:
-        type: integer
-      estimated_date:
-        type: string
-        format: date
-      land_use_id:
-        type: integer
-      inventory:
-        type: array
-        items:
-          type: object
-          properties:
-            dose:
-              type: number
-              format: float
-            inventory_id:
-              type: integer
-  LabourDetail:
-    type: object
-    properties:
-      description:
-        type: string
-      labour_type:
-        type: integer
-      estimated_date:
-        type: string
-        format: date
-      execution_date:
-        type: string
-        format: date
-      execution_stage:
-        type: string
-      land_use:
-        type: object
-        properties:
-          id:
-            type: integer
-          lot_description:
-            type: string
-          area:
-            type: number
-            format: float
-          land_use_description:
-            type: string
-          crop:
-            type: string
-          start_date:
-            type: string
-            format: date
-          start_end:
-            type: string
-            format: date
-      inventory:
-        type: array
-        items:
-          type: object
-          properties:
-            dose:
-              type: number
-              format: float
-            inventory_id:
-              type: integer
-            description:
-              type: string
-            inventory_type:
-              type: string
-            category:
-              type: string
-            unit_cost:
-              type: integer
+### CATTLE END
+
+  ### TECNO PKG DEFINITIONS
   TecnoPackageBrief:
     type: object
     properties:
@@ -6996,7 +8137,54 @@ definitions:
                     properties:
                       id:
                         type: integer
-  ### LABOUR DEFINITIONS END
+  ### TECNO PKG DEFINITIONS END
+
+  ### FIN_DE_EJERCICIO DEFINITIONS
+  PerfomrPeriodDetail:
+    type: object
+    properties:
+      id:
+        type: integer
+      establishment:
+        type: object
+        properties:
+          id:
+            type: integer
+          name:
+            type: string
+          crea_group:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+      ending_date:
+        type: string
+        format: date
+      starting_date:
+        type: string
+        format: date
+      exercise:
+        type: integer
+      closing_stage:
+        type: integer
+      current_process:
+        type: string
+  ClosingProcessNote:
+    type: object
+    properties:
+      id:
+        type: integer
+      date:
+        type: string
+        format: date
+      content:
+        type: string
+      author:
+        type: string
+  ### FIN_DE_EJERCICIO DEFINITIONS
+  
   ### GIS DEFINITIONS
   Position:
     type: array
