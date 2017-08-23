@@ -1908,7 +1908,7 @@ paths:
           description: Usos de suelo obtenidos correctamente
           schema:
             $ref : "#/definitions/LandUseSequence"
-  /land_uses/validate_exercise/:
+  /land_uses/validate_for_closing/:
     get:
       security:
         - Bearer: []
@@ -1919,14 +1919,13 @@ paths:
           name: establishment_id
           in: query
           required: true
-          type: integer        
+          type: integer
       responses:
         200:
           description: Validacion realizada correctamente
-          schema: 
-            $ref : "#/definitions/LandUseExerciseValidations"          
+          schema:
+            $ref : "#/definitions/LandUseExerciseValidations"
   ### LAND USES END
-
   ### SSERVICE BEGIN
   /inventory/services/:
     get:
@@ -2162,7 +2161,6 @@ paths:
               quantity:
                 type: integer
   ### SSERVICE END
-
   ### SUPPLY BEGIN
   /inventory/supplies/catalogs/:
     get:
@@ -2416,6 +2414,68 @@ paths:
                 format: float
               quantity:
                 type: integer
+  /inventory/supplies/stock_pricing/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns stock pricing for supplies
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                supply:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    description:
+                      type: string
+                current_stock:
+                  type: integer
+                unit_price:
+                  type: number
+                  format: float
+                category:
+                  type: string
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores supplies end of exercise pricing
+      parameters:
+        -
+          name: pricings
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              pricings:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    supply_id:
+                      type: integer
+                    price:
+                      type: number
+                      format: float
+      responses:
+        204:
+          description: Valoracion agregada con exito
   ### SUPPLY END
   ### MAQIUNARIA BEGIN
   /inventory/farm_equipment/:
@@ -3139,7 +3199,7 @@ paths:
           description: Caja modificada correctamente
           schema:
             $ref: '#/definitions/SavingsBankMovement'
-  /savings_banks/validate_exercise/:
+  /savings_banks/validate_for_closing/:
     get:
       security:
         - Bearer: []
@@ -3150,12 +3210,12 @@ paths:
           name: establishment_id
           in: query
           required: true
-          type: integer        
+          type: integer
       responses:
         200:
           description: Validacion realizada correctamente
-          schema: 
-            $ref : "#/definitions/BanksExerciseValidations"          
+          schema:
+            $ref : "#/definitions/BanksExerciseValidations"
   ### CAJAS END
   ### BOLETAS BEGIN
   /tickets/:
@@ -3340,7 +3400,7 @@ paths:
           description: Pago ingresado correctamente
           schema:
             $ref: '#/definitions/Payment'
-  /tickets/{id}/cancel/:   
+  /tickets/{id}/cancel/:
     patch:
       security:
         - Bearer: []
@@ -3356,7 +3416,7 @@ paths:
       responses:
         204:
           description: Boleta cancelada Ok
-  /tickets/validate_exercise/:
+  /tickets/validate_for_closing/:
     get:
       security:
         - Bearer: []
@@ -3367,13 +3427,13 @@ paths:
           name: establishment_id
           in: query
           required: true
-          type: integer        
+          type: integer
       responses:
         200:
           description: Validacion realizada correctamente
-          schema: 
-            $ref : "#/definitions/TicketExerciseValidations" 
-          
+          schema:
+            $ref : "#/definitions/TicketExerciseValidations"
+
   ### BOLETAS END
   ### AGRO BEGIN
   /agro/margin/:
@@ -3661,7 +3721,6 @@ paths:
                 type: integer
 
   /agro/exercise_costs/:
-       
     post:
       security:
         - Bearer: []
@@ -3690,7 +3749,7 @@ paths:
 
       responses:
         204:
-          description: Costos asignados correctamente     
+          description: Costos asignados correctamente
   /agro/validate_for_closing/:
     get:
       security:
@@ -3702,12 +3761,72 @@ paths:
           name: establishment_id
           in: query
           required: true
-          type: integer        
+          type: integer
       responses:
         200:
           description: Validacion realizada correctamente
-          schema: 
-            $ref : "#/definitions/AgroExerciseValidations"          
+          schema:
+            $ref : "#/definitions/AgroExerciseValidations"
+  /agro/stock_pricing/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns stock pricing for agro
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                crop_type:
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                    description:
+                      type: string
+                current_stock:
+                  type: integer
+                unit_price:
+                  type: number
+                  format: float
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores agro end of exercise pricing
+      parameters:
+        -
+          name: pricings
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              pricings:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    crop_type:
+                      type: string
+                    price:
+                      type: number
+                      format: float
+      responses:
+        204:
+          description: Valoracion guardada correctamente
   ### AGRO END
   ### CATTLE BEGIN
   /cattle/summary/:
@@ -3846,7 +3965,97 @@ paths:
                     yAxis:
                       type: string
 
+  /cattle/{cattle_type}/reproductive/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Cattle reproductive stats
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise
+          in: query
+          required: true
+          type: integer
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - bovine
+          - ovine
+          type: string
+      responses:
+        200:
+          description: Historico de reproductivo obtenido ok
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CattleReproductiveEntry'
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Cattle reproductive stats
+      parameters:
+        -
+          name: reproductive
+          in: body
+          required: true
+          description: Reproductive Entry info
+          schema:
+            $ref: '#/definitions/CattleReproductiveEntry'
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - bovine
+          - ovine
+          type: string
+      responses:
+        201:
+          description: Historico de reproductivo obtenido ok
+          schema:
+            $ref: '#/definitions/CattleReproductiveEntry'
   /cattle/{cattle_type}/reproductive/{id}/:
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Cattle reproductive stats
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          description: Historic entry id
+          type: integer
+        -
+          name: reproductive
+          in: body
+          required: true
+          description: Reproductive Entry info
+          schema:
+            $ref: '#/definitions/CattleReproductiveEntry'
+      responses:
+        200:
+          description: Historico de reproductivo modificado ok
+          schema:
+            $ref: '#/definitions/CattleReproductiveEntry'
     delete:
       security:
         - Bearer: []
@@ -3865,11 +4074,12 @@ paths:
           name: id
           in: path
           required: true
-          description: Hitoric entry id
+          description: Historic entry id
           type: integer
       responses:
         204:
           description: Historico de reproductivo eliminado ok
+
   /cattle/{cattle_type}/movements/:
     get:
       security:
@@ -4456,7 +4666,7 @@ paths:
                 type: array
                 items:
                   type: array
-                  items:  
+                  items:
                     type: string
               kg_ug:
                 $ref: '#/definitions/DoubleGraphic'
@@ -4556,12 +4766,90 @@ paths:
           name: establishment_id
           in: query
           required: true
-          type: integer        
+          type: integer
       responses:
         200:
           description: Validacion realizada correctamente
-          schema: 
-            $ref : "#/definitions/CattleExerciseValidations"                  
+          schema:
+            $ref : "#/definitions/CattleExerciseValidations"
+  /cattle/{cattle_type}/stock_pricing/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns stock pricing for cattle
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+      responses:
+        200:
+          description: Valoracion obtenida correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                category_name:
+                  type: string
+                category_id:
+                  type: integer
+                current_stock:
+                  type: integer
+                weight:
+                  type: number
+                  format: float
+                unit_price:
+                  type: number
+                  format: float
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores cattle end of exercise pricing
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: pricings
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              pricings:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    category:
+                      type: integer
+                    price:
+                      type: number
+                      format: float
+      responses:
+        204:
+          description: Valoracion almacenada correctamente
   ### CATTLE END
   ### LABOUR BEGIN
   /labours/:
@@ -4591,7 +4879,7 @@ paths:
       responses:
         200:
           description: Labores obtenidas correctamente
-          schema: 
+          schema:
             type: object
             properties:
               filters:
@@ -4710,12 +4998,11 @@ paths:
           required: true
           type: array
           items:
-            type: integer      
-        
+            type: integer
       responses:
         200:
           description: Labores obtenidas correctamente
-          schema: 
+          schema:
             $ref : "#/definitions/LaboursToEnd"
     post:
       security:
@@ -4771,7 +5058,7 @@ paths:
           required: true
           type: array
           items:
-            type: integer      
+            type: integer
         -
           name: establishment_id
           in: query
@@ -4780,9 +5067,9 @@ paths:
       responses:
         200:
           description: Labores obtenidas correctamente
-          schema: 
-            $ref : "#/definitions/LaboursInventorySummary"        
-  /labours/validate_exercise/:
+          schema:
+            $ref : "#/definitions/LaboursInventorySummary"
+  /labours/validate_for_closing/:
     get:
       security:
         - Bearer: []
@@ -4793,11 +5080,11 @@ paths:
           name: establishment_id
           in: query
           required: true
-          type: integer        
+          type: integer
       responses:
         200:
           description: Validacion realizada correctamente
-          schema: 
+          schema:
             $ref : "#/definitions/LabourExerciseValidations"
   /labours/tecno_pkg/:
     get:
@@ -6318,7 +6605,7 @@ definitions:
         format: date
   LandUseExerciseValidations:
     type: object
-    properties:    
+    properties:
       errors:
         type: object
         properties:
@@ -6350,7 +6637,7 @@ definitions:
                 execution_date:
                   type: string
                   format: date
-          
+
       warnings:
         type: object
         properties:
@@ -6401,7 +6688,7 @@ definitions:
                   format: date
                 start_date:
                   type: string
-                  format: date      
+                  format: date
   ### LAND USE DEFINITIONS END
   ### SUPPLY DEFINITIONS
   #Supply:
@@ -6994,7 +7281,7 @@ definitions:
         format: float
   BanksExerciseValidations:
     type: object
-    properties:    
+    properties:
       errors:
         type: object
         properties:
@@ -7011,11 +7298,11 @@ definitions:
                   type: string
                 current_savings:
                   type: number
-                  format: float            
-          
+                  format: float
+
       warnings:
         type: object
-            
+
   ### SAVINGS BANK DEFINITIONS END
   ### TICKETS DEFINITIONS START
   TicketResponse:
@@ -7500,7 +7787,7 @@ definitions:
   TicketExerciseValidations:
     type: object
     properties:
-      warnings: 
+      warnings:
         type: object
       errors:
         type: object
@@ -7526,7 +7813,7 @@ definitions:
                   type: array
                   items:
                     $ref: "#/definitions/TicketDuplicate"
-                    
+
   ### END TICKET MODELS
   
   ### BEGIN LABOUR MODELS ###
@@ -7539,10 +7826,10 @@ definitions:
         type: string
   
       description:
-        type: string      
+        type: string
       date:
         type: string
-        format: date      
+        format: date
       labour_type:
         type: string
       lot:
@@ -7555,7 +7842,7 @@ definitions:
         type: number
         format: float
       execution_stage:
-        type: string    
+        type: string
       inventory:
         type: string
   Labour:
@@ -7564,9 +7851,9 @@ definitions:
       establishment_id:
         type: integer
       description:
-        type: string      
+        type: string
       land_use_id:
-        type: integer     
+        type: integer
       labour_type:
         type: integer
       investment_id:
@@ -7576,7 +7863,7 @@ definitions:
       second_plan:
         type: string
       estimated_date:
-        type: string    
+        type: string
       inventory:
         type: array
         items:
@@ -7591,9 +7878,9 @@ definitions:
     type: object
     properties:
       description:
-        type: string      
+        type: string
       land_use_id:
-        type: integer     
+        type: integer
       labour_type:
         type: integer
       investment_id:
@@ -7603,7 +7890,7 @@ definitions:
       second_plan:
         type: string
       estimated_date:
-        type: string   
+        type: string
         format: date
       inventory:
         type: array
@@ -7619,9 +7906,9 @@ definitions:
     type: object
     properties:
       description:
-        type: string      
+        type: string
       land_use_id:
-        type: integer     
+        type: integer
       labour_type:
         type: integer
       investment_id:
@@ -7631,19 +7918,19 @@ definitions:
       second_plan:
         type: string
       estimated_date:
-        type: string    
+        type: string
         format: date
       estimated_cost:
-        type: number    
+        type: number
         format: float
       execution_date:
         type: string
         format: date
       execution_cost:
-        type: number    
+        type: number
         format: float
       execution_stage:
-        type: string    
+        type: string
       inventory:
         type: array
         items:
@@ -7710,9 +7997,9 @@ definitions:
               format: float
             inventory_id:
               type: integer
-            category: 
+            category:
               type: integer
-            inventory_type: 
+            inventory_type:
               type: string
             unit:
               type: string
@@ -7745,7 +8032,7 @@ definitions:
               type: number
               format: float
             description:
-              type: string        
+              type: string
   LaboursEnd:
     type: object
     properties:
@@ -7789,7 +8076,7 @@ definitions:
               format: float
             harvested_tons:
               type: number
-              format: float           
+              format: float
   LaboursInventorySummary:
     type: array
     items:
@@ -7808,13 +8095,38 @@ definitions:
         inventory_type:
           type: string
         unit:
-          type: string        
+          type: string
         first_use_date:
           type: string
           format: date
         last_use_date:
           type: string
-          format: date              
+          format: date
+  LabourExerciseValidations:
+    type: object
+    properties:
+      errors:
+        type: object
+        properties:
+          unfinished_labours:
+            type: object
+            properties:
+              code:
+                type: string
+              description:
+                type: string
+              labour_type:
+                type: string
+              lot:
+                type: string
+              land_use_description:
+                type: string
+              area:
+                type: number
+                format: float
+              estimated_date:
+                type: string
+                format: date
 ### Labours END
   
 ### AGRO BEGIN
@@ -7831,14 +8143,14 @@ definitions:
               properties:
                 crop:
                   type: string
-                lot: 
+                lot:
                   type: string
                 description:
                   type: string
-                end_date: 
+                end_date:
                   type: string
                   format: date
-                hectares: 
+                hectares:
                   type: number
                   format: float
           stock_errors:
@@ -7888,33 +8200,31 @@ definitions:
 
 ### CATTLE BEGIN
   CattleStock:
-    type: array
-    items:
-      type: object
-      properties:
-        births:
-          type: integer
-        deaths:
-          type: integer
-        consumptions:
-          type: integer
-        category_minus:
-          type: integer
-        category_plus:
-          type: integer
-        sales:
-          type: integer
-        purchases:
-          type: integer
-        adjusts:
-          type: integer
-        current_stock:
-          type: integer
-        initial_stock:
-          type: integer
-        category_name:
-          type: string
-  CattleExerciseValidations:  
+    type: object
+    properties:
+      category:
+        type: string
+      initial_stock:
+        type: integer
+      purchases:
+        type: integer
+      sales:
+        type: integer
+      consumptions:
+        type: integer
+      adjusts:
+        type: integer
+      deaths:
+        type: integer
+      births:
+        type: integer
+      category_plus:
+        type: integer
+      category_minus:
+        type: integer
+      current_stock:
+        type: integer
+  CattleExerciseValidations:
     type: object
     properties:
       errors:
@@ -7987,6 +8297,45 @@ definitions:
       configuration_value:
         type: number
         format: float
+  CattleReproductiveEntry:
+    type: object
+    properties:
+      id:
+        type: string
+        # readOnly: true
+      pregnancy_category:
+        type: integer
+      service_end:
+        type: string
+        format: date
+      service_start:
+        type: string
+        format: date
+      tact_date:
+        type: string
+        format: date
+      marking_date:
+        type: string
+        format: date
+      entored_heads:
+        type: integer
+      marked_heads:
+        type: integer
+      pregnant_heads:
+        type: integer
+      lot:
+        type: string
+      handle:
+        type: integer
+      pregnancy_percent:
+        type: number
+        format: float
+      marking_percent:
+        type: number
+        format: float
+      establishment_id:
+        type: integer
+        # writeOnly: true
 ### CATTLE END
 
   ### TECNO PKG DEFINITIONS
