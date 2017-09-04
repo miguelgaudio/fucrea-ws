@@ -421,6 +421,35 @@ paths:
       responses:
          201:
            description: Categorización creada con éxito
+  /establishments/{id}/lots/bulk/:
+    post:
+      description: |
+        Create new lot in establishment
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: lot
+          in: body
+          required: true
+          description: Lot info
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/LotInEstablishmentPOST'
+        -
+          name: id
+          in: path
+          required: true
+          description: Establishment's id
+          type: integer
+      responses:
+         201:
+            description: Lote modificado con éxito
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/LotInEstablishmentPOST'
   /establishments/{id}/lots/:
     get:
       description: |
@@ -441,7 +470,7 @@ paths:
           description: Listado reducido
           type: boolean
       responses:
-         201:
+         200:
            description: Lote retornado
            schema:
             type: array
@@ -469,6 +498,8 @@ paths:
       responses:
          201:
            description: Lote modificado con éxito
+           schema:
+            $ref: '#/definitions/LotInEstablishmentPOST'
   /companies/:
     get:
       description: |
@@ -4850,6 +4881,69 @@ paths:
       responses:
         204:
           description: Valoracion almacenada correctamente
+  /cattle/ovine/wool_indicators/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns wool indicators
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Indicadores obtenidos correctamente
+          schema:
+            type: object
+            properties:
+              initial_stock:
+                type: integer
+              ammount:
+                type: number
+                format: float
+              tax_ammount:
+                type: number
+                format: float
+              imeba:
+                type: number
+                format: float
+              extra_expenses:
+                type: number
+                format: float
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores wool indicators
+      parameters:
+        -
+          name: indicators
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                establishment_id:
+                  type: string
+                sold_wool_kg:
+                  type: number
+                  format: float
+                wool_exercise_production:
+                  type: number
+                  format: float
+                stock_value:
+                  type: number
+                  format: float
+                sheared_quantity:
+                  type: integer
+      responses:
+        204:
+          description: Indicadores almacenados con exito
   ### CATTLE END
   ### LABOUR BEGIN
   /labours/:
@@ -5367,6 +5461,7 @@ paths:
         Crea fundiendo y cortando una nueva particion definida por el poligono de entrada "blade". Roba superficie de cualquier otra particion con la que pudiera intersectarse
         Retorna el conjunto de todas las particiones nuevas (incluso las particiones vacias de Id ya existentes como collecciones vacias).
         Puede crear nuevas particiones si el Id del blade no se encontraba entre las particiones.
+        Ver posibles zoom en https://developers.google.com/maps/documentation/static-maps/intro#Zoomlevels'
       consumes:
         - application/json
       produces:
@@ -7570,6 +7665,8 @@ definitions:
                   type: string
                 savings_bank_desc:
                   type: string
+                savings_bank_currency:
+                  type: integer
                 ammount:
                   type: number
                   format: float
