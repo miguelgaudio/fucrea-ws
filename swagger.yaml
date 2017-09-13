@@ -5296,6 +5296,39 @@ paths:
           description: Paquete obtenido Ok
           schema:
             $ref : "#/definitions/TecnoPackageDetail"
+  /labours/tecno_pkg/{id}/apply/:
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Crea los labores según el paquete
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: tecno_pkg
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              is_global_pkg:
+                type: boolean
+              establishment_id:
+                type: integer
+              land_uses:
+                type: array
+                items:
+                  type:
+                    integer
+      responses:
+        200:
+          description: Paquete modificado Ok
+          schema:
+            $ref : "#/definitions/TecnoPackageDetail"
   ### LABOUR END
   
   ### FIN_DE_EJERCICIO
@@ -8589,9 +8622,17 @@ definitions:
       cost_p_hectares:
         type: number
         format: float
+      crop:
+        $ref: '#/definitions/CatalogEntryT3'
+      is_global_pkg:
+        type: boolean
   TecnoPackageDetail:
     type: object
     properties:
+      crop:
+        $ref: '#/definitions/CatalogEntryT3'
+      is_global_pkg:
+        type: boolean
       description:
         type: string
       edit_date:
@@ -8607,8 +8648,6 @@ definitions:
           properties:
             description:
               type: string
-            crop:
-              type: integer
             estimated_date_day:
               type: integer
             estimated_date_month:
@@ -8670,16 +8709,15 @@ definitions:
   TecnoPackagePOST:
     type: object
     properties:
-      establishment:
-        type: object
-        properties:
-          id:
-            type: integer
+      establishment_id:
+        type: integer
       description:
         type: string
       edit_date:
         type: string
         format: date
+      crop:
+        type: integer
       labour_templates:
         type: array
         items:
@@ -8687,8 +8725,6 @@ definitions:
           properties:
             description:
               type: string
-            crop:
-              type: integer
             estimated_date_day:
               type: integer
             estimated_date_month:
