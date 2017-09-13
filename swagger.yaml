@@ -2979,6 +2979,24 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Inventory'
+  /inventory/validate_for_closing/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Validates exercise for closing
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema:
+            $ref : "#/definitions/InventoryExerciseValidations"
+    
   ### INVENTORY END
   ### INVESTMENT BEGIN
   /investments/:
@@ -4892,11 +4910,11 @@ paths:
           name: establishment_id
           in: query
           required: true
-          type: integer
+          type: integer           
       responses:
         200:
           description: Indicadores obtenidos correctamente
-          schema:
+          schema: 
             type: object
             properties:
               initial_stock:
@@ -4943,7 +4961,7 @@ paths:
                   type: integer
       responses:
         204:
-          description: Indicadores almacenados con exito
+          description: Indicadores almacenados con exito       
   ### CATTLE END
   ### LABOUR BEGIN
   /labours/:
@@ -5162,7 +5180,9 @@ paths:
         200:
           description: Labores obtenidas correctamente
           schema:
-            $ref : "#/definitions/LaboursInventorySummary"
+            type: array
+            items:
+              $ref : "#/definitions/LaboursInventorySummary"
   /labours/validate_for_closing/:
     get:
       security:
@@ -5279,7 +5299,7 @@ paths:
   ### LABOUR END
   
   ### FIN_DE_EJERCICIO
-  /perform_period//:
+  /perform_period/:
     get:
       security:
         - Bearer: []
@@ -5383,6 +5403,44 @@ paths:
             type: array
             items:
               $ref : "#/definitions/PerfomrPeriodDetail"
+  /perform_period/{id}/rainfalls/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Sets 
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: rainfalls
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/ExerciseRainfalls"
+      responses:
+        201:
+          description: Precipitaciones almacenadas correctamente
+  /perform_period/{id}/information_status/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns information status for closing exercise
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Informacion obtenida correctamente
+          schema:
+            $ref : "#/definitions/InformationStatus"            
   ### FIN_DE_EJERCICIO END
   
   ### GIS WSs
@@ -6882,6 +6940,51 @@ definitions:
         type: number
       warning:
         type: boolean
+  InventoryExerciseValidations:
+    type: object
+    properties:
+      errors:
+        type: object
+        properties:
+          negative_stock:
+            type: array
+            items:
+              type: object
+              properties:
+                unit_price:
+                  type: number
+                  format: float
+                inventory_type:
+                  type: string
+                quantity:
+                  type: integer
+                category:
+                  type: string
+                name:
+                  type: string
+                unit:
+                  type: string
+      warnings:
+        type: object
+        properties:
+          unused_services:
+            type: array
+            items:
+              type: object
+              properties:
+                unit_price:
+                  type: number
+                  format: float
+                inventory_type:
+                  type: string
+                quantity:
+                  type: integer
+                category:
+                  type: string
+                name:
+                  type: string
+                unit:
+                  type: string   
   ### SUPPLY/SERVICE AUX DEFINITIONS END
 
   ### SERVICE DEFINITIONS
@@ -7385,6 +7488,8 @@ definitions:
             items:
               type: object
               properties:
+                id:
+                  type: integer
                 category:
                   type: string
                 description:
@@ -7882,38 +7987,64 @@ definitions:
         type: string
         format: date
   TicketExerciseValidations:
-    type: object
-    properties:
-      warnings:
-        type: object
-      errors:
-        type: object
-        properties:
-          duplicates:
-            type: object
-            properties:
-              description_emition_date:
-                type: array
-                items:
+      type: object
+      properties:
+        warnings:
+          type: object
+          properties:
+            pending_payments:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  provider:
+                    type: string
+                  description:
+                    type: string
+                  ticket_number:
+                    type: integer
+                  ticket_type:
+                    type: string
+                  payment_type:
+                    type: string
+                  ammount:
+                    type: number
+                    format: float
+                  pending_ammount:
+                    type: number
+                    format: float
+                  emition_date:
+                    type: string
+                    format: date
+            duplicates:
+              type: object
+              properties:
+                description_emition_date:
                   type: array
                   items:
-                    $ref: "#/definitions/TicketDuplicate"
-              emition_date_provider_id:
-                type: array
-                items:
+                    type: array
+                    items:
+                      $ref: "#/definitions/TicketDuplicate"
+                emition_date_provider_id:
                   type: array
                   items:
-                    $ref: "#/definitions/TicketDuplicate"
-              provider_id_ticket_number:
-                type: array
-                items:
+                    type: array
+                    items:
+                      $ref: "#/definitions/TicketDuplicate"
+                provider_id_ticket_number:
                   type: array
                   items:
-                    $ref: "#/definitions/TicketDuplicate"
-
-  ### END TICKET MODELS
+                    type: array
+                    items:
+                      $ref: "#/definitions/TicketDuplicate"
+        errors:
+          type: object
   
-  ### BEGIN LABOUR MODELS ###
+    ### END TICKET MODELS
+    
+    ### BEGIN LABOUR MODELS ###
   LaboursListItem:
     type: object
     properties:
@@ -8175,30 +8306,28 @@ definitions:
               type: number
               format: float
   LaboursInventorySummary:
-    type: array
-    items:
-      type: object
-      properties:
-        quantity:
-          type: number
-          format: float
-        category:
-          type: integer
-        description:
-          type: string
-        cost:
-          type: number
-          format: float
-        inventory_type:
-          type: string
-        unit:
-          type: string
-        first_use_date:
-          type: string
-          format: date
-        last_use_date:
-          type: string
-          format: date
+    type: object
+    properties:
+      quantity:
+        type: number
+        format: float
+      category:
+        type: string
+      description:
+        type: string
+      cost:
+        type: number
+        format: float
+      inventory_type:
+        type: string
+      unit:
+        type: string
+      first_use_date:
+        type: string
+        format: date
+      last_use_date:
+        type: string
+        format: date
   LabourExerciseValidations:
     type: object
     properties:
@@ -8208,6 +8337,8 @@ definitions:
           unfinished_labours:
             type: object
             properties:
+              id:
+                type: integer
               code:
                 type: string
               description:
@@ -8240,6 +8371,8 @@ definitions:
               properties:
                 crop:
                   type: string
+                crop_type:
+                  type: string
                 lot:
                   type: string
                 description:
@@ -8256,7 +8389,12 @@ definitions:
               type: object
               properties:
                 crop_type:
-                  type: string
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                    description:
+                      type: string
                 final_stock:
                   type: integer
                 initial_stock:
@@ -8278,6 +8416,8 @@ definitions:
             items:
               type: object
               properties:
+                crop_type:
+                  type: string
                 crop:
                   type: string
                 area:
@@ -8586,6 +8726,20 @@ definitions:
   ### TECNO PKG DEFINITIONS END
 
   ### FIN_DE_EJERCICIO DEFINITIONS
+  ExerciseRainfalls:
+    type: object
+    properties:
+      establishment_id:
+        type: integer
+      rainfalls:
+        type: array
+        items:
+          type: object
+          properties:
+            month:
+              type: integer
+            millimeters:
+              type: integer
   PerfomrPeriodDetail:
     type: object
     properties:
@@ -8629,6 +8783,23 @@ definitions:
         type: string
       author:
         type: string
+  InformationStatus:
+    type: object
+    properties:
+      wool:
+        type: boolean
+      land_use:
+        type: boolean
+      general_information:
+        type: boolean
+      agro:
+        type: boolean
+      cattle:
+        type: boolean
+      rainfall:
+        type: boolean
+      inventory:
+        type: boolean        
   ### FIN_DE_EJERCICIO DEFINITIONS
   
   ### GIS DEFINITIONS
