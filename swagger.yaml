@@ -1962,23 +1962,6 @@ paths:
           description: Usos de suelo obtenidos correctamente
           schema:
             $ref : "#/definitions/LandUseSequence"
-  /land_uses/validate_for_closing/:
-    get:
-      security:
-        - Bearer: []
-      description: |
-        Validates exercise for closing
-      parameters:
-        -
-          name: establishment_id
-          in: query
-          required: true
-          type: integer
-      responses:
-        200:
-          description: Validacion realizada correctamente
-          schema:
-            $ref : "#/definitions/LandUseExerciseValidations"
   ### LAND USES END
   ### SERVICE BEGIN
   /inventory/services/:
@@ -2214,68 +2197,6 @@ paths:
                 format: float
               quantity:
                 type: integer
-  /inventory/services/stock_pricing/:
-    get:
-      security:
-        - Bearer: []
-      description: |
-        Returns stock pricing
-      parameters:
-        -
-          name: establishment_id
-          in: query
-          required: true
-          type: integer
-      responses:
-        200:
-          description: Validacion realizada correctamente
-          schema:
-            type: array
-            items:
-              type: object
-              properties:
-                service:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    description:
-                      type: string
-                current_stock:
-                  type: integer
-                unit_price:
-                  type: number
-                  format: float
-                category:
-                  type: string
-    post:
-      security:
-        - Bearer: []
-      description: |
-        Stores services end of exercise pricing
-      parameters:
-        -
-          name: pricings
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              establishment_id:
-                type: integer
-              pricings:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    service_id:
-                      type: integer
-                    price:
-                      type: number
-                      format: float
-      responses:
-        204:
-          description: Valoracion agregada con exito
   ### SERVICE END
   ### SUPPLY BEGIN
   /inventory/supplies/catalogs/:
@@ -2530,68 +2451,6 @@ paths:
                 format: float
               quantity:
                 type: integer
-  /inventory/supplies/stock_pricing/:
-    get:
-      security:
-        - Bearer: []
-      description: |
-        Returns stock pricing for supplies
-      parameters:
-        -
-          name: establishment_id
-          in: query
-          required: true
-          type: integer
-      responses:
-        200:
-          description: Validacion realizada correctamente
-          schema:
-            type: array
-            items:
-              type: object
-              properties:
-                supply:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    description:
-                      type: string
-                current_stock:
-                  type: integer
-                unit_price:
-                  type: number
-                  format: float
-                category:
-                  type: string
-    post:
-      security:
-        - Bearer: []
-      description: |
-        Stores supplies end of exercise pricing
-      parameters:
-        -
-          name: pricings
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              establishment_id:
-                type: integer
-              pricings:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    supply_id:
-                      type: integer
-                    price:
-                      type: number
-                      format: float
-      responses:
-        204:
-          description: Valoracion agregada con exito
   ### SUPPLY END
   ### MAQIUNARIA BEGIN
   /inventory/farm_equipment/:
@@ -3064,23 +2923,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Inventory'
-  /inventory/validate_for_closing/:
-    get:
-      security:
-        - Bearer: []
-      description: |
-        Validates exercise for closing
-      parameters:
-        -
-          name: establishment_id
-          in: query
-          required: true
-          type: integer
-      responses:
-        200:
-          description: Validacion realizada correctamente
-          schema:
-            $ref : "#/definitions/InventoryExerciseValidations"
   ### INVENTORY END
   ### INVESTMENT BEGIN
   /investments/:
@@ -3332,23 +3174,6 @@ paths:
           description: Caja modificada correctamente
           schema:
             $ref: '#/definitions/SavingsBankMovement'
-  /savings_banks/validate_for_closing/:
-    get:
-      security:
-        - Bearer: []
-      description: |
-        Validates exercise for closing
-      parameters:
-        -
-          name: establishment_id
-          in: query
-          required: true
-          type: integer
-      responses:
-        200:
-          description: Validacion realizada correctamente
-          schema:
-            $ref : "#/definitions/BanksExerciseValidations"
   ### CAJAS END
   ### BOLETAS BEGIN
   /tickets/:
@@ -3549,23 +3374,6 @@ paths:
       responses:
         204:
           description: Boleta cancelada Ok
-  /tickets/validate_for_closing/:
-    get:
-      security:
-        - Bearer: []
-      description: |
-        Validates exercise for closing
-      parameters:
-        -
-          name: establishment_id
-          in: query
-          required: true
-          type: integer
-      responses:
-        200:
-          description: Validacion realizada correctamente
-          schema:
-            $ref : "#/definitions/TicketExerciseValidations"
   ### BOLETAS END
   ### AGRO BEGIN
   /agro/margin/:
@@ -3899,128 +3707,6 @@ paths:
                 type: string
               exercise:
                 type: integer
-  /agro/exercise_costs/:
-    get:
-      security:
-        - Bearer: []
-      description: |
-        Returns exercise costs
-      parameters:
-        -
-          name: establishment_id
-          in: query
-          required: true
-          type: integer
-      responses:
-        200:
-          description: Costos obtenidos correctamente
-          schema:
-            $ref : "#/definitions/AgroExerciseCost"
-    post:
-      security:
-        - Bearer: []
-      description: |
-        Sets exercise crop costs
-      parameters:
-        -
-          name: stock
-          in: body
-          required: true
-          description: Adjust mov info
-          schema:
-            type: object
-            properties:
-              establishment_id:
-                type: integer
-              land_uses:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    crop_id:
-                      type: integer
-                    harvested_percentage:
-                      type: integer
-      responses:
-        204:
-          description: Costos asignados correctamente
-  /agro/validate_for_closing/:
-    get:
-      security:
-        - Bearer: []
-      description: |
-        Validates exercise for closing
-      parameters:
-        -
-          name: establishment_id
-          in: query
-          required: true
-          type: integer
-      responses:
-        200:
-          description: Validacion realizada correctamente
-          schema:
-            $ref : "#/definitions/AgroExerciseValidations"
-  /agro/stock_pricing/:
-    get:
-      security:
-        - Bearer: []
-      description: |
-        Returns stock pricing for agro
-      parameters:
-        -
-          name: establishment_id
-          in: query
-          required: true
-          type: integer
-      responses:
-        200:
-          description: Validacion realizada correctamente
-          schema:
-            type: array
-            items:
-              type: object
-              properties:
-                crop_type:
-                  type: object
-                  properties:
-                    value:
-                      type: string
-                    description:
-                      type: string
-                current_stock:
-                  type: integer
-                unit_price:
-                  type: number
-                  format: float
-    post:
-      security:
-        - Bearer: []
-      description: |
-        Stores agro end of exercise pricing
-      parameters:
-        -
-          name: pricings
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              establishment_id:
-                type: integer
-              pricings:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    crop_type:
-                      type: string
-                    price:
-                      type: number
-                      format: float
-      responses:
-        204:
-          description: Valoracion guardada correctamente
   ### AGRO END
   ### CATTLE BEGIN
   /cattle/summary/:
@@ -4946,168 +4632,7 @@ paths:
                         type: string
                   name:
                     type: string
-  /cattle/validate_for_closing/:
-    get:
-      security:
-        - Bearer: []
-      description: |
-        Validates exercise for closing
-      parameters:
-        -
-          name: establishment_id
-          in: query
-          required: true
-          type: integer
-      responses:
-        200:
-          description: Validacion realizada correctamente
-          schema:
-            properties:
-              horse_errors:
-                $ref : "#/definitions/CattleExerciseValidations"
-              bovine_errors:
-                $ref : "#/definitions/CattleExerciseValidations"
-              ovine_errors:
-                $ref : "#/definitions/CattleExerciseValidations"
-  /cattle/{cattle_type}/stock_pricing/:
-    get:
-      security:
-        - Bearer: []
-      description: |
-        Returns stock pricing for cattle
-      parameters:
-        -
-          name: establishment_id
-          in: query
-          required: true
-          type: integer
-        -
-          name: cattle_type
-          in: path
-          required: true
-          enum:
-          - horse
-          - bovine
-          - ovine
-          type: string
-      responses:
-        200:
-          description: Valoracion obtenida correctamente
-          schema:
-            type: array
-            items:
-              type: object
-              properties:
-                category_name:
-                  type: string
-                category_id:
-                  type: integer
-                current_stock:
-                  type: integer
-                weight:
-                  type: number
-                  format: float
-                unit_price:
-                  type: number
-                  format: float
-    post:
-      security:
-        - Bearer: []
-      description: |
-        Stores cattle end of exercise pricing
-      parameters:
-        -
-          name: cattle_type
-          in: path
-          required: true
-          enum:
-          - horse
-          - bovine
-          - ovine
-          type: string
-        -
-          name: pricings
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              establishment_id:
-                type: integer
-              pricings:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    category:
-                      type: integer
-                    price:
-                      type: number
-                      format: float
-      responses:
-        204:
-          description: Valoracion almacenada correctamente
-  /cattle/ovine/wool_indicators/:
-    get:
-      security:
-        - Bearer: []
-      description: |
-        Returns wool indicators
-      parameters:
-        -
-          name: establishment_id
-          in: query
-          required: true
-          type: integer
-      responses:
-        200:
-          description: Indicadores obtenidos correctamente
-          schema:
-            type: object
-            properties:
-              initial_stock:
-                type: integer
-              ammount:
-                type: number
-                format: float
-              tax_ammount:
-                type: number
-                format: float
-              imeba:
-                type: number
-                format: float
-              extra_expenses:
-                type: number
-                format: float
-    post:
-      security:
-        - Bearer: []
-      description: |
-        Stores wool indicators
-      parameters:
-        -
-          name: indicators
-          in: body
-          required: true
-          schema:
-              type: object
-              properties:
-                establishment_id:
-                  type: string
-                sold_wool_kg:
-                  type: number
-                  format: float
-                wool_exercise_production:
-                  type: number
-                  format: float
-                stock_value:
-                  type: number
-                  format: float
-                sheared_quantity:
-                  type: integer
-      responses:
-        204:
-          description: Indicadores almacenados con exito
+
   ### CATTLE END
   ### LABOUR BEGIN
   /labours/:
@@ -5329,23 +4854,6 @@ paths:
             type: array
             items:
               $ref : "#/definitions/LaboursInventorySummary"
-  /labours/validate_for_closing/:
-    get:
-      security:
-        - Bearer: []
-      description: |
-        Validates exercise for closing
-      parameters:
-        -
-          name: establishment_id
-          in: query
-          required: true
-          type: integer
-      responses:
-        200:
-          description: Validacion realizada correctamente
-          schema:
-            $ref : "#/definitions/LabourExerciseValidations"
   /labours/tecno_pkg/:
     get:
       security:
@@ -5693,6 +5201,516 @@ paths:
       responses:
         200:
           description: Nothing to say
+
+  /perform_period/{id}/labours/validate_close/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Validates exercise for closing
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema:
+            $ref : "#/definitions/LabourExerciseValidations"
+
+  /perform_period/{id}/cattle/validate_close/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Validates exercise for closing
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema:
+            properties:
+              horse_errors:
+                $ref : "#/definitions/CattleExerciseValidations"
+              bovine_errors:
+                $ref : "#/definitions/CattleExerciseValidations"
+              ovine_errors:
+                $ref : "#/definitions/CattleExerciseValidations"
+
+  /perform_period/{id}/land_uses/validate_close/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Validates exercise for closing
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema:
+            $ref : "#/definitions/LandUseExerciseValidations"
+
+  /perform_period/{id}/inventory/validate_close/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Validates exercise for closing
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema:
+            $ref : "#/definitions/InventoryExerciseValidations"
+
+  /perform_period/{id}/savings_banks/validate_close/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Validates exercise for closing
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema:
+            $ref : "#/definitions/BanksExerciseValidations"
+
+  /perform_period/{id}/tickets/validate_close/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Validates exercise for closing
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema:
+            $ref : "#/definitions/TicketExerciseValidations"
+
+  /perform_period/{id}/agro/validate_close/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Validates exercise for closing
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema:
+            $ref : "#/definitions/AgroExerciseValidations"
+
+  /perform_period/{id}/agro/exercise_costs/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns exercise costs
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Costos obtenidos correctamente
+          schema:
+            $ref : "#/definitions/AgroExerciseCost"
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Sets exercise crop costs
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: land_uses
+          in: body
+          required: true
+          description: Adjust mov info
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                crop_id:
+                  type: integer
+                harvested_percentage:
+                  type: integer
+      responses:
+        204:
+          description: Costos asignados correctamente
+
+  /perform_period/{id}/agro/pricings/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns stock pricing for agro
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                crop_type:
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                    description:
+                      type: string
+                current_stock:
+                  type: integer
+                unit_price:
+                  type: number
+                  format: float
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores agro end of exercise pricing
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: pricings
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                crop_type:
+                  type: string
+                price:
+                  type: number
+                  format: float
+      responses:
+        204:
+          description: Valoracion guardada correctamente
+
+  /perform_period/{id}/cattle/{cattle_type}/pricings/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns stock pricing for cattle
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+      responses:
+        200:
+          description: Valoracion obtenida correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                category_name:
+                  type: string
+                category_id:
+                  type: integer
+                current_stock:
+                  type: integer
+                weight:
+                  type: number
+                  format: float
+                unit_price:
+                  type: number
+                  format: float
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores cattle end of exercise pricing
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: pricings
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                category:
+                  type: integer
+                price:
+                  type: number
+                  format: float
+      responses:
+        204:
+          description: Valoracion almacenada correctamente
+
+  /perform_period/{id}/cattle/ovine/wool_indicators/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns wool indicators
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Indicadores obtenidos correctamente
+          schema:
+            type: object
+            properties:
+              initial_stock:
+                type: integer
+              ammount:
+                type: number
+                format: float
+              tax_ammount:
+                type: number
+                format: float
+              imeba:
+                type: number
+                format: float
+              extra_expenses:
+                type: number
+                format: float
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores wool indicators
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: indicators
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              sold_wool_kg:
+                type: number
+                format: float
+              wool_exercise_production:
+                type: number
+                format: float
+              stock_value:
+                type: number
+                format: float
+              sheared_quantity:
+                type: integer
+      responses:
+        204:
+          description: Indicadores almacenados con exito
+
+  /perform_period/{id}/inventory/services/pricings/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns stock pricing
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                service:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    description:
+                      type: string
+                current_stock:
+                  type: integer
+                unit_price:
+                  type: number
+                  format: float
+                category:
+                  type: string
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores services end of exercise pricing
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: pricings
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                service_id:
+                  type: integer
+                price:
+                  type: number
+                  format: float
+      responses:
+        204:
+          description: Valoracion agregada con exito
+
+  /perform_period/{id}/inventory/supplies/pricings/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns stock pricing for supplies
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                supply:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    description:
+                      type: string
+                current_stock:
+                  type: integer
+                unit_price:
+                  type: number
+                  format: float
+                category:
+                  type: string
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores supplies end of exercise pricing
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: pricings
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                supply_id:
+                  type: integer
+                price:
+                  type: number
+                  format: float
+      responses:
+        204:
+          description: Valoracion agregada con exito
+
   ### FIN_DE_EJERCICIO END
   ### GIS WSs
   /gis/encode_kml/:
