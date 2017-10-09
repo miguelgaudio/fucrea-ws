@@ -1123,6 +1123,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/CatalogEntryT2'
+              savings_banks_movements_deposit_types:
+                type: array
+                items:
+                  $ref: '#/definitions/CatalogEntryT2'
               savings_banks_movements_types:
                 type: array
                 items:
@@ -1148,6 +1152,10 @@ paths:
                 items:
                   $ref: '#/definitions/CatalogEntryT2'
               ticket_types:
+                type: array
+                items:
+                  $ref: '#/definitions/CatalogEntryT2'
+              sale_types:
                 type: array
                 items:
                   $ref: '#/definitions/CatalogEntryT2'
@@ -1185,6 +1193,21 @@ paths:
                 items:
                   type: string
               categories:
+                type: object
+                properties:
+                  ovine:
+                    type: array
+                    items:
+                      $ref: '#/definitions/CatalogEntryT2'
+                  bovine:
+                    type: array
+                    items:
+                      $ref: '#/definitions/CatalogEntryT2'
+                  horse:
+                    type: array
+                    items:
+                      $ref: '#/definitions/CatalogEntryT2'
+              birth_categories:
                 type: object
                 properties:
                   ovine:
@@ -1957,7 +1980,7 @@ paths:
           schema:
             $ref : "#/definitions/LandUseExerciseValidations"
   ### LAND USES END
-  ### SSERVICE BEGIN
+  ### SERVICE BEGIN
   /inventory/services/:
     get:
       description: |
@@ -2191,7 +2214,69 @@ paths:
                 format: float
               quantity:
                 type: integer
-  ### SSERVICE END
+  /inventory/services/stock_pricing/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns stock pricing
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Validacion realizada correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                service:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    description:
+                      type: string
+                current_stock:
+                  type: integer
+                unit_price:
+                  type: number
+                  format: float
+                category:
+                  type: string
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores services end of exercise pricing
+      parameters:
+        -
+          name: pricings
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              pricings:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    service_id:
+                      type: integer
+                    price:
+                      type: number
+                      format: float
+      responses:
+        204:
+          description: Valoracion agregada con exito
+  ### SERVICE END
   ### SUPPLY BEGIN
   /inventory/supplies/catalogs/:
     get:
@@ -2996,7 +3081,6 @@ paths:
           description: Validacion realizada correctamente
           schema:
             $ref : "#/definitions/InventoryExerciseValidations"
-    
   ### INVENTORY END
   ### INVESTMENT BEGIN
   /investments/:
@@ -3482,7 +3566,6 @@ paths:
           description: Validacion realizada correctamente
           schema:
             $ref : "#/definitions/TicketExerciseValidations"
-
   ### BOLETAS END
   ### AGRO BEGIN
   /agro/margin/:
@@ -3583,7 +3666,6 @@ paths:
                 current_stock:
                   type: number
                   format: float
-  
   /agro/production/harvest/:
     post:
       security:
@@ -3615,6 +3697,55 @@ paths:
       responses:
         201:
           description: Cosecha agrados correctamente
+          schema:
+            type: object
+            properties:
+              area:
+                type: number
+                format: float
+              execution_date:
+                type: string
+                format: date
+              tons:
+                type: number
+                format: float
+              description:
+                type: string
+  /agro/production/harvest/{id}:
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Nothing to say
+      parameters:
+        -
+          name: harvest
+          in: body
+          required: true
+          description: Harvest info
+          schema:
+            type: object
+            properties:
+              execution_date:
+                type: string
+                format: date
+      responses:
+        200:
+          description: Nothing to say
+          schema:
+            type: object
+            properties:
+              area:
+                type: number
+                format: float
+              execution_date:
+                type: string
+                format: date
+              tons:
+                type: number
+                format: float
+              description:
+                type: string
   /agro/production/consume/:
     post:
       security:
@@ -3768,8 +3899,23 @@ paths:
                 type: string
               exercise:
                 type: integer
-
   /agro/exercise_costs/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns exercise costs
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Costos obtenidos correctamente
+          schema:
+            $ref : "#/definitions/AgroExerciseCost"
     post:
       security:
         - Bearer: []
@@ -3795,7 +3941,6 @@ paths:
                       type: integer
                     harvested_percentage:
                       type: integer
-
       responses:
         204:
           description: Costos asignados correctamente
@@ -4013,7 +4158,6 @@ paths:
                       type: string
                     yAxis:
                       type: string
-
   /cattle/{cattle_type}/reproductive/:
     get:
       security:
@@ -4128,7 +4272,6 @@ paths:
       responses:
         204:
           description: Historico de reproductivo eliminado ok
-
   /cattle/{cattle_type}/movements/:
     get:
       security:
@@ -4250,7 +4393,6 @@ paths:
       responses:
         204:
           description: Blah
-  
   /cattle/{cattle_type}/config_weighs/defaults/:
     get:
       security:
@@ -4648,7 +4790,7 @@ paths:
           - ovine
           type: string
         -
-          name: consumption
+          name: consume
           in: body
           required: true
           description: Category change info
@@ -4820,7 +4962,13 @@ paths:
         200:
           description: Validacion realizada correctamente
           schema:
-            $ref : "#/definitions/CattleExerciseValidations"
+            properties:
+              horse_errors:
+                $ref : "#/definitions/CattleExerciseValidations"
+              bovine_errors:
+                $ref : "#/definitions/CattleExerciseValidations"
+              ovine_errors:
+                $ref : "#/definitions/CattleExerciseValidations"
   /cattle/{cattle_type}/stock_pricing/:
     get:
       security:
@@ -4910,11 +5058,11 @@ paths:
           name: establishment_id
           in: query
           required: true
-          type: integer           
+          type: integer
       responses:
         200:
           description: Indicadores obtenidos correctamente
-          schema: 
+          schema:
             type: object
             properties:
               initial_stock:
@@ -4942,8 +5090,6 @@ paths:
           in: body
           required: true
           schema:
-            type: array
-            items:
               type: object
               properties:
                 establishment_id:
@@ -4961,7 +5107,7 @@ paths:
                   type: integer
       responses:
         204:
-          description: Indicadores almacenados con exito       
+          description: Indicadores almacenados con exito
   ### CATTLE END
   ### LABOUR BEGIN
   /labours/:
@@ -5330,7 +5476,6 @@ paths:
           schema:
             $ref : "#/definitions/TecnoPackageDetail"
   ### LABOUR END
-  
   ### FIN_DE_EJERCICIO
   /perform_period/:
     get:
@@ -5441,7 +5586,7 @@ paths:
       security:
         - Bearer: []
       description: |
-        Sets 
+        Sets
       parameters:
         -
           name: id
@@ -5473,9 +5618,82 @@ paths:
         200:
           description: Informacion obtenida correctamente
           schema:
-            $ref : "#/definitions/InformationStatus"            
+            $ref : "#/definitions/InformationStatus"
+  /perform_period/{id}/general_indicators/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns general indicators
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Indicadores obtenidos correctamente
+          schema:
+            $ref : "#/definitions/GeneralIndicators"
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores general indicators
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: indicators
+          in: body
+          required: true
+          schema:
+            $ref : "#/definitions/POSTGeneralIndicators"
+      responses:
+        201:
+          description: Indicadores almacenados con exito
+  /perform_period/{id}/consumptions/change_plan/:
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Cambia los planes de cuenta de todos los movimientos especificados al plan de cuentas dado por parámetro
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: consumption
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              movements:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    movement_type:
+                      type: string
+              first_plan:
+                type: string
+              second_plan:
+                type: string
+              investment_id:
+                type: integer
+      responses:
+        200:
+          description: Nothing to say
   ### FIN_DE_EJERCICIO END
-  
   ### GIS WSs
   /gis/encode_kml/:
     get:
@@ -6816,14 +7034,18 @@ definitions:
                 description:
                   type: string
                 crop:
-                  type: string
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                    description:
+                      type: string
                 cost:
                   type: number
                   format: float
                 execution_date:
                   type: string
                   format: date
-
       warnings:
         type: object
         properties:
@@ -6835,7 +7057,12 @@ definitions:
                 description:
                   type: string
                 crop:
-                  type: string
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                    description:
+                      type: string
                 area:
                   type: number
                   format: float
@@ -6859,7 +7086,12 @@ definitions:
                 description:
                   type: string
                 crop:
-                  type: string
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                    description:
+                      type: string
                 area:
                   type: number
                   format: float
@@ -6946,7 +7178,6 @@ definitions:
               type: array
               items:
                 type: object
-
   ### SUPPLY/SERVICE AUX DEFINITIONS
   Inventory:
     type: object
@@ -6989,10 +7220,17 @@ definitions:
                   format: float
                 inventory_type:
                   type: string
+                id:
+                  type: integer
                 quantity:
                   type: integer
                 category:
-                  type: string
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                    description:
+                      type: string
                 name:
                   type: string
                 unit:
@@ -7010,16 +7248,22 @@ definitions:
                   format: float
                 inventory_type:
                   type: string
+                id:
+                  type: integer
                 quantity:
                   type: integer
                 category:
-                  type: string
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                    description:
+                      type: string
                 name:
                   type: string
                 unit:
-                  type: string   
+                  type: string
   ### SUPPLY/SERVICE AUX DEFINITIONS END
-
   ### SERVICE DEFINITIONS
   ServicePOST:
     type: object
@@ -7091,7 +7335,6 @@ definitions:
           type: number
           format: float
   ### SERVICE DEFINITIONS END
-
   ### SUPPLY DEFINITIONS
   SupplyPOST:
     type: object
@@ -7453,6 +7696,8 @@ definitions:
       execution_date:
         type: string
         format: float
+      deposit_type:
+        type: integer
   SavingsBankMovement:
     type: object
     properties:
@@ -7515,6 +7760,8 @@ definitions:
     properties:
       errors:
         type: object
+      warnings:
+        type: object
         properties:
           negative_savings:
             type: array
@@ -7532,10 +7779,6 @@ definitions:
                 current_savings:
                   type: number
                   format: float
-
-      warnings:
-        type: object
-
   ### SAVINGS BANK DEFINITIONS END
   ### TICKETS DEFINITIONS START
   TicketResponse:
@@ -7680,7 +7923,7 @@ definitions:
       residual_value:
         type: number
         format: float
-  EconomicGeneralItem:
+  EconomicGeneralBuyItem:
     type: object
     properties:
       cost:
@@ -7698,6 +7941,54 @@ definitions:
       second_plan:
         type: string
       investment_id:
+        type: integer
+  EconomicGeneralItem:
+    type: object
+    properties:
+      cost:
+        type: number
+        format: float
+      tax_ammount:
+        type: number
+        format: float
+      imeba:
+        type: number
+        format: float
+      extra_expenses:
+        type: number
+        format: float
+      description:
+        type: string
+      comments:
+        type: string
+      sale_type:
+        type: integer
+  EconomicGeneralGETItem:
+    type: object
+    properties:
+      first_plan_description:
+        type: string
+      second_plan_description:
+        type: string
+      investment_description:
+        type: integer
+      cost:
+        type: number
+        format: float
+      tax_ammount:
+        type: number
+        format: float
+      imeba:
+        type: number
+        format: float
+      extra_expenses:
+        type: number
+        format: float
+      description:
+        type: string
+      comments:
+        type: string
+      sale_type_description:
         type: integer
   TicketDetail:
     type: object
@@ -7774,7 +8065,7 @@ definitions:
               type: object
               allOf:
                 - $ref: "#/definitions/TicketItemBaseDetail"
-                - $ref: "#/definitions/EconomicGeneralItem"
+                - $ref: "#/definitions/EconomicGeneralGETItem"
           agro_stock:
             type: array
             items:
@@ -7855,7 +8146,7 @@ definitions:
           generals:
             type: array
             items:
-              $ref: "#/definitions/EconomicGeneralItem"
+              $ref: "#/definitions/EconomicGeneralBuyItem"
           agro_stock:
             type: array
             items:
@@ -8074,9 +8365,7 @@ definitions:
                       $ref: "#/definitions/TicketDuplicate"
         errors:
           type: object
-  
     ### END TICKET MODELS
-    
     ### BEGIN LABOUR MODELS ###
   LaboursListItem:
     type: object
@@ -8085,7 +8374,6 @@ definitions:
         type: integer
       code:
         type: string
-  
       description:
         type: string
       date:
@@ -8389,7 +8677,6 @@ definitions:
                 type: string
                 format: date
 ### Labours END
-  
 ### AGRO BEGIN
   AgroExerciseValidations:
     type: object
@@ -8466,8 +8753,29 @@ definitions:
             $ref: '#/definitions/Characterization'
           bad_characterization_warning:
             $ref: '#/definitions/Characterization'
+  AgroExerciseCost:
+    type: object
+    properties:
+      previous_exercise_cost:
+        type: integer
+      current_exercise_labours_cost:
+        type: integer
+      next_exercise_labours_cost:
+        type: integer
+      general_cost:
+        type: integer
+      total_area:
+        type: integer
+      crop:
+        type: object
+        properties:
+          id:
+            type: integer
+          description:
+            type: string
+      harvested_percentage:
+        type: integer
 ### AGRO END
-
 ### CATTLE BEGIN
   CattleStock:
     type: object
@@ -8501,14 +8809,16 @@ definitions:
         type: object
         properties:
           weigh_errors:
-            type: object
-            properties:
-              category:
-                type: string
-              weighs:
-                type: array
-                items:
-                  type: boolean
+            type: array
+            items:
+              type: object
+              properties:
+                category:
+                  type: string
+                weighs:
+                  type: array
+                  items:
+                    type: boolean
           stock_errors:
             type: array
             items:
@@ -8526,7 +8836,9 @@ definitions:
                   type: integer
                 adjusts:
                   type: integer
-                category_changes:
+                category_changes_minus:
+                  type: integer
+                category_changes_plus:
                   type: integer
                 consumptions:
                   type: integer
@@ -8541,7 +8853,6 @@ definitions:
             $ref: '#/definitions/Characterization'
           cattle_with_no_data_warning:
             $ref: '#/definitions/Characterization'
-
   Weighing:
     type: object
     properties:
@@ -8607,7 +8918,6 @@ definitions:
         type: integer
         # writeOnly: true
 ### CATTLE END
-
   ### TECNO PKG DEFINITIONS
   TecnoPackageBrief:
     type: object
@@ -8760,7 +9070,6 @@ definitions:
                       id:
                         type: integer
   ### TECNO PKG DEFINITIONS END
-
   ### FIN_DE_EJERCICIO DEFINITIONS
   ExerciseRainfalls:
     type: object
@@ -8788,6 +9097,17 @@ definitions:
             type: integer
           name:
             type: string
+          some_company:
+            type: object
+            properties:
+              id:
+                type: integer
+              fantasy_name:
+                type: string
+              business_name:
+                type: string
+              rut:
+                type: string
           crea_group:
             type: object
             properties:
@@ -8826,7 +9146,7 @@ definitions:
         type: boolean
       land_use:
         type: boolean
-      general_information:
+      general:
         type: boolean
       agro:
         type: boolean
@@ -8835,9 +9155,56 @@ definitions:
       rainfall:
         type: boolean
       inventory:
-        type: boolean        
+        type: boolean
+  GeneralIndicators:
+    type: object
+    properties:
+      forestation_area:
+        type: integer
+      active_land_end_exercise:
+        type: integer
+      active_leased_land_end_exercise:
+        type: integer
+      passive_short_term_end_exercise:
+        type: integer
+      passive_long_term_end_exercise:
+        type: integer
+      equivalent_handwork:
+        type: integer
+      woods_value:
+        type: integer
+      cattle_production:
+        type: integer
+      legumes_meadow:
+        type: integer
+      own_land:
+        type: integer
+      leased_land:
+        type: integer
+      passive_long_term_begin_exercise:
+        type: integer
+      passive_short_term_begin_exercise:
+        type: integer
+  POSTGeneralIndicators:
+    type: object
+    properties:
+      active_land_end_exercise:
+        type: integer
+      active_leased_land_end_exercise:
+        type: integer
+      passive_short_term_end_exercise:
+        type: integer
+      passive_long_term_end_exercise:
+        type: integer
+      equivalent_handwork:
+        type: integer
+      woods_value:
+        type: integer
+      cattle_production:
+        type: integer
+      legumes_meadow:
+        type: integer
   ### FIN_DE_EJERCICIO DEFINITIONS
-  
   ### GIS DEFINITIONS
   Position:
     type: array
