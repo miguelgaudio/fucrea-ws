@@ -3519,13 +3519,18 @@ paths:
                 format: float
               description:
                 type: string
-  /agro/production/harvest/{id}:
+  /agro/production/harvest/{id}/:
     patch:
       security:
         - Bearer: []
       description: |
         Nothing to say
       parameters:
+        -
+          name: id
+          in: path
+          type: integer
+          required: true
         -
           name: harvest
           in: body
@@ -5584,6 +5589,54 @@ paths:
       responses:
         204:
           description: Indicadores almacenados con exito
+          
+  /perform_period/{id}/cattle/ovine/initial_wool_indicators/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns wool indicators
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Indicadores obtenidos correctamente
+          schema:
+            type: object
+            properties:
+              initial_stock:
+                type: integer
+              wool_kg_price:
+                type: integer
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores wool indicators
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: indicators
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              initial_stock:
+                type: integer
+              wool_kg_price:
+                type: integer
+      responses:
+        204:
+          description: Indicadores almacenados con exito          
 
   /perform_period/{id}/inventory/services/pricings/:
     get:
@@ -9245,6 +9298,8 @@ definitions:
           - Point
       coordinates:
         type: array
+        items:
+          type: integer
   MultiPolygon:
     allOf:
       - $ref: "#/definitions/GEOJson"
