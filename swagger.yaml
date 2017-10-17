@@ -371,6 +371,24 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Establishment'
+  /establishments/{id}/active_characterization/:
+    get:
+      description: |
+        Gets active establishment characterization
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: id
+          in: path
+          description: Establishment's id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Caracterizacion obtenida correctamente
+          schema:
+              $ref: '#/definitions/Characterization'              
   /establishments/{id}/:
     patch:
        description: |
@@ -500,6 +518,339 @@ paths:
            description: Lote modificado con éxito
            schema:
             $ref: '#/definitions/LotInEstablishmentPOST'
+  /establishment/{id}/cattle/ovine/initial_wool/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns wool indicators
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Indicadores obtenidos correctamente
+          schema:
+            type: object
+            properties:
+              wool_initial_stock:
+                type: integer
+              wool_kg_price:
+                type: integer
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores wool indicators
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: indicators
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              wool_initial_stock:
+                type: integer
+              wool_kg_price:
+                type: integer
+      responses:
+        204:
+          description: Indicadores almacenados con exito          
+  /establishment/{id}/initial_wood_indicators/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns wood indicators
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Indicadores obtenidos correctamente
+          schema:
+            type: object
+            properties:
+              woods_value:
+                type: integer
+              
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores wood indicators
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: indicators
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              woods_value:
+                type: integer
+      responses:
+        204:
+          description: Indicadores almacenados con exito                    
+  /establishment/{id}/initial_passive_indicators/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns passive indicators
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Indicadores obtenidos correctamente
+          schema:
+            type: object
+            properties:
+              passive_long_term_begin_exercise:
+                type: integer
+              passive_short_term_begin_exercise:
+                type: integer
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores wool indicators
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: indicators
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              passive_short_term_begin_exercise:
+                type: integer
+              passive_long_term_begin_exercise:
+                type: integer
+      responses:
+        204:
+          description: Indicadores almacenados con exito          
+  /establishment/{id}/land_use/initial_costs/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns land use initial costs
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Costos obtenidos correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                crop_id:
+                  type: integer
+                crop_description:
+                  type: string
+                cost:
+                  type: integer
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores land use costs
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: land_uses
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                crop_id:
+                  type: integer
+                cost:
+                  type: integer
+      responses:
+        204:
+          description: Indicadores almacenados con exito                    
+  /establishment/{id}/cattle/{cattle_type}/initial_movement/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns cattle initial movements
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: cattle_type
+          in: path
+          required: true
+          type: string
+          enum:
+          - horse
+          - bovine
+          - ovine
+      responses:
+        200:
+          description: Movimientos obtenidos correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                category:
+                  type: object
+                  properties:
+                    value:
+                      type: integer
+                    description:
+                      type: string
+                quantity:
+                  type: integer
+                unit_cost:
+                  type: integer
+                unit_weight:
+                  type: integer
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores initial movements
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: cattle_type
+          in: path
+          required: true
+          type: string
+          enum:
+          - horse
+          - bovine
+          - ovine          
+        -
+          name: movements
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                category:
+                  type: integer
+                quantity:
+                  type: integer
+                unit_cost:
+                  type: integer
+                unit_weight:
+                  type: integer
+      responses:
+        201:
+          description: Movimientos almacenados con exito  
+  /establishment/{id}/agro/initial_movement/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns agro initial movements
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer        
+      responses:
+        200:
+          description: Movimientos obtenidos correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                cattle_type:
+                  type: object
+                  properties:
+                    value:
+                      type: integer
+                    description:
+                      type: string
+                tons:
+                  type: integer
+                unit_cost:
+                  type: integer                
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores initial movements
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer                 
+        -
+          name: movements
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                crop_type:
+                  type: string
+                tons:
+                  type: integer
+                unit_cost:
+                  type: integer                
+      responses:
+        201:
+          description: Movimientos almacenados con exito          
   /companies/:
     get:
       description: |
@@ -2009,6 +2360,25 @@ paths:
           description: Insumo agrado correctamente
           schema:
             $ref: '#/definitions/ServiceDetail'
+  /inventory/services/catalogs/:
+    get:
+      description: |
+         Lista los catalogos de insumos del establecimiento y los globales
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ServiceCatalogItem'
   /inventory/services/{id}/:
     get:
       description: |
@@ -2036,13 +2406,13 @@ paths:
           name: id
           in: path
           required: true
-          description: Supply's id
+          description: nothing
           type: integer
         -
-          name: supply
+          name: service
           in: body
           required: true
-          description: Supply info
+          description: info
           schema:
             type: object
             properties:
@@ -2056,7 +2426,7 @@ paths:
           schema:
             $ref: '#/definitions/ServiceDetail'
   /inventory/services/{id}/add/:
-    post:
+    patch:
       security:
         - Bearer: []
       description: |
@@ -2066,13 +2436,13 @@ paths:
           name: id
           in: path
           required: true
-          description: Supply's id
+          description: nothing
           type: integer
         -
-          name: supply
+          name: service
           in: body
           required: true
-          description: Supply info
+          description: info
           schema:
             type: object
             properties:
@@ -2087,7 +2457,7 @@ paths:
                 format: date
       responses:
         201:
-          description: Insumos agrados correctamente
+          description: nothing
           schema:
             type: object
             properties:
@@ -2101,69 +2471,69 @@ paths:
                 format: float
               quantity:
                 type: integer
-  # /inventory/services/{id}/loss/:
-  #   post:
-  #     security:
-  #       - Bearer: []
-  #     description: |
-  #       Decrements a specified quantity for the selected supply
-  #     parameters:
-  #       -
-  #         name: id
-  #         in: path
-  #         required: true
-  #         description: Supply's id
-  #         type: integer
-  #       -
-  #         name: supply
-  #         in: body
-  #         required: true
-  #         description: Supply info
-  #         schema:
-  #           type: object
-  #           properties:
-  #             loss_reason:
-  #               type: string
-  #             quantity:
-  #               type: number
-  #               format: float
-  #             execution_date:
-  #               type: string
-  #               format: date
-  #     responses:
-  #       201:
-  #         description: Pérdida de servicio declarada correctamente
-  #         schema:
-  #           type: object
-  #           properties:
-  #             execution_date:
-  #               type: string
-  #               format: date
-  #             id:
-  #               type: integer
-  #             cost:
-  #               type: number
-  #               format: float
-  #             quantity:
-  #               type: integer
-  /inventory/services/{id}/use/:
-    post:
+  /inventory/services/{id}/loss/:
+    patch:
       security:
         - Bearer: []
       description: |
-        Decrements a specified quantity for the selected supply
+        Decrements a specified quantity for the selected service
       parameters:
         -
           name: id
           in: path
           required: true
-          description: Supply's id
+          description: nothing
           type: integer
         -
-          name: supply
+          name: service
           in: body
           required: true
-          description: Supply info
+          description: info
+          schema:
+            type: object
+            properties:
+              loss_reason:
+                type: string
+              quantity:
+                type: number
+                format: float
+              execution_date:
+                type: string
+                format: date
+      responses:
+        201:
+          description: Pérdida de servicio declarada correctamente
+          schema:
+            type: object
+            properties:
+              execution_date:
+                type: string
+                format: date
+              id:
+                type: integer
+              cost:
+                type: number
+                format: float
+              quantity:
+                type: integer
+  /inventory/services/{id}/use/:
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Decrements a specified quantity for the selected service
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          description: nothing
+          type: integer
+        -
+          name: service
+          in: body
+          required: true
+          description: info
           schema:
             type: object
             properties:
@@ -2720,8 +3090,6 @@ paths:
                       type: integer
                     name:
                       type: string
-                    unit:
-                      type: integer
                     category:
                       type: integer
                     unit_price:
@@ -2730,6 +3098,8 @@ paths:
                     unit_price_update_date:
                       type: string
                       format: date
+                    unit:
+                      $ref: '#/definitions/CatalogEntryT3'
               service:
                 type: array
                 items:
@@ -2739,8 +3109,6 @@ paths:
                       type: integer
                     name:
                       type: string
-                    unit:
-                      type: integer
                     category:
                       type: integer
                     unit_price:
@@ -2749,6 +3117,8 @@ paths:
                     unit_price_update_date:
                       type: string
                       format: date
+                    unit:
+                      $ref: '#/definitions/CatalogEntryT3'
   /inventory/movements/:
     get:
       description: |
@@ -5094,6 +5464,31 @@ paths:
             type: array
             items:
               $ref : "#/definitions/PerfomrPeriodDetail"
+  /perform_period/{id}/indicators_preview/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Visualiza algunos indicadores
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                ref_name:
+                  type: string
+                value:
+                  type: number
+                  format: float
   /perform_period/{id}/rainfalls/:
     post:
       security:
@@ -5111,10 +5506,34 @@ paths:
           in: body
           required: true
           schema:
-            $ref: "#/definitions/ExerciseRainfalls"
+            type: array
+            items:
+              $ref: "#/definitions/MonthRainfalls"
       responses:
         201:
-          description: Precipitaciones almacenadas correctamente
+          description: Ok
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/MonthRainfalls"
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Sets
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/MonthRainfalls"
   /perform_period/{id}/information_status/:
     get:
       security:
@@ -5414,7 +5833,7 @@ paths:
                       type: string
                 current_stock:
                   type: integer
-                unit_price:
+                price:
                   type: number
                   format: float
     post:
@@ -5443,8 +5862,25 @@ paths:
                   type: number
                   format: float
       responses:
-        204:
+        201:
           description: Valoracion guardada correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                crop_type:
+                  type: object
+                  properties:
+                    value:
+                      type: string
+                    description:
+                      type: string
+                current_stock:
+                  type: integer
+                price:
+                  type: number
+                  format: float
 
   /perform_period/{id}/cattle/{cattle_type}/pricings/:
     get:
@@ -5484,7 +5920,7 @@ paths:
                 weight:
                   type: number
                   format: float
-                unit_price:
+                price:
                   type: number
                   format: float
     post:
@@ -5522,8 +5958,25 @@ paths:
                   type: number
                   format: float
       responses:
-        204:
+        201:
           description: Valoracion almacenada correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                category_name:
+                  type: string
+                category_id:
+                  type: integer
+                current_stock:
+                  type: integer
+                weight:
+                  type: number
+                  format: float
+                price:
+                  type: number
+                  format: float
 
   /perform_period/{id}/cattle/ovine/wool_indicators/:
     get:
@@ -5543,6 +5996,18 @@ paths:
           schema:
             type: object
             properties:
+              sold_wool_kg:
+                type: number
+                format: float
+              wool_exercise_production:
+                type: number
+                format: float
+              stock_value:
+                type: number
+                format: float
+              sheared_quantity:
+                type: integer
+            
               initial_stock:
                 type: integer
               ammount:
@@ -5587,56 +6052,37 @@ paths:
               sheared_quantity:
                 type: integer
       responses:
-        204:
+        201:
           description: Indicadores almacenados con exito
-          
-  /perform_period/{id}/cattle/ovine/initial_wool_indicators/:
-    get:
-      security:
-        - Bearer: []
-      description: |
-        Returns wool indicators
-      parameters:
-        -
-          name: id
-          in: path
-          required: true
-          type: integer
-      responses:
-        200:
-          description: Indicadores obtenidos correctamente
           schema:
             type: object
             properties:
+              sold_wool_kg:
+                type: number
+                format: float
+              wool_exercise_production:
+                type: number
+                format: float
+              stock_value:
+                type: number
+                format: float
+              sheared_quantity:
+                type: integer
+            
               initial_stock:
                 type: integer
-              wool_kg_price:
-                type: integer
-    post:
-      security:
-        - Bearer: []
-      description: |
-        Stores wool indicators
-      parameters:
-        -
-          name: id
-          in: path
-          required: true
-          type: integer
-        -
-          name: indicators
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              initial_stock:
-                type: integer
-              wool_kg_price:
-                type: integer
-      responses:
-        204:
-          description: Indicadores almacenados con exito          
+              ammount:
+                type: number
+                format: float
+              tax_ammount:
+                type: number
+                format: float
+              imeba:
+                type: number
+                format: float
+              extra_expenses:
+                type: number
+                format: float
 
   /perform_period/{id}/inventory/services/pricings/:
     get:
@@ -5667,7 +6113,7 @@ paths:
                       type: string
                 current_stock:
                   type: integer
-                unit_price:
+                price:
                   type: number
                   format: float
                 category:
@@ -5698,8 +6144,27 @@ paths:
                   type: number
                   format: float
       responses:
-        204:
+        201:
           description: Valoracion agregada con exito
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                service:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    description:
+                      type: string
+                current_stock:
+                  type: integer
+                price:
+                  type: number
+                  format: float
+                category:
+                  type: string
 
   /perform_period/{id}/inventory/supplies/pricings/:
     get:
@@ -5730,7 +6195,7 @@ paths:
                       type: string
                 current_stock:
                   type: integer
-                unit_price:
+                price:
                   type: number
                   format: float
                 category:
@@ -5761,8 +6226,27 @@ paths:
                   type: number
                   format: float
       responses:
-        204:
+        201:
           description: Valoracion agregada con exito
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                supply:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    description:
+                      type: string
+                current_stock:
+                  type: integer
+                price:
+                  type: number
+                  format: float
+                category:
+                  type: string
 
   ### FIN_DE_EJERCICIO END
   ### GIS WSs
@@ -6500,6 +6984,9 @@ definitions:
         type: integer
       category:
         type: integer
+      creation_date:
+        type: string
+        format: date
   IndicatorFilterPOSTList:
     type: object
     properties:
@@ -7021,6 +7508,10 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/CropCatalog'
+      winter_crops:
+        type: array
+        items:
+          $ref: '#/definitions/CatalogEntryT2'
   LandUseByLot:
     type: object
     properties:
@@ -7146,6 +7637,8 @@ definitions:
                 harvest_date:
                   type: string
                   format: date
+                harvest_id:
+                  type: integer
                 start_date:
                   type: string
                   format: date
@@ -7405,6 +7898,15 @@ definitions:
         stock_value:
           type: number
           format: float
+  ServiceCatalogItem:
+    type: object
+    properties:
+      id:
+        type: integer
+      description:
+        type: string
+      unit:
+        $ref: '#/definitions/CatalogEntryT3'
   ### SERVICE DEFINITIONS END
   ### SUPPLY DEFINITIONS
   SupplyPOST:
@@ -7470,6 +7972,8 @@ definitions:
           - Otro
       establishment_name:
         type: string
+      catalog:
+        $ref: '#/definitions/SupplyCatalogItem'
       unit_price:
         type: number
       unit:
@@ -7527,7 +8031,7 @@ definitions:
       description:
         type: string
       unit:
-        type: string
+        $ref: '#/definitions/CatalogEntryT3'
   SupplyList:
     type: array
     items:
@@ -9142,20 +9646,13 @@ definitions:
                         type: integer
   ### TECNO PKG DEFINITIONS END
   ### FIN_DE_EJERCICIO DEFINITIONS
-  ExerciseRainfalls:
+  MonthRainfalls:
     type: object
     properties:
-      establishment_id:
+      month:
         type: integer
-      rainfalls:
-        type: array
-        items:
-          type: object
-          properties:
-            month:
-              type: integer
-            millimeters:
-              type: integer
+      millimeters:
+        type: integer
   PerfomrPeriodDetail:
     type: object
     properties:
