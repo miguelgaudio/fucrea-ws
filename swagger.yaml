@@ -518,7 +518,7 @@ paths:
            description: Lote modificado con éxito
            schema:
             $ref: '#/definitions/LotInEstablishmentPOST'
-  /establishment/{id}/cattle/ovine/initial_wool/:
+  /establishments/{id}/cattle/ovine/initial_wool/:
     get:
       security:
         - Bearer: []
@@ -565,7 +565,7 @@ paths:
       responses:
         204:
           description: Indicadores almacenados con exito          
-  /establishment/{id}/initial_wood_indicators/:
+  /establishments/{id}/initial_wood_indicators/:
     get:
       security:
         - Bearer: []
@@ -609,7 +609,7 @@ paths:
       responses:
         204:
           description: Indicadores almacenados con exito                    
-  /establishment/{id}/initial_passive_indicators/:
+  /establishments/{id}/initial_passive_indicators/:
     get:
       security:
         - Bearer: []
@@ -656,7 +656,7 @@ paths:
       responses:
         204:
           description: Indicadores almacenados con exito          
-  /establishment/{id}/land_use/initial_costs/:
+  /establishments/{id}/land_use/initial_costs/:
     get:
       security:
         - Bearer: []
@@ -709,7 +709,7 @@ paths:
       responses:
         204:
           description: Indicadores almacenados con exito                    
-  /establishment/{id}/cattle/{cattle_type}/initial_movement/:
+  /establishments/{id}/cattle/{cattle_type}/initial_movement/:
     get:
       security:
         - Bearer: []
@@ -791,7 +791,7 @@ paths:
       responses:
         201:
           description: Movimientos almacenados con exito  
-  /establishment/{id}/agro/initial_movement/:
+  /establishments/{id}/agro/initial_movement/:
     get:
       security:
         - Bearer: []
@@ -851,6 +851,96 @@ paths:
       responses:
         201:
           description: Movimientos almacenados con exito          
+  /establishments/{id}/initial_status/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Returns initialization status
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Estados obtenido correctamente
+          schema:
+              type: object
+              properties:
+                personal_information:
+                  type: boolean
+                characterization:
+                  type: boolean
+                agro:
+                  type: boolean
+                cattle:
+                  type: boolean
+                inventory:
+                  type: boolean
+                investments:
+                  type: boolean
+                economical:
+                  type: boolean
+                woods:
+                  type: boolean
+                lots:
+                  type: boolean
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores initial status
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: status
+          in: body
+          required: true
+          schema:
+              type: object
+              properties:
+                personal_information:
+                  type: boolean
+                characterization:
+                  type: boolean
+                agro:
+                  type: boolean
+                cattle:
+                  type: boolean
+                inventory:
+                  type: boolean
+                investments:
+                  type: boolean
+                economical:
+                  type: boolean
+                woods:
+                  type: boolean
+                lots:
+                  type: boolean
+      responses:
+        204:
+          description: Estados almacenados con exito
+  /establishments/{id}/initialize/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Stores initial indicators
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        204:
+          description: Establecimiento inicializado con exito
   /companies/:
     get:
       description: |
@@ -1533,6 +1623,12 @@ paths:
         Lists all the forms to use in cattle section
       security:
         - Bearer: []
+      parameters:
+        -
+          name: extended
+          type: boolean
+          required: false
+          in: query
       responses:
         200:
           description: Formularios obtenidos correctamente
@@ -1549,15 +1645,15 @@ paths:
                   ovine:
                     type: array
                     items:
-                      $ref: '#/definitions/CatalogEntryT2'
+                      $ref: '#/definitions/CatalogEntryCattle'
                   bovine:
                     type: array
                     items:
-                      $ref: '#/definitions/CatalogEntryT2'
+                      $ref: '#/definitions/CatalogEntryCattle'
                   horse:
                     type: array
                     items:
-                      $ref: '#/definitions/CatalogEntryT2'
+                      $ref: '#/definitions/CatalogEntryCattleHorse'
               birth_categories:
                 type: object
                 properties:
@@ -2034,6 +2130,64 @@ paths:
       responses:
         200:
           description: Indicadores obtenidos correctamente
+  /indicators/sustentability/detail/:
+    get:
+      description: |
+        Returns an indicator list to show on the table
+      responses:
+        200:
+          description: Indicadores obtenidos correctamente
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/IndicatorDetailList'
+    post:
+      description: |
+        Calculates an indicator acording to selected chategorization and filters
+      parameters:
+        -
+          name: comparative
+          in: body
+          required: false
+          description: Filters to calculate indicator
+          schema:
+            properties:
+              compare_w_myself:
+                type: boolean
+              exercise_date:
+                type: integer
+              company_id:
+                type: integer
+              establishment_id:
+                type: integer
+              characterization:
+                $ref: '#/definitions/CharacterizationPOSTList'
+              filters:
+                type: array
+                items:
+                  $ref: '#/definitions/IndicatorFilterPOSTList'
+      responses:
+        200:
+          description: Indicadores obtenidos correctamente
+          schema:
+            $ref: '#/definitions/IndicatorDetailList'
+    delete:
+      description: |
+        Deletes a stored indicator detail
+      parameters:
+        -
+          name: ids
+          in: query
+          required: false
+          description: Indicator ids to delete, comma separated string
+          type: array
+          items:
+            type: string
+      responses:
+        204:
+          description: Indicador eliminada correctamente
+        404:
+          description: Indicador no enontrado
   ### INDICATORS DEFINITIONS END
   ### LAND USES SERVICES
   /land_uses/summary/:
@@ -2265,15 +2419,20 @@ paths:
         Lists land uses by lot
       parameters:
         -
-         name: establishment_id
-         in: query
-         required: true
-         type: integer
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
         -
-         name: exercise
-         in: query
-         required: true
-         type: integer
+          name: exercise
+          in: query
+          required: true
+          type: integer
+        -
+          name: hide_empty
+          in: query
+          required: false
+          type: boolean
       responses:
         200:
           description: Usos de suelo obtenidos correctamente
@@ -3585,6 +3744,11 @@ paths:
           required: false
           type: string
           format: date
+        -
+          name: extended
+          in: query
+          required: false
+          type: boolean
       responses:
         200:
           description: Boletas obtenidas correctamente
@@ -3889,6 +4053,47 @@ paths:
                 format: float
               description:
                 type: string
+  /agro/production/harvest/bulk_fixdate/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Cambia las fechas de ejecucion de los distintos movimientos enviados
+      parameters:
+        -
+          name: harvest
+          in: body
+          required: true
+          description: Harvest info
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                harvest_id:
+                  type: integer
+                harvest_date:
+                  type: string
+                  format: date
+      responses:
+        200:
+          description: Cosechas modificadas
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                area:
+                  type: number
+                  format: float
+                execution_date:
+                  type: string
+                  format: date
+                tons:
+                  type: number
+                  format: float
+                description:
+                  type: string
   /agro/production/harvest/{id}/:
     patch:
       security:
@@ -6249,6 +6454,835 @@ paths:
                   type: string
 
   ### FIN_DE_EJERCICIO END
+  
+  ### PLANNING BEGIN
+  /planning/:
+    get:
+      description: |
+         List plannings for the specified establishment and exercise
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: PLanificaciones obtenidas correctamente
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Planning'
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Creates Savings bank
+      parameters:
+        -
+          name: planning
+          in: body
+          required: true
+          description: savings bank info
+          schema:
+            $ref: '#/definitions/PlanningPOST'
+      responses:
+        201:
+          description: Planificacion agregada correctamente
+          schema:
+            $ref: '#/definitions/Planning'
+  
+  /planning/{id}/copy/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Copia en profundidad un escenario en uno nuevo, con todo igual excepto su descripción
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: planning
+          in: body
+          required: true
+          description: info
+          schema:
+            type: object
+            properties:
+              description:
+                type: string
+      responses:
+        201:
+          description: Planificacion copiada correctamente
+          schema:
+            $ref: '#/definitions/Planning'
+  /planning/{id}/land_uses/detail/:
+    get:
+      description: |
+        Returns land use values by type and exercise. Company_id, establishment_id and crea_group_id are exclusive between them. Undefined hectares are sent by the crop key "undefined"
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Usos de suelo obtenidos correctamente
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PlanningMonthlyLandUse'
+    post:
+      description: |
+        Updates a land use for selected months. Actions 0=crear, 1=modificar y 2=quitar
+      parameters:
+        -
+          name: land_use
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              lot_id:
+                type: integer
+              planning_id:
+                type: integer
+              month_start:
+                type: integer
+              crops:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    crop_id:
+                      type: integer
+                    hectares:
+                      type: integer
+                    duration:
+                      type: integer
+                    description:
+                      type: string
+                    previous_duration:
+                      type: integer
+                    previous_description:
+                      type: string
+                    previous_hectares:
+                      type: number
+                      format: float
+                    action:
+                      type: integer
+                      description: 0=crear, 1=modificar y 2=quitar
+      responses:
+        200:
+          description: Uso de suelo actualizado correctamente
+    delete:
+      description: |
+        Deletes all land uses for selected months
+      parameters:
+        -
+          name: land_use
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              lot_id:
+                type: integer
+              planning_id:
+                type: integer
+              month_start:
+                type: integer
+              duration:
+                type: integer
+      responses:
+        200:
+          description: Uso de suelo actualizado correctamente
+  /planning/{id}/land_uses/copy/:
+    post:
+      description: |
+        Copia uso de suelo de la gestion
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        201:
+          description: Uso de suelo actualizado correctamente
+  /planning/{id}/agro/:
+    get:
+      description: |
+        Returns agro planning by crop
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Planificacion obtenida correctamente
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AgroPlanningResponse'
+    post:
+      description: |
+        Updates agro planning
+      parameters:
+        -
+          name: crops
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                crop_id:
+                  type: integer
+                throwput:
+                  type: number
+                  format: float
+                cost:
+                  type: integer
+                unit_price:
+                  type: integer
+      responses:
+        201:
+          description: Planificacion actualizada correctamente
+  /planning/{id}/cattle/{cattle_type}/movements/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Cattle movements
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Movimientos obtenidos correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                category:
+                  type: string
+                movement_type:
+                  type: string
+                quantity:
+                  type: integer
+                total_weight:
+                  type: number
+                  format: float
+                unit_cost:
+                  type: number
+                  format: float
+                execution_date:
+                  type: string
+                  format: date
+  /planning/{id}/cattle/{cattle_type}/movements/{movement_id}/:
+    delete:
+      security:
+        - Bearer: []
+      description: |
+        Cattle movements
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: movement_id
+          in: path
+          required: true
+          type: integer
+      responses:
+        204:
+          description: Movimiento eliminado correctamente
+  /planning/{id}/cattle/{cattle_type}/birth/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Birth movement for bovine cattle
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true          
+          type: integer
+        -
+          name: birth
+          in: body
+          required: true
+          description: Birth info
+          schema:
+            type: object
+            properties:
+              category:
+                type: integer
+              execution_date:
+                type: string
+                format: date
+              quantity:
+                type: integer                
+      responses:
+        201:
+          description: Movimientos creados correctamente
+  /planning/{id}/cattle/{cattle_type}/death/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Death movement for bovines
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true          
+          type: integer
+        -
+          name: death
+          in: body
+          required: true
+          description: Deaths info
+          schema:        
+            properties:
+              category:
+                type: integer
+              quantity:
+                type: integer  
+              execution_date:
+                type: string
+                format: date
+      responses:
+        201:
+          description: Movimientos creados correctamente
+  /planning/{id}/cattle/{cattle_type}/category_change/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Category change movement for bovines
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: change
+          in: body
+          required: true
+          description: Category change info
+          schema:
+            type: object
+            properties:
+              category:
+                type: integer
+              quantity:
+                type: integer
+              destination_category:
+                type: integer
+              execution_date:
+                type: string
+                format: date
+      responses:
+        201:
+          description: Movimiento creado correctamente
+  /planning/{id}/cattle/{cattle_type}/consumption/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Consumption movement for bovines
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: consume
+          in: body
+          required: true
+          description: Category change info
+          schema:
+            type: object
+            properties:
+              category:
+                type: integer
+              quantity:
+                type: integer
+              unit_weight:
+                type: number
+                format: float
+              unit_price:
+                type: number
+                format: float
+              execution_date:
+                type: string
+                format: date
+      responses:
+        201:
+          description: Movimiento creado correctamente
+  /planning/{id}/cattle/{cattle_type}/sale/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Consumption movement for bovines
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: sale
+          in: body
+          required: true
+          description: Category change info
+          schema:
+            type: object
+            properties:
+              category:
+                type: integer
+              quantity:
+                type: integer
+              unit_weight:
+                type: number
+                format: float
+              unit_price:
+                type: number
+                format: float
+              execution_date:
+                type: string
+                format: date
+      responses:
+        201:
+          description: Movimiento creado correctamente
+  /planning/{id}/cattle/{cattle_type}/purchase/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Consumption movement for bovines
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: purchase
+          in: body
+          required: true
+          description: Category change info
+          schema:
+            type: object
+            properties:
+              category:
+                type: integer
+              quantity:
+                type: integer
+              unit_weight:
+                type: number
+                format: float
+              unit_price:
+                type: number
+                format: float
+              execution_date:
+                type: string
+                format: date
+      responses:
+        201:
+          description: Movimiento creado correctamente          
+  /planning/{id}/cattle/{cattle_type}/stock/:
+    get:
+      description: |
+        Returns agro planning by crop
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - horse
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          type: integer        
+      responses:
+        200:
+          description: Stocks obtenida correctamente
+          schema:            
+            type: array
+            items:
+              $ref: '#/definitions/CattleStockPlanningResponse'
+              
+    post:
+      description: |
+        Updates cattle stock planning
+      parameters:
+        -
+          name: stocks
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                category_id:
+                  type: integer
+                first_weigh:
+                  type: number
+                  format: float
+                second_weigh:
+                  type: number
+                  format: float
+                third_weigh:
+                  type: number
+                  format: float
+                fourth_weigh:
+                  type: number
+                  format: float
+                final_price:
+                  type: integer                
+      responses:
+        201:
+          description: Planificacion actualizada correctamente
+  /planning/{id}/cattle/ovine/wool/:
+    get:
+      description: |
+        Returns wool planning 
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer        
+      responses:
+        200:
+          description: Planificacion obtenida correctamente
+          schema:            
+            type: object
+            properties:
+              heads:
+                type: integer
+              produced_kg:
+                type: integer
+              unit_price:
+                type: integer              
+    post:
+      description: |
+        Updates wool planning
+      parameters:
+        -
+          name: wool
+          in: body
+          required: true
+          schema:
+            type: object            
+            properties:
+              heads:
+                type: integer
+              produced_kg:
+                type: integer
+              unit_price:
+                type: integer                
+      responses:
+        201:
+          description: Planificacion actualizada correctamente          
+  /planning/{id}/cattle/general_costs/:
+    get:
+      description: |
+        Returns planning cattle costs
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer        
+      responses:
+        200:
+          description: Planificacion obtenida correctamente
+          schema:            
+            type: object
+            properties:
+              pastures:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    crop:
+                      type: object
+                      properties:
+                        value:
+                          type: integer
+                        description: 
+                          type: string
+                    area:
+                      type: integer
+              costs:
+                type: object
+                properties:
+                  supplement:
+                    type: integer
+                  shearing:
+                    type: integer
+                  forage_reserves:  
+                    type: integer
+                  machinery_cost:  
+                    type: integer
+                  other_cost:  
+                    type: integer
+                  health:
+                    type: integer
+    post:  
+      description: |
+        Updates cattle costs planning
+      parameters:
+        -
+          name: general_costs
+          in: body
+          required: true
+          schema:
+            type: object            
+            properties:
+              pastures:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    pasture:                      
+                      type: integer                        
+                    cost:
+                      type: integer
+              costs:
+                type: object
+                properties:
+                  supplement:  
+                    type: integer  
+                  shearing:  
+                    type: integer  
+                  forage_reserves:  
+                    type: integer  
+                  machinery_cost:  
+                    type: integer  
+                  other_cost:  
+                    type: integer  
+                  health:
+                    type: integer             
+      responses:
+        201:
+          description: Planificacion actualizada correctamente   
+  /planning/{id}/general_costs/:
+    get:
+      description: |
+        Returns planning costs
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer        
+      responses:
+        200:
+          description: Planificacion obtenida correctamente
+          schema:            
+            type: object
+            properties:          
+              forestation_area:
+                type: integer                
+              forest_unit_cost:  
+                type: integer  
+              woods_unit_cost:  
+                type: integer  
+              other_cost:  
+                type: integer  
+              other_pb:  
+                type: integer                         
+              ima:
+                 type: integer
+
+    post:  
+      description: |
+        Updates costs planning
+      parameters:
+        -
+          name: woods_and_others
+          in: body
+          required: true
+          schema:
+            type: object            
+            properties:              
+              forest_unit_cost:  
+                type: integer  
+              woods_unit_cost:  
+                type: integer  
+              other_cost:  
+                type: integer  
+              other_pb:  
+                type: integer  
+              ima:    
+                 type: integer
+                          
+      responses:
+        201:
+          description: Planificacion actualizada correctamente      
+  /planning/{id}/structure_costs/:
+    get:
+      description: |
+        Returns planning costs
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer        
+      responses:
+        200:
+          description: Planificacion obtenida correctamente
+          schema:            
+            type: object
+            properties:          
+              structure_handwork:
+                type: integer                
+              fixed_improvements:  
+                type: integer  
+              administration:  
+                type: integer  
+              other_cost:  
+                type: integer  
+              tax_ammount:  
+                type: integer                         
+               
+
+    post:  
+      description: |
+        Updates costs planning
+      parameters:
+        -
+          name: structure
+          in: body
+          required: true
+          schema:
+            type: object            
+            properties:              
+              structure_handwork:  
+                type: integer  
+              fixed_improvements:  
+                type: integer  
+              administration:  
+                type: integer  
+              other_cost:  
+                type: integer  
+              tax_ammount:    
+                 type: integer
+                          
+      responses:
+        201:
+          description: Planificacion actualizada correctamente                  
+  ### PLANNIGN END 
+  
+  
   ### GIS WSs
   /gis/encode_kml/:
     get:
@@ -6516,6 +7550,26 @@ definitions:
         type: integer
       name:
         type: string
+  CatalogEntryCattle:
+    type: object
+    properties:
+      value:
+        type: integer
+      description:
+        type: string
+      price:
+        type: integer
+      weight:
+        type: integer
+  CatalogEntryCattleHorse:
+    type: object
+    properties:
+      value:
+        type: integer
+      description:
+        type: string
+      price:
+        type: integer
   DoubleGraphic:
     type: object
     properties:
@@ -6905,6 +7959,8 @@ definitions:
                   type: array
                   items:
                     type: integer
+                initilization_stage:
+                  type: string
   CharacterizationPOSTList:
     type: object
     properties:
@@ -7489,6 +8545,40 @@ definitions:
                       type: boolean
               closed:
                 type: boolean
+  PlanningMonthlyLandUse:
+    type: object
+    properties:
+      lot:
+        type: object
+        properties:
+          id:
+            type: integer
+          description:
+            type: string
+          hectares:
+            type: integer
+      land_uses:
+        type: array
+        items:
+          type: object
+          properties:
+              month:
+                type: integer
+              crops:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    crop_id:
+                      type: integer
+                    crop_name:
+                      type: string
+                    duration:
+                      type: integer
+                    hectares:
+                      type: integer
+                    description:
+                      type: string
   CropCatalog:
     allOf:
     - $ref: "#/definitions/CatalogEntryT1"
@@ -7625,6 +8715,8 @@ definitions:
                       type: string
                     description:
                       type: string
+                    crop_type:
+                      $ref: '#/definitions/CatalogEntryT1'
                 area:
                   type: number
                   format: float
@@ -7656,6 +8748,8 @@ definitions:
                       type: string
                     description:
                       type: string
+                    crop_type:
+                      $ref: '#/definitions/CatalogEntryT1'
                 area:
                   type: number
                   format: float
@@ -8628,12 +9722,30 @@ definitions:
                 - $ref: "#/definitions/TicketItemBaseDetail"
                 - $ref: "#/definitions/EconomicSupplyItem"
                 - properties:
+                    unit:
+                      type: integer
                     first_plan_description:
                       type: string
                     second_plan_description:
                       type: string
                     investment_description:
                       type: string
+          # services:
+          #   type: array
+          #   items:
+          #     type: object
+          #     allOf:
+          #       - $ref: "#/definitions/TicketItemBaseDetail"
+          #       - $ref: "#/definitions/EconomicSupplyItem"
+          #       - properties:
+          #           unit:
+          #             type: integer
+          #           first_plan_description:
+          #             type: string
+          #           second_plan_description:
+          #             type: string
+          #           investment_description:
+          #             type: string
           generals:
             type: array
             items:
@@ -9350,6 +10462,28 @@ definitions:
             type: string
       harvested_percentage:
         type: integer
+  AgroPlanningResponse:
+    type: object
+    properties:
+      crop:
+        type: object
+        properties:
+          value: 
+            type: integer
+          description:
+            type: string
+      area:
+        type: number
+        format: float
+      throwput:
+        type: number
+        format: float
+      cost:
+        type: number
+        format: float
+      unit_price:
+        type: number
+        format: float        
 ### AGRO END
 ### CATTLE BEGIN
   CattleStock:
@@ -9377,6 +10511,49 @@ definitions:
         type: integer
       current_stock:
         type: integer
+  CattleStockPlanningResponse:
+    type: object
+    properties:
+      category:
+        type: object
+        properties:
+          value: 
+            type: integer
+          description:
+            type: string
+      initial_stock:
+        type: integer
+      first_trimester:
+        type: object
+        properties:
+          stock:
+            type: integer
+          weight:
+            type: integer
+      second_trimester:
+        type: object
+        properties:
+          stock:
+            type: integer
+          weight:
+            type: integer
+      third_trimester:
+        type: object
+        properties:
+          stock:
+            type: integer
+          weight:
+            type: integer
+      fourth_trimester:
+        type: object
+        properties:
+          stock:
+            type: integer
+          weight:
+            type: integer    
+      final_price:
+        type: number
+        format: float        
   CattleExerciseValidations:
     type: object
     properties:
@@ -9773,6 +10950,29 @@ definitions:
       legumes_meadow:
         type: integer
   ### FIN_DE_EJERCICIO DEFINITIONS
+  
+  ### PLANIFICACION BEGIN
+  Planning:
+    type: object
+    properties:
+      id:
+        type: integer
+      description:
+        type: string
+      last_update:
+        type: string
+        format: date
+  PlanningPOST:
+    type: object
+    properties:
+      establishment_id: 
+        type: integer
+      exercise:
+        type: integer
+      description:
+        type: string
+  ### PLANIFICACION END
+  
   ### GIS DEFINITIONS
   Position:
     type: array
