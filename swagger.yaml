@@ -1066,7 +1066,17 @@ paths:
         -
           name: establishment_id
           in: query
-          required: true
+          required: false
+          type: integer
+        -
+          name: company_id
+          in: query
+          required: false
+          type: integer
+        -
+          name: crea_group_id
+          in: query
+          required: false
           type: integer
         -
           name: exercise
@@ -1440,6 +1450,22 @@ paths:
           description: Formularios obtenidos correctamente
           schema:
               $ref: '#/definitions/IndicatorFilterFormList'
+  /forms/indicators/sustainability/by_lot/:
+    get:
+      description: |
+        Lista catalogo de indicadores para lotes
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Formularios obtenidos correctamente
+          schema:
+            type: object
+            properties:
+              indicators:
+                type: array
+                items:
+                  $ref: '#/definitions/CatalogEntryT1'
   /forms/user_forms/:
     get:
       description: |
@@ -2076,20 +2102,121 @@ paths:
                             type: array
                             items:
                               type: string
-  /indicators/sustainability/detail/:
-    get:
+  /indicators/sustainability/by_lot/preview/:
+    post:
       description: |
-        Returns an indicator list to show on the table
+        Retorna los indicadores de sustentabilidad de mis lotes seleccionados
+      parameters:
+        -
+          name: comparative
+          in: body
+          required: false
+          description: Filters to calculate indicator
+          schema:
+            properties:
+              lot_ids:
+                type: array
+                items:
+                  type: integer
+              exercises:
+                type: array
+                items:
+                  type: integer
+              # company_id:
+              #   type: integer
+              # establishment_id:
+              #   type: integer
+              # crea_group_id:
+              #   type: integer
       responses:
         200:
           description: Indicadores obtenidos correctamente
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/IndicatorDetailList'
+            type: object
+            properties:
+              count:
+                type: integer
+              indicators:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    value:
+                      type: number
+                      format: float
+                    ref_value:
+                      type: number
+                      format: float
+  # /indicators/sustainability/by_lot/detail/:
+  #   get:
+  #     description: |
+  #       Returns an indicator list to show on the table
+  #     responses:
+  #       200:
+  #         description: Indicadores obtenidos correctamente
+  #         schema:
+  #           type: array
+  #           items:
+  #             $ref: '#/definitions/SustainabilityIndicatorDetailList'
+  #   post:
+  #     description: |
+  #       Calculates an indicator acording to selected chategorization and filters
+  #     parameters:
+  #       -
+  #         name: comparative
+  #         in: body
+  #         required: false
+  #         description: Filters to calculate indicator
+  #         schema:
+  #           properties:
+  #             compare_w_myself:
+  #               type: boolean
+  #             exercise_date:
+  #               type: integer
+  #             company_id:
+  #               type: integer
+  #             establishment_id:
+  #               type: integer
+  #             crea_group_id:
+  #               type: integer
+  #             lots_id:
+  #               type: array
+  #               items:
+  #                 type: integer
+  #             characterization:
+  #               $ref: '#/definitions/CharacterizationPOSTList'
+  #             filters:
+  #               type: array
+  #               items:
+  #                 $ref: '#/definitions/IndicatorFilterPOSTList'
+  #     responses:
+  #       200:
+  #         description: Indicadores obtenidos correctamente
+  #         schema:
+  #           $ref: '#/definitions/SustainabilityIndicatorDetailList'
+  #   delete:
+  #     description: |
+  #       Deletes a stored indicator detail
+  #     parameters:
+  #       -
+  #         name: ids
+  #         in: query
+  #         required: false
+  #         description: Indicator ids to delete, comma separated string
+  #         type: array
+  #         items:
+  #           type: string
+  #     responses:
+  #       204:
+  #         description: Indicador eliminada correctamente
+  #       404:
+  #         description: Indicador no enontrado
+  /indicators/sustainability/:
     post:
       description: |
-        Calculates an indicator acording to selected chategorization and filters
+        Retorna los indicadores de sustentabilidad
       parameters:
         -
           name: comparative
@@ -2101,17 +2228,15 @@ paths:
               compare_w_myself:
                 type: boolean
               exercise_date:
-                type: integer
+                type: array
+                items:
+                  type: integer
               company_id:
                 type: integer
               establishment_id:
                 type: integer
               crea_group_id:
                 type: integer
-              lots_id:
-                type: array
-                items:
-                  type: integer
               characterization:
                 $ref: '#/definitions/CharacterizationPOSTList'
               filters:
@@ -2122,61 +2247,57 @@ paths:
         200:
           description: Indicadores obtenidos correctamente
           schema:
-            $ref: '#/definitions/IndicatorDetailList'
-    delete:
-      description: |
-        Deletes a stored indicator detail
-      parameters:
-        -
-          name: ids
-          in: query
-          required: false
-          description: Indicator ids to delete, comma separated string
-          type: array
-          items:
-            type: string
-      responses:
-        204:
-          description: Indicador eliminada correctamente
-        404:
-          description: Indicador no enontrado
-  /indicators/sustainability/preview/:
-    post:
-      description: |
-        Returns an indicator list to show on the table
-      responses:
-        200:
-          description: Indicadores obtenidos correctamente
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/IndicatorDetailList'
-  /indicators/sustainability/detail/descriptions/:
-    post:
-      description: |
-        Returns an indicator list to show on the table
-      parameters:
-        -
-          name: comparative
-          in: body
-          required: false
-          description: Filters to calculate indicator
-          schema:
-            type: array
-            items:
-              type: object
-              properties:
-                id:
-                  type: integer
-                description:
-                  type: string
-      responses:
-        200:
-          description: Indicadores obtenidos correctamente
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/IndicatorDetailList'
+            type: object
+            properties:
+              comparative:
+                type: object
+                properties:
+                  description:
+                    type: string
+              indicators:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    value:
+                      type: number
+                      format: float
+                    ref_value:
+                      type: number
+                      format: float
+              date_consulted:
+                type: string
+                format: date
+              indicators_compared:
+                type: integer
+  # /indicators/sustainability/by_lot/detail/descriptions/:
+  #   post:
+  #     description: |
+  #       Returns an indicator list to show on the table
+  #     parameters:
+  #       -
+  #         name: comparative
+  #         in: body
+  #         required: false
+  #         description: Filters to calculate indicator
+  #         schema:
+  #           type: array
+  #           items:
+  #             type: object
+  #             properties:
+  #               id:
+  #                 type: integer
+  #               description:
+  #                 type: string
+  #     responses:
+  #       200:
+  #         description: Indicadores obtenidos correctamente
+  #         schema:
+  #           type: array
+  #           items:
+  #             $ref: '#/definitions/SustainabilityIndicatorDetailList'
   /indicators/detail/:
     get:
       description: |
@@ -2185,10 +2306,10 @@ paths:
         200:
           description: Indicadores obtenidos correctamente
           schema:
-             type: array
-             items:
-               type: object
-               properties:
+            type: array
+            items:
+              type: object
+              properties:
                 stored_comparatives:
                   $ref: '#/definitions/IndicatorDetailList'
     post:
@@ -2213,9 +2334,9 @@ paths:
                   characterization:
                     $ref: '#/definitions/CharacterizationPOSTList'
                   filters:
-                      type: array
-                      items:
-                        $ref: '#/definitions/IndicatorFilterPOSTList'
+                    type: array
+                    items:
+                      $ref: '#/definitions/IndicatorFilterPOSTList'
       responses:
         200:
           description: Indicadores obtenidos correctamente
