@@ -1056,6 +1056,51 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Lot'
+  /lots/by_crop/:
+    get:
+      description: |
+         List lots grouped by crop
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise
+          in: query
+          required: true
+          type: integer
+        -
+          name: crops
+          in: query
+          required: false
+          type: array
+          items:
+            type: integer
+      responses:
+        200:
+          description: Lotes obtenidos correctamente
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                crop:
+                  $ref: '#/definitions/CatalogEntryT3'
+                lots:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      code:
+                        type: string
+                      description:
+                        type: string
   /lots/decode_kml/:
     post:
       description: |
@@ -1750,6 +1795,19 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/CatalogEntryT3'
+  /forms/planning/cattle/:
+    get:
+      description: |
+        Lists all the movement types for planning cattle
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Formularios obtenidos correctamente
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CatalogEntryT3'
   ### AUX SERVICES END
   ### INDICATORS SERVICES
   /indicators/summary/:
@@ -2018,6 +2076,107 @@ paths:
                             type: array
                             items:
                               type: string
+  /indicators/sustainability/detail/:
+    get:
+      description: |
+        Returns an indicator list to show on the table
+      responses:
+        200:
+          description: Indicadores obtenidos correctamente
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/IndicatorDetailList'
+    post:
+      description: |
+        Calculates an indicator acording to selected chategorization and filters
+      parameters:
+        -
+          name: comparative
+          in: body
+          required: false
+          description: Filters to calculate indicator
+          schema:
+            properties:
+              compare_w_myself:
+                type: boolean
+              exercise_date:
+                type: integer
+              company_id:
+                type: integer
+              establishment_id:
+                type: integer
+              crea_group_id:
+                type: integer
+              lots_id:
+                type: array
+                items:
+                  type: integer
+              characterization:
+                $ref: '#/definitions/CharacterizationPOSTList'
+              filters:
+                type: array
+                items:
+                  $ref: '#/definitions/IndicatorFilterPOSTList'
+      responses:
+        200:
+          description: Indicadores obtenidos correctamente
+          schema:
+            $ref: '#/definitions/IndicatorDetailList'
+    delete:
+      description: |
+        Deletes a stored indicator detail
+      parameters:
+        -
+          name: ids
+          in: query
+          required: false
+          description: Indicator ids to delete, comma separated string
+          type: array
+          items:
+            type: string
+      responses:
+        204:
+          description: Indicador eliminada correctamente
+        404:
+          description: Indicador no enontrado
+  /indicators/sustainability/preview/:
+    post:
+      description: |
+        Returns an indicator list to show on the table
+      responses:
+        200:
+          description: Indicadores obtenidos correctamente
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/IndicatorDetailList'
+  /indicators/sustainability/detail/descriptions/:
+    post:
+      description: |
+        Returns an indicator list to show on the table
+      parameters:
+        -
+          name: comparative
+          in: body
+          required: false
+          description: Filters to calculate indicator
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                description:
+                  type: string
+      responses:
+        200:
+          description: Indicadores obtenidos correctamente
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/IndicatorDetailList'
   /indicators/detail/:
     get:
       description: |
@@ -2090,14 +2249,14 @@ paths:
           required: false
           description: Indicator ids and descriptions to update
           schema:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  description:
-                    type: string
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                description:
+                  type: string
       responses:
         204:
           description: Indicador eliminada correctamente
@@ -2130,64 +2289,6 @@ paths:
       responses:
         200:
           description: Indicadores obtenidos correctamente
-  /indicators/sustentability/detail/:
-    get:
-      description: |
-        Returns an indicator list to show on the table
-      responses:
-        200:
-          description: Indicadores obtenidos correctamente
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/IndicatorDetailList'
-    post:
-      description: |
-        Calculates an indicator acording to selected chategorization and filters
-      parameters:
-        -
-          name: comparative
-          in: body
-          required: false
-          description: Filters to calculate indicator
-          schema:
-            properties:
-              compare_w_myself:
-                type: boolean
-              exercise_date:
-                type: integer
-              company_id:
-                type: integer
-              establishment_id:
-                type: integer
-              characterization:
-                $ref: '#/definitions/CharacterizationPOSTList'
-              filters:
-                type: array
-                items:
-                  $ref: '#/definitions/IndicatorFilterPOSTList'
-      responses:
-        200:
-          description: Indicadores obtenidos correctamente
-          schema:
-            $ref: '#/definitions/IndicatorDetailList'
-    delete:
-      description: |
-        Deletes a stored indicator detail
-      parameters:
-        -
-          name: ids
-          in: query
-          required: false
-          description: Indicator ids to delete, comma separated string
-          type: array
-          items:
-            type: string
-      responses:
-        204:
-          description: Indicador eliminada correctamente
-        404:
-          description: Indicador no enontrado
   ### INDICATORS DEFINITIONS END
   ### LAND USES SERVICES
   /land_uses/summary/:
@@ -6498,7 +6599,266 @@ paths:
           description: Planificacion agregada correctamente
           schema:
             $ref: '#/definitions/Planning'
-  
+  /planning/{id}/:
+    get:
+      description: |
+         List plannings for the specified establishment and exercise
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: PLanificaciones obtenidas correctamente
+          schema:
+            $ref: '#/definitions/Planning'
+    patch:
+      description: |
+         Permite alterar algunas cosas del escenario
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+        -
+          name: planning
+          in: body
+          required: true
+          description: info
+          schema:
+            type: object
+            properties:
+              description:
+                type: string
+      responses:
+        200:
+          description: PLanificacion modificada OK
+          schema:
+            $ref: '#/definitions/Planning'
+    delete:
+      description: |
+         Permite borrar un escenario y todo su info en cascada
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        204:
+          description: Borrado OK
+  /planning/margins/:
+    get:
+      description: |
+        Retorna los distintos margenes de todos los escenarios
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: object
+            properties:
+              margen_forestal:
+                $ref: '#/definitions/PlanningMarginsTable'
+              margen_ganadero:
+                $ref: '#/definitions/PlanningMarginsTable'
+              margen_agricola:
+                $ref: '#/definitions/PlanningMarginsTable'
+              margen_agricola_extension:
+                $ref: '#/definitions/PlanningMarginsTable'
+  /planning/indicators_table/:
+    get:
+      description: |
+        Retorna la tabla de indicadores para exportar a excel de los escenarios seleccionados dentro del ejercicio y establecimiento
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise
+          in: query
+          required: true
+          type: integer
+        -
+          name: planning_ids
+          in: query
+          required: true
+          type: integer
+        -
+          name: detailed
+          in: query
+          required: true
+          type: boolean
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: array
+            items:
+              type: array
+  /planning/indicators/:
+    get:
+      description: |
+        Retorna las graficas de indicadores de todos los escenarios
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: establishment_id
+          in: query
+          required: true
+          type: integer
+        -
+          name: exercise
+          in: query
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: object
+            properties:
+              gral:
+                type: object
+                properties:
+                  series:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        name:
+                          type: string
+                        data:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              value:
+                                type: number
+                                format: float
+                              id:
+                                type: integer
+                  categories:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                  type_graphic:
+                    type: string
+                    # enumerate:
+                    #   - multigraphic
+                  name:
+                    type: string
+                  yAxis:
+                    type: array
+                    items:
+                      type: string
+              pb:
+                type: object
+                properties:
+                  series:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        type:
+                          type: string
+                        data:
+                          type: object
+                          properties:
+                            value:
+                              type: number
+                              format: float
+                            id:
+                              type: integer
+                  categories:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                  type_graphic:
+                    type: string
+                    # enumerate:
+                    #   - multigraphic
+                  name:
+                    type: string
+                  yAxis:
+                    type: string
+              cost:
+                type: object
+                properties:
+                  series:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        type:
+                          type: string
+                        data:
+                          type: object
+                          properties:
+                            value:
+                              type: number
+                              format: float
+                            id:
+                              type: integer
+                  categories:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                  type_graphic:
+                    type: string
+                    # enumerate:
+                    #   - multigraphic
+                  name:
+                    type: string
+                  yAxis:
+                    type: string
   /planning/{id}/copy/:
     post:
       security:
@@ -6526,6 +6886,23 @@ paths:
           description: Planificacion copiada correctamente
           schema:
             $ref: '#/definitions/Planning'
+  /planning/{id}/sensitivity/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Genera grafica de sensibilidad de IK
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Ok
+          schema:
+            $ref: '#/definitions/SimpleGraphic'
   /planning/{id}/land_uses/detail/:
     get:
       description: |
@@ -6707,36 +7084,6 @@ paths:
                 execution_date:
                   type: string
                   format: date
-  /planning/{id}/cattle/{cattle_type}/movements/{movement_id}/:
-    delete:
-      security:
-        - Bearer: []
-      description: |
-        Cattle movements
-      parameters:
-        -
-          name: cattle_type
-          in: path
-          required: true
-          enum:
-          - horse
-          - bovine
-          - ovine
-          type: string
-        -
-          name: id
-          in: path
-          required: true
-          type: integer
-        -
-          name: movement_id
-          in: path
-          required: true
-          type: integer
-      responses:
-        204:
-          description: Movimiento eliminado correctamente
-  /planning/{id}/cattle/{cattle_type}/birth/:
     post:
       security:
         - Bearer: []
@@ -6771,95 +7118,24 @@ paths:
                 type: string
                 format: date
               quantity:
-                type: integer                
-      responses:
-        201:
-          description: Movimientos creados correctamente
-  /planning/{id}/cattle/{cattle_type}/death/:
-    post:
-      security:
-        - Bearer: []
-      description: |
-        Death movement for bovines
-      parameters:
-        -
-          name: cattle_type
-          in: path
-          required: true
-          enum:
-          - horse
-          - bovine
-          - ovine
-          type: string
-        -
-          name: id
-          in: path
-          required: true          
-          type: integer
-        -
-          name: death
-          in: body
-          required: true
-          description: Deaths info
-          schema:        
-            properties:
-              category:
-                type: integer
-              quantity:
-                type: integer  
-              execution_date:
-                type: string
-                format: date
-      responses:
-        201:
-          description: Movimientos creados correctamente
-  /planning/{id}/cattle/{cattle_type}/category_change/:
-    post:
-      security:
-        - Bearer: []
-      description: |
-        Category change movement for bovines
-      parameters:
-        -
-          name: cattle_type
-          in: path
-          required: true
-          enum:
-          - horse
-          - bovine
-          - ovine
-          type: string
-        -
-          name: id
-          in: path
-          required: true
-          type: integer
-        -
-          name: change
-          in: body
-          required: true
-          description: Category change info
-          schema:
-            type: object
-            properties:
-              category:
-                type: integer
-              quantity:
-                type: integer
+                type: integer    
               destination_category:
                 type: integer
-              execution_date:
-                type: string
-                format: date
+              unit_weight:
+                type: integer
+              unit_price:
+                type: integer     
+              movement_type:
+                type: integer
       responses:
         201:
-          description: Movimiento creado correctamente
-  /planning/{id}/cattle/{cattle_type}/consumption/:
-    post:
+          description: Movimientos creados correctamente                  
+  /planning/{id}/cattle/{cattle_type}/movements/{movement_id}/:
+    delete:
       security:
         - Bearer: []
       description: |
-        Consumption movement for bovines
+        Cattle movements
       parameters:
         -
           name: cattle_type
@@ -6876,119 +7152,13 @@ paths:
           required: true
           type: integer
         -
-          name: consume
-          in: body
-          required: true
-          description: Category change info
-          schema:
-            type: object
-            properties:
-              category:
-                type: integer
-              quantity:
-                type: integer
-              unit_weight:
-                type: number
-                format: float
-              unit_price:
-                type: number
-                format: float
-              execution_date:
-                type: string
-                format: date
-      responses:
-        201:
-          description: Movimiento creado correctamente
-  /planning/{id}/cattle/{cattle_type}/sale/:
-    post:
-      security:
-        - Bearer: []
-      description: |
-        Consumption movement for bovines
-      parameters:
-        -
-          name: cattle_type
-          in: path
-          required: true
-          enum:
-          - horse
-          - bovine
-          - ovine
-          type: string
-        -
-          name: id
+          name: movement_id
           in: path
           required: true
           type: integer
-        -
-          name: sale
-          in: body
-          required: true
-          description: Category change info
-          schema:
-            type: object
-            properties:
-              category:
-                type: integer
-              quantity:
-                type: integer
-              unit_weight:
-                type: number
-                format: float
-              unit_price:
-                type: number
-                format: float
-              execution_date:
-                type: string
-                format: date
       responses:
-        201:
-          description: Movimiento creado correctamente
-  /planning/{id}/cattle/{cattle_type}/purchase/:
-    post:
-      security:
-        - Bearer: []
-      description: |
-        Consumption movement for bovines
-      parameters:
-        -
-          name: cattle_type
-          in: path
-          required: true
-          enum:
-          - horse
-          - bovine
-          - ovine
-          type: string
-        -
-          name: id
-          in: path
-          required: true
-          type: integer
-        -
-          name: purchase
-          in: body
-          required: true
-          description: Category change info
-          schema:
-            type: object
-            properties:
-              category:
-                type: integer
-              quantity:
-                type: integer
-              unit_weight:
-                type: number
-                format: float
-              unit_price:
-                type: number
-                format: float
-              execution_date:
-                type: string
-                format: date
-      responses:
-        201:
-          description: Movimiento creado correctamente          
+        204:
+          description: Movimiento eliminado correctamente
   /planning/{id}/cattle/{cattle_type}/stock/:
     get:
       description: |
@@ -7120,6 +7290,8 @@ paths:
                           type: string
                     area:
                       type: integer
+                    cost:
+                      type: integer
               costs:
                 type: object
                 properties:
@@ -7172,8 +7344,8 @@ paths:
                     type: integer             
       responses:
         201:
-          description: Planificacion actualizada correctamente   
-  /planning/{id}/general_costs/:
+          description: Planificacion actualizada correctamente
+  /planning/{id}/woods_and_others/:
     get:
       description: |
         Returns planning costs
@@ -7186,22 +7358,21 @@ paths:
       responses:
         200:
           description: Planificacion obtenida correctamente
-          schema:            
+          schema:
             type: object
-            properties:          
+            properties:
               forestation_area:
-                type: integer                
-              forest_unit_cost:  
-                type: integer  
-              woods_unit_cost:  
-                type: integer  
-              other_cost:  
-                type: integer  
-              other_pb:  
-                type: integer                         
+                type: integer
+              forest_unit_cost:
+                type: integer
+              woods_unit_cost:
+                type: integer
+              other_cost:
+                type: integer
+              other_pb:
+                type: integer
               ima:
                  type: integer
-
     post:  
       description: |
         Updates costs planning
@@ -7599,26 +7770,31 @@ definitions:
               items:
                 type: number
                 format: float
-  # SimpleGraphic:
-  #   type: object
-  #   properties:
-  #     series:
-  #       type: object
-  #       properties:
-  #         depreciation:
-  #           type: array
-  #           items:
-  #             type: integer
-  #     categories:
-  #       type: array
-  #       items:
-  #         type: integer
-  #     type_graphic:
-  #       type: string
-  #     name:
-  #       type: string
-  #     yAxis:
-  #       type: string
+  SimpleGraphic:
+    type: object
+    properties:
+      series:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            data:
+              type: array
+              items:
+                type: number
+                format: float
+      categories:
+        type: array
+        items:
+          type: string
+      type_graphic:
+        type: string
+      name:
+        type: string
+      yAxis:
+        type: string
   ### AUX DEFINITIONS END
   ### USERS definitions:
   Permissions:
@@ -10952,6 +11128,12 @@ definitions:
   ### FIN_DE_EJERCICIO DEFINITIONS
   
   ### PLANIFICACION BEGIN
+  PlanningMarginsTable:
+    type: array
+    items:
+      type: array
+      items:
+        type: integer
   Planning:
     type: object
     properties:
@@ -10962,6 +11144,8 @@ definitions:
       last_update:
         type: string
         format: date
+      establishment_id:
+        type: integer
   PlanningPOST:
     type: object
     properties:
