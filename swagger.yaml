@@ -371,6 +371,31 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Establishment'
+  /establishments/{id}/reset/:
+    patch:
+      description: |
+        Resets
+      security:
+        - Bearer: []
+      parameters:
+        -
+          name: id
+          in: path
+          description: Establishment's id
+          required: true
+          type: integer
+        -
+          name: data
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              password:
+                type: string
+      responses:
+        204:
+          description: Establecimiento reseteado Ok
   /establishments/{id}/active_characterization/:
     get:
       description: |
@@ -720,6 +745,11 @@ paths:
           name: id
           in: path
           required: true
+          type: integer
+        -
+          name: exercise
+          in: query
+          required: false
           type: integer
         -
           name: cattle_type
@@ -1079,10 +1109,12 @@ paths:
           required: false
           type: integer
         -
-          name: exercise
+          name: exercises
           in: query
           required: true
-          type: integer
+          type: array
+          items:
+            type: integer
         -
           name: crops
           in: query
@@ -2142,11 +2174,19 @@ paths:
                   type: object
                   properties:
                     id:
-                      type: integer
+                      type: string
                     value:
                       type: number
                       format: float
                     ref_value:
+                      type: number
+                      format: float
+                    name:
+                      type: string
+                    max:
+                      type: number
+                      format: float
+                    min:
                       type: number
                       format: float
   # /indicators/sustainability/by_lot/detail/:
@@ -2265,6 +2305,14 @@ paths:
                       type: number
                       format: float
                     ref_value:
+                      type: number
+                      format: float
+                    name:
+                      type: string
+                    max:
+                      type: number
+                      format: float
+                    min:
                       type: number
                       format: float
               date_consulted:
@@ -2760,6 +2808,54 @@ paths:
             type: array
             items:
               $ref: '#/definitions/ServiceCatalogItem'
+  /inventory/services/catalogs/{id}/add_from_catalog/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Creates and initailizes a service from a global service catalog
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          description: nothing
+          type: integer
+        -
+          name: data
+          in: body
+          required: true
+          description: info
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              quantity:
+                type: number
+                format: float
+              unit_price:
+                type: number
+                format: float
+              execution_date:
+                type: string
+                format: date
+      responses:
+        201:
+          description: nothing
+          schema:
+            type: object
+            properties:
+              execution_date:
+                type: string
+                format: date
+              id:
+                type: integer
+              cost:
+                type: number
+                format: float
+              quantity:
+                type: integer
   /inventory/services/{id}/:
     get:
       description: |
@@ -2969,6 +3065,54 @@ paths:
             type: array
             items:
               $ref: '#/definitions/SupplyCatalogItem'
+  /inventory/supplies/catalogs/{id}/add_from_catalog/:
+    post:
+      security:
+        - Bearer: []
+      description: |
+        Creates and initailizes a supply from a global supply catalog
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          description: nothing
+          type: integer
+        -
+          name: data
+          in: body
+          required: true
+          description: info
+          schema:
+            type: object
+            properties:
+              establishment_id:
+                type: integer
+              quantity:
+                type: number
+                format: float
+              unit_price:
+                type: number
+                format: float
+              execution_date:
+                type: string
+                format: date
+      responses:
+        201:
+          description: nothing
+          schema:
+            type: object
+            properties:
+              execution_date:
+                type: string
+                format: date
+              id:
+                type: integer
+              cost:
+                type: number
+                format: float
+              quantity:
+                type: integer
   /inventory/supplies/:
     get:
       description: |
@@ -3454,7 +3598,7 @@ paths:
         -
           name: establishment_id
           in: query
-          required: true
+          required: false
           type: integer
       responses:
         200:
@@ -3754,8 +3898,25 @@ paths:
           schema:
             $ref: '#/definitions/InvestmentPATCH'
       responses:
-        201:
+        200:
           description: Insumos modificada Ok
+          schema:
+            $ref: '#/definitions/InvestmentDetail'
+    delete:
+      security:
+        - Bearer: []
+      description: |
+        Deletes Investment
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          description: Investment's id
+          type: integer
+      responses:
+        204:
+          description: Ok
     get:
       security:
         - Bearer: []
@@ -3768,16 +3929,11 @@ paths:
           required: true
           description: Investment's id
           type: integer
-        -
-          name: investment
-          in: body
-          required: true
-          description: investment info
+      responses:
+        200:
+          description: Inversion get Ok
           schema:
             $ref: '#/definitions/InvestmentDetail'
-      responses:
-        201:
-          description: Inversion get Ok
   ### INVESTMENT END
   ### Cajas BEGIN
   /savings_banks/:
@@ -5144,6 +5300,68 @@ paths:
       responses:
         201:
           description: Movimientos creados correctamente
+  /cattle/{cattle_type}/birth/{id}/:
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Cattle birth patch
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          description: Birth entry id
+          type: integer
+        -
+          name: birth
+          in: body
+          required: true
+          description: Birth info
+          schema:
+            properties:
+              category:
+                type: integer
+              quantity:
+                type: integer
+              execution_date:
+                type: string
+                format: date
+      responses:
+        200:
+          description: Nacimiento modificado ok
+          
+    delete:
+      security:
+        - Bearer: []
+      description: |
+        Cattle birth
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          description: Birth entry id
+          type: integer
+      responses:
+        204:
+          description: Nacimiento eliminado ok
   /cattle/{cattle_type}/death/:
     post:
       security:
@@ -5185,6 +5403,68 @@ paths:
       responses:
         201:
           description: Movimientos creados correctamente
+  /cattle/{cattle_type}/death/{id}/:
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Cattle death patch
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          description: Death entry id
+          type: integer
+        -
+          name: death
+          in: body
+          required: true
+          description: Death info
+          schema:
+            properties:
+              category:
+                type: integer
+              quantity:
+                type: integer
+              execution_date:
+                type: string
+                format: date
+      responses:
+        200:
+          description: Muerte modificado ok
+          
+    delete:
+      security:
+        - Bearer: []
+      description: |
+        Cattle death
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          description: Death entry id
+          type: integer
+      responses:
+        204:
+          description: Muerte eliminado ok          
   /cattle/{cattle_type}/adjust/:
     post:
       security:
@@ -5223,6 +5503,70 @@ paths:
       responses:
         201:
           description: Movimiento creados correctamente
+  /cattle/{cattle_type}/adjust/{id}/:
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Cattle adjust patch
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          description: Adjust entry id
+          type: integer
+        -
+          name: adjust
+          in: body
+          required: true
+          description: Adjust info
+          schema:
+            properties:
+              category:
+                type: integer
+              quantity:
+                type: integer
+              execution_date:
+                type: string
+                format: date
+              reason:
+                type: integer
+      responses:
+        200:
+          description: Ajuste modificado ok
+          
+    delete:
+      security:
+        - Bearer: []
+      description: |
+        Cattle adjust
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          description: Adjust entry id
+          type: integer
+      responses:
+        204:
+          description: Ajuste eliminado ok          
   /cattle/{cattle_type}/category_change/:
     post:
       security:
@@ -5261,6 +5605,70 @@ paths:
       responses:
         201:
           description: Movimiento creado correctamente
+  /cattle/{cattle_type}/category_change/{id}/:
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Cattle category change patch
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          description: Change entry id
+          type: integer
+        -
+          name: change
+          in: body
+          required: true
+          description: Change info
+          schema:
+            properties:
+              category:
+                type: integer
+              quantity:
+                type: integer
+              execution_date:
+                type: string
+                format: date
+              destination_category:
+                type: integer
+      responses:
+        200:
+          description: Cambio de categoria modificado ok
+          
+    delete:
+      security:
+        - Bearer: []
+      description: |
+        Cattle category change
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          description: Change entry id
+          type: integer
+      responses:
+        204:
+          description: Cambio de categoria eliminado ok          
   /cattle/{cattle_type}/consumption/:
     post:
       security:
@@ -5309,6 +5717,80 @@ paths:
       responses:
         201:
           description: Movimiento creado correctamente
+  /cattle/{cattle_type}/consumption/{id}/:
+    patch:
+      security:
+        - Bearer: []
+      description: |
+        Cattle consumption patch
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          description: Consumption entry id
+          type: integer
+        -
+          name: consumption
+          in: body
+          required: true
+          description: Consumption info
+          schema:
+            properties:
+              category:
+                type: integer
+              quantity:
+                type: integer
+              execution_date:
+                type: string
+                format: date
+              unit_weight:
+                type: number
+                format: float
+              unit_price:
+                type: number
+                format: float
+              first_plan:
+                type: string
+              second_plan:
+                type: string
+              investment_id:
+                type: integer
+      responses:
+        200:
+          description: Consumo modificado ok
+          
+    delete:
+      security:
+        - Bearer: []
+      description: |
+        Cattle consumption
+      parameters:
+        -
+          name: cattle_type
+          in: path
+          required: true
+          enum:
+          - bovine
+          - ovine
+          type: string
+        -
+          name: id
+          in: path
+          required: true
+          description: Consumption entry id
+          type: integer
+      responses:
+        204:
+          description: Consumo eliminado ok          
   /cattle/{cattle_type}/indicators/:
     get:
       security:
@@ -6832,6 +7314,11 @@ paths:
           type: integer
         -
           name: detailed
+          in: query
+          required: true
+          type: boolean
+        -
+          name: add_supposed
           in: query
           required: true
           type: boolean
@@ -10534,6 +11021,8 @@ definitions:
               type: integer
             inventory_type:
               type: string
+            description:
+              type: string
             unit:
               type: string
       land_uses:
@@ -10818,6 +11307,9 @@ definitions:
             type: integer
           description:
             type: string
+      initial_weight:
+        type: number
+        format: float
       initial_stock:
         type: integer
       first_trimester:
