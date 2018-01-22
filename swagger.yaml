@@ -28,6 +28,10 @@ securityDefinitions:
 #  500:
 #    descripcion: Error proveniente del servidor
 paths:
+  /mobile/users/:
+    post:
+      # NOTA!!: El validator lo marca como un error pero en realidad funciona muy bien
+      $ref: '#/paths/~1users~1/post'
   ### USERS SERVICES
   /users/:
     post:
@@ -1219,7 +1223,7 @@ paths:
           description: Lote no enontrado
     delete:
       description: |
-        Deletes a lot
+        Deletes a lot. Only when its establishment is not initilized
       security:
         - Bearer: []
       parameters:
@@ -4553,6 +4557,21 @@ paths:
       responses:
         201:
           description: Cultivo consumido correctamente
+  /agro/production/consume/{id}/:
+    delete:
+      security:
+        - Bearer: []
+      description: |
+        Nothing to say
+      parameters:
+        -
+          name: id
+          in: path
+          type: integer
+          required: true
+      responses:
+        204:
+          description: Nothing to say
   /agro/production/general_harvest/:
     post:
       security:
@@ -4665,6 +4684,21 @@ paths:
                 type: string
               exercise:
                 type: integer
+  /agro/production/adjust/{id}/:
+    delete:
+      security:
+        - Bearer: []
+      description: |
+        Nothing to say
+      parameters:
+        -
+          name: id
+          in: path
+          type: integer
+          required: true
+      responses:
+        204:
+          description: Nothing to say                
   ### AGRO END
   ### CATTLE BEGIN
   /cattle/summary/:
@@ -5301,43 +5335,6 @@ paths:
         201:
           description: Movimientos creados correctamente
   /cattle/{cattle_type}/birth/{id}/:
-    patch:
-      security:
-        - Bearer: []
-      description: |
-        Cattle birth patch
-      parameters:
-        -
-          name: cattle_type
-          in: path
-          required: true
-          enum:
-          - bovine
-          - ovine
-          type: string
-        -
-          name: id
-          in: path
-          required: true
-          description: Birth entry id
-          type: integer
-        -
-          name: birth
-          in: body
-          required: true
-          description: Birth info
-          schema:
-            properties:
-              category:
-                type: integer
-              quantity:
-                type: integer
-              execution_date:
-                type: string
-                format: date
-      responses:
-        200:
-          description: Nacimiento modificado ok
           
     delete:
       security:
@@ -5404,43 +5401,6 @@ paths:
         201:
           description: Movimientos creados correctamente
   /cattle/{cattle_type}/death/{id}/:
-    patch:
-      security:
-        - Bearer: []
-      description: |
-        Cattle death patch
-      parameters:
-        -
-          name: cattle_type
-          in: path
-          required: true
-          enum:
-          - bovine
-          - ovine
-          type: string
-        -
-          name: id
-          in: path
-          required: true
-          description: Death entry id
-          type: integer
-        -
-          name: death
-          in: body
-          required: true
-          description: Death info
-          schema:
-            properties:
-              category:
-                type: integer
-              quantity:
-                type: integer
-              execution_date:
-                type: string
-                format: date
-      responses:
-        200:
-          description: Muerte modificado ok
           
     delete:
       security:
@@ -5504,45 +5464,6 @@ paths:
         201:
           description: Movimiento creados correctamente
   /cattle/{cattle_type}/adjust/{id}/:
-    patch:
-      security:
-        - Bearer: []
-      description: |
-        Cattle adjust patch
-      parameters:
-        -
-          name: cattle_type
-          in: path
-          required: true
-          enum:
-          - bovine
-          - ovine
-          type: string
-        -
-          name: id
-          in: path
-          required: true
-          description: Adjust entry id
-          type: integer
-        -
-          name: adjust
-          in: body
-          required: true
-          description: Adjust info
-          schema:
-            properties:
-              category:
-                type: integer
-              quantity:
-                type: integer
-              execution_date:
-                type: string
-                format: date
-              reason:
-                type: integer
-      responses:
-        200:
-          description: Ajuste modificado ok
           
     delete:
       security:
@@ -5606,45 +5527,6 @@ paths:
         201:
           description: Movimiento creado correctamente
   /cattle/{cattle_type}/category_change/{id}/:
-    patch:
-      security:
-        - Bearer: []
-      description: |
-        Cattle category change patch
-      parameters:
-        -
-          name: cattle_type
-          in: path
-          required: true
-          enum:
-          - bovine
-          - ovine
-          type: string
-        -
-          name: id
-          in: path
-          required: true
-          description: Change entry id
-          type: integer
-        -
-          name: change
-          in: body
-          required: true
-          description: Change info
-          schema:
-            properties:
-              category:
-                type: integer
-              quantity:
-                type: integer
-              execution_date:
-                type: string
-                format: date
-              destination_category:
-                type: integer
-      responses:
-        200:
-          description: Cambio de categoria modificado ok
           
     delete:
       security:
@@ -5718,55 +5600,6 @@ paths:
         201:
           description: Movimiento creado correctamente
   /cattle/{cattle_type}/consumption/{id}/:
-    patch:
-      security:
-        - Bearer: []
-      description: |
-        Cattle consumption patch
-      parameters:
-        -
-          name: cattle_type
-          in: path
-          required: true
-          enum:
-          - bovine
-          - ovine
-          type: string
-        -
-          name: id
-          in: path
-          required: true
-          description: Consumption entry id
-          type: integer
-        -
-          name: consumption
-          in: body
-          required: true
-          description: Consumption info
-          schema:
-            properties:
-              category:
-                type: integer
-              quantity:
-                type: integer
-              execution_date:
-                type: string
-                format: date
-              unit_weight:
-                type: number
-                format: float
-              unit_price:
-                type: number
-                format: float
-              first_plan:
-                type: string
-              second_plan:
-                type: string
-              investment_id:
-                type: integer
-      responses:
-        200:
-          description: Consumo modificado ok
           
     delete:
       security:
@@ -6398,6 +6231,27 @@ paths:
                 value:
                   type: number
                   format: float
+  /perform_period/{id}/indicators_full_preview/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Visualiza todos los indicadores (en formato de tabla)
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: array
+            items:
+              type: array
+              items:
+                type: string
   /perform_period/{id}/rainfalls/:
     post:
       security:
