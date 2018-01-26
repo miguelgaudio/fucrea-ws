@@ -1,0 +1,174 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: fucrea
+host: virtserver.swaggerhub.com
+basePath: /smartway-ro/fucrea_mobile/1.0.0
+schemes:
+  - https
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+
+paths:
+  /mobile/users/login/:
+    get:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1users~1login~1/post'
+  /mobile/users/logout/:
+    get:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1users~1logout~1/post'
+  /mobile/users/refresh_login/:
+    get:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1users~1refresh_login~1/post'
+  /mobile/labours/:
+    get:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1labours~1/get'
+  /mobile/labours/finalize/:
+    get:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1labours~1finalize~1/get'
+    post:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1labours~1finalize~1/post'
+  /mobile/labours/cancel/:
+    post:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1labours~1cancel~1/post'
+  /mobile/labours/{id}/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Shows labour
+      # operationId: mobile_labours_detail
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Stock obtenido correctamente
+          schema:
+            $ref : "#/definitions/LabourDetail"
+    patch:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1labours~1{id}~1/patch'
+  /mobile/labours/{id}/notes/:
+    post:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1labours~1{id}~1notes~1/post'
+  /mobile/inventory/:
+    get:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1inventory~1/get'
+  /mobile/inventory/catalog_items/:
+    get:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1inventory~1catalog_items~1/get'
+  /mobile/savings_banks/:
+    get:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1savings_banks~1/get'
+  /mobile/tickets/:
+    get:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1tickets~1/get'
+  /mobile/tickets/buy/:
+    post:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1tickets~1buy~1/post'
+  /mobile/tickets/sell/:
+    post:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1tickets~1sell~1/post'
+  /mobile/providers/:
+    get:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1providers~1/get'
+  /mobile/investments/:
+    get:
+      $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/paths/~1investments~1/get'
+  
+  /mobile/app_init/:
+    get:
+      security:
+        - Bearer: []
+      description: |
+        Shows labour
+      produces:
+        - application/json
+      # operationId: mobile_labours_detail
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: object
+            properties:
+              cattle:
+                $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/definitions/CatalogEntryT2'
+              account_plans:
+                $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/definitions/AccountPlans'
+              agro_crop_types:
+                $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/definitions/CatalogEntryT2'
+              savings_banks:
+                $ref: 'https://api.swaggerhub.com/apis/smartway-ro/fucrea_desktop/1.0.0#/definitions/CatalogEntryT2'
+
+definitions:
+  LabourDetail:
+    type: object
+    properties:
+      description:
+        type: string
+      labour_type:
+        type: string
+      estimated_date:
+        type: string
+        format: date
+      estimated_cost:
+        type: number
+        format: float
+      execution_date:
+        type: string
+        format: date
+      execution_cost:
+        type: number
+        format: float
+      execution_stage:
+        type: string
+      inventory:
+        type: array
+        items:
+          type: object
+          properties:
+            inventory_id:
+              type: integer
+            dose:
+              type: number
+              format: float
+            unit_cost:
+              type: number
+              format: float
+            description:
+              type: string
+            inventory_type:
+              type: string
+            category:
+              type: string
+            unit:
+              type: string
+      land_use:
+        type: object
+        properties:
+          land_use_description:
+            type: string
+          lot_description:
+            type: string
+          area:
+            type: number
+            format: float
+          crop:
+            type: string
+      notes:
+        type: array
+        items:
+          type: object
+          properties:
+            author:
+              type: string
+            content:
+              type: string
+            date:
+              type: string
+              format: date

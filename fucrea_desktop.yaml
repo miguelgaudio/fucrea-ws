@@ -322,6 +322,40 @@ paths:
             properties:
               access_token:
                 type: string
+              refresh_token:
+                type: string
+              user:
+                $ref: '#/definitions/UserLogin'
+        400:
+          description: No user with that username, or auth failed (pass or username wrong).
+  /users/refresh_login/:
+    post:
+      description: |
+        Re logins the user that belongs the given refresh token
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        -
+          name: data
+          in: body
+          description: Data
+          required: true
+          schema:
+            properties:
+              refresh_token:
+                type: string
+      responses:
+        200:
+          description: User logged in
+          schema:
+            type: object
+            properties:
+              access_token:
+                type: string
+              refresh_token:
+                type: string
               user:
                 $ref: '#/definitions/UserLogin'
         400:
@@ -5773,13 +5807,19 @@ paths:
         -
           name: date_from
           in: query
-          required: true
+          required: false
           type: string
           format: date
         -
           name: date_to
           in: query
           required: true
+          type: string
+          format: date
+        -
+          name: exercise
+          in: query
+          required: false
           type: string
           format: date
       responses:
@@ -5841,7 +5881,7 @@ paths:
         - Bearer: []
       description: |
         Creates a new labour
-      operationId: labour_patch
+      # operationId: labour_patch
       parameters:
         -
           name: id
@@ -7173,6 +7213,8 @@ paths:
             type: array
             items:
               type: array
+              items: 
+                type: string
   /planning/indicators/:
     get:
       description: |
@@ -9431,39 +9473,55 @@ definitions:
         format: float
       inventory_type:
         type: string
+  AccountPlanEntryFst:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      applies_second_plan:
+        type: boolean
+      applies_investment:
+        type: boolean
+      children:
+        type: array
+        items:
+          type: string
+          # $ref: '#/definitions/AccountPlanEntryFst'
+  AccountPlanEntrySnd:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      children:
+        type: array
+        items:
+          type: string
+          # $ref: '#/definitions/AccountPlanEntrySnd'
   AccountPlans:
     type: object
     properties:
-      1st_account_plan:
+      1st_account_plans:
         type: array
         items:
           type: object
           properties:
-            name:
-              type: string
-            description:
-              type: string
-            applies_second_plan:
-              type: boolean
-            applies_investment:
-              type: boolean
             children:
               type: array
               items:
-                type: object
-      2nd_account_plan:
+                $ref: '#/definitions/AccountPlanEntryFst'
+      2nd_account_plans:
         type: array
         items:
           type: object
           properties:
-            name:
-              type: string
-            description:
-              type: string
             children:
               type: array
               items:
-                type: object
+                $ref: '#/definitions/AccountPlanEntrySnd'
   ### SUPPLY/SERVICE AUX DEFINITIONS
   Inventory:
     type: object
