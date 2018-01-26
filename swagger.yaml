@@ -1,8 +1,9 @@
 swagger: '2.0'
 info:
-  version: "1"
+  version: 1.0.0
   title: fucrea
-host: basic-auth-server.herokuapp.com
+host: virtserver.swaggerhub.com
+basePath: /smartway-ro/fucrea_desktop/1.0.0
 schemes:
   - https
 securityDefinitions:
@@ -28,10 +29,6 @@ securityDefinitions:
 #  500:
 #    descripcion: Error proveniente del servidor
 paths:
-  /mobile/users/:
-    post:
-      # NOTA!!: El validator lo marca como un error pero en realidad funciona muy bien
-      $ref: '#/paths/~1users~1/post'
   ### USERS SERVICES
   /users/:
     post:
@@ -3795,6 +3792,10 @@ paths:
                             format: date
   /inventory/:
     get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
       description: |
          List movements for the specified establishment
       security:
@@ -4126,6 +4127,11 @@ paths:
           required: false
           type: string
           format: date
+        -
+          name: exercise
+          in: query
+          required: false
+          type: integer
         -
           name: extended
           in: query
@@ -5783,24 +5789,7 @@ paths:
             type: object
             properties:
               filters:
-                type: object
-                properties:
-                  lots:
-                    type: array
-                    items:
-                      type: string
-                  execution_stages:
-                    type: array
-                    items:
-                      type: string
-                  crops:
-                    type: array
-                    items:
-                      type: string
-                  labour_types:
-                    type: array
-                    items:
-                      type: string
+                $ref:  "#/definitions/LaboursFilters"
               labours:
                 type: array
                 items:
@@ -5852,6 +5841,7 @@ paths:
         - Bearer: []
       description: |
         Creates a new labour
+      operationId: labour_patch
       parameters:
         -
           name: id
@@ -10144,6 +10134,8 @@ definitions:
       tax_ammount:
         type: number
         format: float
+      description:
+        type: string
       crop_type:
         type: string
       tons:
@@ -10161,6 +10153,8 @@ definitions:
       tax_ammount:
         type: number
         format: float
+      description:
+        type: string
       category:
         type: integer
       quantity:
@@ -10692,6 +10686,34 @@ definitions:
           type: object
     ### END TICKET MODELS
     ### BEGIN LABOUR MODELS ###
+  LaboursFilters:
+    type: object
+    properties:
+      lots:
+        type: array
+        items:
+          type: string
+      lots_geofences:
+        type: array
+        items:
+          type: object
+          properties:
+            lot_name:
+              type: string
+            geofence:
+              $ref: '#/definitions/GEOJson'
+      execution_stages:
+        type: array
+        items:
+          type: string
+      crops:
+        type: array
+        items:
+          type: string
+      labour_types:
+        type: array
+        items:
+          type: string
   LaboursListItem:
     type: object
     properties:
